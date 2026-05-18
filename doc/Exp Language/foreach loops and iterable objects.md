@@ -1,9 +1,9 @@
-#`foreach` loops
-As any other loop type in Exp, `foreach` loops support the use of `counter` keyword, which let you declare a special constant that holds the index of the current item in the collection:
+# `foreach` loops
+As any other loop type in Exp, `foreach` loops support the use of `counter` keyword, which lets you declare a special constant that holds the index of the current item in the collection:
 
-`foreach x in items : counter i { println(i + ": " + x) }
+`foreach x in items : counter i { println(i + ": " + x) }`
 
-#How to define a class as iterable via `foreach` loops
+# How to define a class as iterable via `foreach` loops
 There are 2 methods for that: 
 - if your class has an array property and you just want the `foreach` to iterate over it, add the `basearray` keyword after the property declaration and you're done:
   `class Stack(arr basearray) {...}`
