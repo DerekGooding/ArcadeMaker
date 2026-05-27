@@ -28,7 +28,7 @@ internal class InitOperation : IReadingOperation
         Instance inst;
         if (Constructor?.DefinedAt == ClassDefSpan.ExpArrayDef && Constructor.Args.Length == 1) // new Array(len)
         {
-            int len = (int)(Args[0].Read()?.Number ?? Interpreter.Activated.ThrowRuntime<int>("Argument value was null.", RuntimeException.INVALID_ARGUMENT)); // null check is critical because the arguments null check wasn't happening yet!
+            var len = (int)(Args[0].Read()?.Number ?? Interpreter.Activated.ThrowRuntime<int>("Argument value was null.", RuntimeException.INVALID_ARGUMENT)); // null check is critical because the arguments null check wasn't happening yet!
             if (len < 0)
                 Interpreter.Activated.ThrowRuntime("Array length cannot have a negative size.", RuntimeException.INVALID_ARGUMENT);
             inst = new Instance(Def, new IValue[len]);
@@ -37,7 +37,7 @@ internal class InitOperation : IReadingOperation
             inst = new Instance(Def);
 
         if (Constructor != null)
-            Interpreter.Activated.FuncCall(inst, Constructor, null, out bool _, Args.Select(a => a.Read()));
+            Interpreter.Activated.FuncCall(inst, Constructor, null, out var _, Args.Select(a => a.Read()));
 
         return inst;
     }

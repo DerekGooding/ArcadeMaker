@@ -51,7 +51,7 @@ public class ScriptDocument
             if (spanIndex >= TextSpans.Length)
                 return null;
 
-            TextSpan span = TextSpans[spanIndex];
+            var span = TextSpans[spanIndex];
 
             // skip spaces
             while (span.type == SpanType.Space)
@@ -73,7 +73,7 @@ public class ScriptDocument
             return TextSpans[spanIndex++];
         }
 
-        bool anySettingsRead = false;
+        var anySettingsRead = false;
 
         // read doc description
         var next = NextSpan();
@@ -88,7 +88,7 @@ public class ScriptDocument
         while (next?.text == UsingWordSpan.Keyword)
         {
             anySettingsRead = true;
-            string? use = NextSpan()?.text;
+            var use = NextSpan()?.text;
             if (use == null)
                 SettingsErrors.Add(new(Name, line, col, "Namespace name expected."));
             else if (!use.IsLiterallyValidName())
@@ -105,7 +105,7 @@ public class ScriptDocument
         if (next?.text == NamespaceWordSpan.Keyword)
         {
             anySettingsRead = true;
-            string? ns = NextSpan()?.text;
+            var ns = NextSpan()?.text;
             if (ns == null)
                 SettingsErrors.Add(new(Name, line, col, "Namespace name expected."));
             else if (!ns.IsLiterallyValidName())
@@ -147,14 +147,11 @@ public class ScriptDocument
         compiler.Run(this);
     }
 
-    public static ScriptDocument FromString(string script, string name)
-    {
-        return new ScriptDocument(script, name);
-    }
+    public static ScriptDocument FromString(string script, string name) => new ScriptDocument(script, name);
 
     public static ScriptDocument FromFile(string path)
     {
-        char endd = '\\';
+        var endd = '\\';
 #if ANDROID
         endd = '/';
 #endif
@@ -165,7 +162,7 @@ public class ScriptDocument
     public static ScriptDocument[] FromFiles(string[] paths)
     {
         var docs = new ScriptDocument[paths.Length];
-        for (int i = 0; i < paths.Length; i++)
+        for (var i = 0; i < paths.Length; i++)
             docs[i] = FromFile(paths[i]);
         return docs;
     }

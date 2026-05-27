@@ -13,7 +13,7 @@ internal class NullCoalescingOperatorSpan : OperatorSpan, ISymbol
 
     internal override IValue Result(IValue left, IValue right)
     {
-        IValue value = left ?? right;
+        var value = left ?? right;
         if (value is ThrowWordSpan)
             Interpreter.Activated.ThrowRuntime(NullCoalsingEx.Vars[0].Value.ToString(), NullCoalsingEx.Vars[1].Value.ToString(), this);
         return value;

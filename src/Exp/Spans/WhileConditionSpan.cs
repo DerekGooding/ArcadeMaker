@@ -13,7 +13,7 @@ internal class WhileConditionSpan : ConditionSpan, ILoopContext, IKeyword, IExpI
     {
         get
         {
-            string s = $"{Keyword} {Condition}";
+            var s = $"{Keyword} {Condition}";
             if (Id != null || Counter != null)
                 s += " : ";
             if (Id != null)

@@ -14,23 +14,13 @@ public partial class GSScriptBox : UserControl
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int SelectionStart
     {
-        get
-        {
-            return textBox.SelectionStart;
-        }
-        set
-        {
-            textBox.SelectionStart = value;
-        }
+        get => textBox.SelectionStart; set => textBox.SelectionStart = value;
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int SelectionLength
     {
-        get
-        {
-            return textBox.SelectionLength;
-        }
+        get => textBox.SelectionLength;
         set
         {
             if (value > 0 && !textBox.Focused)
@@ -68,26 +58,26 @@ public partial class GSScriptBox : UserControl
             textBox.Text = Text;
         }
 
-        ScriptBoxSpan[] newSpans = Global.GetScriptBoxSpans(Text);
+        var newSpans = Global.GetScriptBoxSpans(Text);
 
         if (endSpan < 0)
         {
             endSpan = newSpans.Length - 1;
         }
-        int selectionStart = 0;
-        for (int i = 0; i < startSpan; i++)
+        var selectionStart = 0;
+        for (var i = 0; i < startSpan; i++)
             selectionStart += newSpans[i].text.Length;
         textBox.SelectionStart = selectionStart;
         textBox.SelectionLength = 0;
 
-        bool spanAdded = spans == null ? false : (newSpans.Length != spans.Length);
+        var spanAdded = spans == null ? false : (newSpans.Length != spans.Length);
 
-        for (int i = startSpan; i <= endSpan; i++)
+        for (var i = startSpan; i <= endSpan; i++)
         {
             if (i < 0 || i >= newSpans.Length)
                 continue;
 
-            ScriptBoxSpan span = newSpans[i];
+            var span = newSpans[i];
 
             if (!(spans != null && i < spans.Length && span.text == spans[i].text && span.color == spans[i].color))
             {
@@ -152,8 +142,8 @@ public partial class GSScriptBox : UserControl
                 TextChanged?.Invoke(this, new EventArgs());
                 skipText = true;
 
-                bool scrollPosFound = false;
-                Point scroll = Point.Empty;
+                var scrollPosFound = false;
+                var scroll = Point.Empty;
                 try
                 {
                     scroll = textBox.GetScrollPoint();
@@ -167,7 +157,7 @@ public partial class GSScriptBox : UserControl
                 }
 
                 textHolder.Rtf = textBox.Rtf;
-                int caret = textBox.SelectionStart;
+                var caret = textBox.SelectionStart;
                 ColorTextBox(textBox: textHolder);
                 textBox.Rtf = textHolder.Rtf;
                 textBox.SelectionStart = caret;
@@ -210,7 +200,7 @@ public partial class GSScriptBox : UserControl
         {
             caret = textBox.SelectionStart;
             Text = textBox.Text;
-            int lc = Text.CountOf('\n');
+            var lc = Text.CountOf('\n');
             if (lc != lineCount)
             {
                 lineCount = lc;
@@ -240,8 +230,8 @@ public partial class GSScriptBox : UserControl
     private void textBox_VScroll(object sender, EventArgs e)
     {
         return;
-        int lineNum = 0;
-        for (int i = 0; i < textBox.SelectionStart; i++)
+        var lineNum = 0;
+        for (var i = 0; i < textBox.SelectionStart; i++)
         {
             if (textBox.Text[i] == '\n')
                 lineNum++;
@@ -254,11 +244,11 @@ public partial class GSScriptBox : UserControl
         if (e.KeyCode == Keys.Enter)
         {
             // get depth
-            int caretLoc = textBox.SelectionStart;
-            int depth = 0;
-            for (int i = 0; i < caretLoc; i++)
+            var caretLoc = textBox.SelectionStart;
+            var depth = 0;
+            for (var i = 0; i < caretLoc; i++)
             {
-                char c = textBox.Text[i];
+                var c = textBox.Text[i];
                 if (c == '{')
                     depth++;
                 else if (c == '}')
@@ -266,8 +256,8 @@ public partial class GSScriptBox : UserControl
             }
 
             // insert <depth> tabs
-            string tabs = "";
-            for (int t = 0; t < depth; t++)
+            var tabs = "";
+            for (var t = 0; t < depth; t++)
                 tabs += "\t";
             spans = null; // to draw all text again
             textBox.Text = textBox.Text.Insert(caretLoc, tabs);
@@ -298,10 +288,7 @@ public partial class GSScriptBox : UserControl
         }
     }
 
-    private void rtfPrintBtn_Click(object sender, EventArgs e)
-    {
-        MessageBox.Show(textBox.Rtf);
-    }
+    private void rtfPrintBtn_Click(object sender, EventArgs e) => MessageBox.Show(textBox.Rtf);
 
     private SpansTextBox2SearchForm searchForm = null;
 
@@ -352,13 +339,7 @@ public class ScriptBoxSpan : IDisposable
     public bool isKeyword = false;
     public string link = null;
 
-    public bool isLink
-    {
-        get
-        {
-            return link != null;
-        }
-    }
+    public bool isLink => link != null;
 
     public event EventHandler<string> TextChanged;
 
@@ -372,15 +353,9 @@ public class ScriptBoxSpan : IDisposable
         disposed = true;
     }
 
-    public ScriptBoxSpan Duplicate()
-    {
-        return new ScriptBoxSpan { text = text, color = color, backColor = backColor, type = type, insideFormattedString = insideFormattedString };
-    }
+    public ScriptBoxSpan Duplicate() => new ScriptBoxSpan { text = text, color = color, backColor = backColor, type = type, insideFormattedString = insideFormattedString };
 
-    public override string ToString()
-    {
-        return text;
-    }
+    public override string ToString() => text;
 
     public override bool Equals(object obj)
     {
@@ -447,7 +422,7 @@ internal class TextEditor : RichTextBoxEx
         int minScroll;
         int maxScroll;
         GetScrollRange(Handle, SB_VERT, out minScroll, out maxScroll);
-        Point rtfPoint = Point.Empty;
+        var rtfPoint = Point.Empty;
         SendMessage(Handle, EM_GETSCROLLPOS, 0, ref rtfPoint);
 
         return rtfPoint;

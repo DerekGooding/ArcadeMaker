@@ -12,7 +12,7 @@ internal interface IOperationWithInnerSource : IOperation
 
     void IOperation.Make()
     {
-        bool wasRunning = IsRunning;
+        var wasRunning = IsRunning;
         IsRunning = true;
 
         IVarSystem thisVs = Context;

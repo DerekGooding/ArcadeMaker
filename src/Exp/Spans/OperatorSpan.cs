@@ -15,18 +15,9 @@ internal abstract class OperatorSpan : Span
     internal abstract bool TwoSides { get; }
     internal virtual bool Action { get; } = false;
 
-    protected static string TypeOrNull(IValue obj)
-    {
-        return Extensions.GetExpTypeName(obj, true);
-    }
+    protected static string TypeOrNull(IValue obj) => Extensions.GetExpTypeName(obj, true);
 
-    protected static void OperationFailed(string err, Span throwing = null)
-    {
-        Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, throwing);
-    }
+    protected static void OperationFailed(string err, Span throwing = null) => Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, throwing);
 
-    protected void OperationFailed(string err)
-    {
-        Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, this);
-    }
+    protected void OperationFailed(string err) => Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, this);
 }

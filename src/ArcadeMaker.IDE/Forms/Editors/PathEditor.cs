@@ -31,12 +31,12 @@ public partial class PathEditor : Form
         roomBox.SelectedIndex = 0;
         closeCheckBox.Checked = path.close;
 
-        for (int i = 0; i < path.points.Count; i++)
+        for (var i = 0; i < path.points.Count; i++)
         {
             AddPointToPanel(path.points[i], i);
         }
 
-        Rectangle screenRectangle = RectangleToScreen(ClientRectangle);
+        var screenRectangle = RectangleToScreen(ClientRectangle);
         titleBarHeight = screenRectangle.Top - Top;
     }
 
@@ -60,7 +60,7 @@ public partial class PathEditor : Form
 
     private void roomBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        object item = roomBox.SelectedItem;
+        var item = roomBox.SelectedItem;
         if (item is GameRoom)
         {
             roomView = item as GameRoom;
@@ -101,7 +101,7 @@ public partial class PathEditor : Form
         if (path.points.Count < 2)
             return;
 
-        for (int p = 0; p < path.points.Count; p++)
+        for (var p = 0; p < path.points.Count; p++)
         {
             if (path.points.Count > p + 1)
             {
@@ -123,7 +123,7 @@ public partial class PathEditor : Form
 
     private void panel_MouseClick(object sender, MouseEventArgs e)
     {
-        bool add = true;
+        var add = true;
         /*
         foreach (Control control in panel.Controls)
         {
@@ -137,14 +137,14 @@ public partial class PathEditor : Form
             var pt = new PathPoint(new Point((int)(e.Location.X / snapXBox.Value) * (int)snapXBox.Value,
                                              (int)(e.Location.Y / snapYBox.Value) * (int)snapYBox.Value) - new Size(scrollX, scrollY));
             path.points.Add(pt);
-            int index = path.points.Count - 1;
+            var index = path.points.Count - 1;
             AddPointToPanel(pt, index);
         }
     }
 
     private void AddPointToPanel(PathPoint pt, int index)
     {
-        int btnSize = 10;
+        var btnSize = 10;
         Button button = new Button { Location = pt - new Size(btnSize / 2, btnSize / 2) + new Size(scrollX, scrollY), Size = new Size(btnSize, btnSize), Cursor = Cursors.Arrow, Tag = pt };
         button.MouseDown += (s, e) =>
         {
@@ -155,7 +155,7 @@ public partial class PathEditor : Form
         {
             if (e.Button == MouseButtons.Left && holdedBtn == button)
             {
-                Point loc = panel.PointToClient(Cursor.Position);
+                var loc = panel.PointToClient(Cursor.Position);
                 loc = new Point((int)(loc.X / snapXBox.Value) * (int)snapXBox.Value,
                                 (int)(loc.Y / snapYBox.Value) * (int)snapYBox.Value) + new Size(scrollX, scrollY);
                 button.Location = loc;
@@ -180,10 +180,7 @@ public partial class PathEditor : Form
         pointsListBox.Items.Add(pt);
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 
     private Button holdedBtn = null;
 
@@ -271,7 +268,7 @@ public partial class PathEditor : Form
 
     private void UpdateScroll()
     {
-        foreach (Button btn in panel.Controls.OfType<Button>())
+        foreach (var btn in panel.Controls.OfType<Button>())
         {
             if (btn.Tag is PathPoint pt)
             {
@@ -293,19 +290,13 @@ public partial class PathEditor : Form
         panelDataLbl.Text = $"x: {mouseLoc.Value.X}   y: {mouseLoc.Value.Y}   Area: ({-scrollX}, {-scrollY}) -> ({-scrollX + panel.Size.Width}, {-scrollY + panel.Size.Height})";
     }
 
-    private void snapXBox_ValueChanged(object sender, EventArgs e)
-    {
-        panel.Invalidate();
-    }
+    private void snapXBox_ValueChanged(object sender, EventArgs e) => panel.Invalidate();
 
-    private void snapYBox_ValueChanged(object sender, EventArgs e)
-    {
-        panel.Invalidate();
-    }
+    private void snapYBox_ValueChanged(object sender, EventArgs e) => panel.Invalidate();
 
     private void panel_MouseMove(object sender, MouseEventArgs e)
     {
-        Point loc = new Point((int)(e.Location.X / snapXBox.Value) * (int)snapXBox.Value,
+        var loc = new Point((int)(e.Location.X / snapXBox.Value) * (int)snapXBox.Value,
                               (int)(e.Location.Y / snapYBox.Value) * (int)snapYBox.Value) - new Size(scrollX, scrollY);
         UpdatePanelDataText(loc);
     }

@@ -8,20 +8,11 @@ internal class AttributeParamSpan : WordSpan, IExpItem
     internal DefNameSpan ExpTypeName { get; }
     internal Type Type { get; }
 
-    private AttributeParamSpan(string name) : base(name)
-    {
-        Name = name;
-    }
+    private AttributeParamSpan(string name) : base(name) => Name = name;
 
-    internal AttributeParamSpan(Instance type, string name) : this(name)
-    {
-        ExpType = type;
-    }
+    internal AttributeParamSpan(Instance type, string name) : this(name) => ExpType = type;
 
-    internal AttributeParamSpan(Type type, string name) : this(name)
-    {
-        Type = type;
-    }
+    internal AttributeParamSpan(Type type, string name) : this(name) => Type = type;
 
     internal AttributeParamSpan(DefNameSpan defName, string name) : this(name)
     {

@@ -10,10 +10,7 @@ public partial class Interpreter
 {
     private IContext currentContext => stack?.context;
 
-    private IVarSystem CurrentVarSystem
-    {
-        get => currentContext ?? field;
-    }
+    private IVarSystem CurrentVarSystem => currentContext ?? field;
 
     private string currNs;
 
@@ -82,448 +79,7 @@ public partial class Interpreter
     private StackIndex stack;
     private VsStackIndex vsStack;
 
-    internal void Run(IContext context = null, bool single = false, bool neutral = false, bool clearVars = true)
-    {
-        throw new NotImplementedException();
-
-        //Variable[] contextVarsBefore = null;
-        //if (context != null)
-        //{
-        //    stack = new StackIndex(context, stack);
-        //    vsStack = new VsStackIndex(context, vsStack);
-
-        //    if (clearVars)
-        //    {
-        //        contextVarsBefore = context.Vars.ToArray();
-        //        context.Vars.Clear();
-        //    }
-        //}
-        //else
-        //{
-        //    stack = null;
-        //    vsStack = new VsStackIndex(this, null);
-        //}
-
-        ////if (BuiltinFuncs(context))
-        ////    return;
-
-        //WordSpan cmd = null, prevCmd = null;
-        //while (CodeSpans == null ? spansCursor < SourceSpans.Length : codeCursor < CodeSpans.Length)
-        //{
-        //    if (cmd != null && single)
-        //        break;
-        //    prevCmd = cmd;
-
-        //    // break or continue if needed
-        //    ILoopContext firstBroken = null;
-        //    int ShouldBreak(StackIndex stack) // 0 No, 1 Continue, 2 Break
-        //    {
-        //        //if (throwing != null)
-        //        //    return 2;
-        //        while (stack != null)
-        //        {
-        //            var con = stack.context;
-        //            if (con is ILoopContext lc)
-        //            {
-        //                firstBroken = lc;
-        //                if (lc.Break)
-        //                    return 2;
-        //                if (lc.Continue)
-        //                    return 1;
-        //            }
-        //            else if (con is FuncDefSpan func && func.Return)
-        //                return 2;
-
-        //            stack = stack.parent;
-        //        }
-        //        firstBroken = null;
-        //        return 0;
-        //    }
-
-        //    int res = ShouldBreak(stack);
-
-        //    if (res == 2)
-        //        break;
-        //    if (res == 1)
-        //    {
-        //        if (firstBroken == context)
-        //            firstBroken.Continue = false;
-        //        break;
-        //    }
-
-        //    // make next cmd
-        //    Span nextSpan = ReadSpan();
-        //    if (nextSpan is WordSpan _cmd)
-        //        cmd = _cmd;
-        //    else if (nextSpan != null)
-        //        Throw($"Unexpected span '{nextSpan.FullText}.'");
-        //    else
-        //        break;// throw new Exception("cmd was null, meaning something went wrong as while condition should prevent that.");
-
-        //    //if (cmd is IContext toSetCtx)
-        //    //    toSetCtx.Context = context;
-
-        //    void RunContext(IContext rctx, bool clearVars)
-        //    {
-        //        //var stackb = this.stack;
-        //        Run(rctx.InnerSource, rctx, clearVars: clearVars);
-        //        //this.stack = stackb;
-        //    }
-
-        //    if (cmd is ConditionSpan cond)
-        //    {
-        //        if (neutral)
-        //            continue;
-
-        //        // init counter if set
-        //        bool delCounter = false;
-        //        if (cond is ILoopContext counterc)
-        //            delCounter = VarExists(counterc.Counter);
-        //        Action TickCounter = null;
-        //        if (cond is ILoopContext lc && lc.Counter != null)
-        //        {
-        //            Variable counter = SetVar(lc.Counter, 0d, cond, lc, createConst: true);
-        //            TickCounter = () =>
-        //            {
-        //                if (lc.Counter != null)
-        //                    //SetVar(lc.Counter, GetVar<double>(lc.Counter, false, lc) + 1, null, lc);
-        //                    counter.SetSkippingConstant((double)counter.Value + 1);
-        //            };
-        //        }
-
-        //        // if statement / while loop
-        //        if (cond is IfConditionSpan || cond is WhileConditionSpan)
-        //        {
-        //            while (Run<bool>(cond.Condition))
-        //            {
-        //                RunContext(cond, true);
-        //                cond.ConditionWasTrue = true;
-
-        //                if (cmd is IfConditionSpan || cond is ILoopContext { Break: true } || (ShouldBreak(stack) == 2))
-        //                    break;
-
-        //                TickCounter?.Invoke();
-        //            }
-        //        }
-
-        //        // for loop
-        //        else if (cond is ForLoopSpan loops)
-        //        {
-        //            Variable[] loopVars = loops.Vars.ToArray();
-        //            loops.Vars.Clear();
-        //            for (Run(loops.InitExe, loops, clearVars: false); Run<bool>(cond.Condition, loops); Run(loops.StepExe, loops, clearVars: false))
-        //            {
-        //                RunContext(loops, false);
-
-        //                if (loops.Break || ShouldBreak(stack) == 2)
-        //                    break;
-
-        //                TickCounter?.Invoke();
-        //            }
-        //            loops.Vars.Clear();
-        //            loops.Vars.AddRange(loopVars);
-        //        }
-
-        //        // delete counter if set
-        //        if (delCounter && cond is ILoopContext cc)
-        //            DeleteVar(cc.Counter, cc);
-        //    }
-
-        //    // else statement
-        //    else if (cmd is ElseConditionSpan elses)
-        //    {
-        //        if (neutral)
-        //            continue;
-
-        //        if (prevCmd is ConditionSpan conditionSpan && (!conditionSpan.ConditionWasTrue) && conditionSpan is not ForLoopSpan)
-        //        {
-        //            RunContext(elses, true);
-        //        }
-        //    }
-        //    else if (cmd is ForEachLoopSpan fe)
-        //    {
-        //        if (neutral)
-        //            continue;
-
-        //        var arr = Run<Instance>(fe.ArrReadText);
-
-        //        // base array
-        //        while (arr != null && !arr.IsArray && arr.def.BaseArrayProp is Property bap)
-        //            arr = (arr.Vars.FirstOrDefault(v => v.Name.Equals(bap.Name)) is Variable vv ? vv.Value as Instance : null);
-
-        //        if (arr == null)
-        //            ThrowRuntime("Array is null.", RuntimeException.INVALID_OPERATION);
-        //        if (!arr.IsArray)
-        //            Throw($"An array or basearray defining instance was expected (type read: {arr})");
-        //        int counter = 0;
-        //        try
-        //        {
-        //            Variable[] vars = fe.Vars.ToArray();
-        //            fe.Vars.Clear();
-        //            foreach (var obj in arr.ArrayValues)
-        //            {
-        //                if (fe.Counter != null)
-        //                    SetVar(fe.Counter, counter++, fe);
-        //                SetVar(fe.VarName, obj, fe);
-        //                RunContext(fe, false);
-
-        //                // a comment left weeks after implementing StackIndex:
-        //                // i have no idea why i did'nt check ShouldBreak(stack) here too, but it works (and in while loop it wouldn't):
-        //                /*
-        //                 * while true : id loop
-        //                   {
-        //                     while true
-        //                     {
-        //                      foreach x in [1, 2, 3]
-        //                      {
-        //                             print x
-        //                       while true
-        //                       {
-        //                        break loop
-        //                       }
-        //                      }
-        //                     }
-        //                    }
-        //                */
-        //                if (fe.Break)
-        //                    break;
-        //            }
-        //            fe.Vars.Clear();
-        //            fe.Vars.AddRange(vars);
-        //        }
-        //        catch (InvalidOperationException ex)
-        //        {
-        //            ThrowRuntime("Invalid operation while in foreach loop: " + ex.Message, RuntimeException.INVALID_OPERATION);
-        //        }
-        //    }
-        //    else if (cmd is BreakWordSpan or ContinueWordSpan)
-        //    {
-        //        // if id is attached, search a loop with this id
-        //        string spoiler = Spoiler()?.FullText;
-
-        //        StackIndex search = this.stack;
-        //        while (search != null && !(search.context is ILoopContext atta && atta.Id == spoiler))
-        //            search = search.parent;
-
-        //        // if id not found, relate this as id-less break / continue
-        //        if (search == null)
-        //        {
-        //            search = stack;
-        //            while (search != null && search.context is not ILoopContext)
-        //                search = search.parent;
-        //        }
-
-        //        if (search?.context is ILoopContext loopc)
-        //        {
-        //            if (loopc.Id != null && loopc.Id == spoiler)
-        //                ReadSpan();
-
-        //            if (neutral)
-        //                continue;
-
-        //            if (cmd is BreakWordSpan)
-        //                loopc.Break = true;
-        //            else if (cmd is ContinueWordSpan)
-        //                loopc.Continue = true;
-        //            break;
-        //        }
-        //        else
-        //            Throw("No enclosing loop out of which to break or continue.");
-        //    }
-        //    else if (cmd is TryWordSpan trys)
-        //    {
-        //        if (neutral)
-        //            continue;
-
-        //        try
-        //        {
-        //            RunContext(trys, true);
-        //        }
-        //        catch (RuntimeException ex)
-        //        {
-        //            if (trys.Catch != null)
-        //            {
-        //                // init exception var
-        //                if (trys.Catch.VarName != null)
-        //                    SetVar(trys.Catch.VarName, ex.ex, specificVS: trys.Catch);
-
-        //                // check "when"
-        //                bool toCatch = true;
-        //                if (trys.Catch.When != null)
-        //                    toCatch = Run<bool>(trys.Catch.When.Condition, trys.Catch);
-
-        //                if (toCatch)
-        //                {
-        //                    RunContext(trys.Catch, true);
-        //                }
-        //            }
-        //        }
-        //        finally
-        //        {
-        //            if (trys.Finally != null)
-        //            {
-        //                RunContext(trys.Finally, true);
-        //            }
-        //        }
-        //    }
-        //    else if (cmd is ThrowWordSpan)
-        //    {
-        //        ReadThrowStmt(readThrowKeyword: false, neutral: neutral);
-        //    }
-        //    else if (cmd is SectionWordSpan section)
-        //    {
-        //        if (neutral)
-        //            continue;
-
-        //        try
-        //        {
-        //            RunContext(section, true);
-        //        }
-        //        catch (RuntimeException ex)
-        //        {
-        //            if (FindParentContext<TryWordSpan>(cmd) is TryWordSpan tryb && tryb.Catch != null)
-        //            {
-        //                if (tryb.Catch.VarName != null)
-        //                    SetVar(tryb.Catch.VarName, ex.ex, specificVS: tryb.Catch);
-        //                if (tryb.Catch.When == null || Run<bool>(tryb.Catch.When.Condition, tryb.Catch))
-        //                {
-        //                    RunContext(tryb.Catch, true);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (cmd is PrintWordSpan)
-        //    {
-        //        object str = ReadValue(allowUnknownVars: neutral);
-
-        //        if (neutral)
-        //            continue;
-
-        //        Print(str ?? "NULL");
-        //    }
-        //    else if (cmd is SetWordSpan or ConstWordSpan)
-        //    {
-        //        string vname = ReadWord().Text;
-
-        //        // if this name is catched, throw an error
-        //        // the bug in this code will be fixed when inner sources will be of Span instead of TextSpan
-        //        /*bool setOnOuterVS = CurrentVarSystem is IContext someContext && VarExists(vname, someContext.OuterVarSystem);
-        //        if (setOnOuterVS || (GetPointer(vname) is Variable exists && exists.SettingSpan != cmd))
-        //        {
-        //            Throw($"'{vname}': This name is already in use. Pick another name for the variable.");
-        //        }*/
-
-        //        Read<SetSymbolSpan>();
-        //        object value = ReadValue(allowUnknownVars: neutral);
-
-        //        if (neutral)
-        //            continue;
-
-        //        SetVar(vname, value, cmd, null, cmd is ConstWordSpan);
-        //    }
-        //    else if (cmd is ReturnWordSpan)
-        //    {
-        //        // find the func we are in
-        //        StackIndex ctx = this.stack;
-        //        ILoopContext breakFrom = null;
-        //        while (ctx != null && ctx.context is not FuncDefSpan)
-        //        {
-        //            if (ctx.context is ILoopContext lc)
-        //                breakFrom = lc;
-        //            ctx = ctx.parent;
-        //        }
-
-        //        // return
-        //        if (ctx?.context is FuncDefSpan func)
-        //        {
-        //            if (ctx.context is not ConstructorDefSpan)
-        //            {
-        //                func.Returns = ReadValue(allowUnknownVars: neutral);
-
-        //                if (neutral)
-        //                {
-        //                    func.Returns = null;
-        //                    continue;
-        //                }
-
-        //                func.Return = true;
-        //            }
-
-        //            if (breakFrom != null)
-        //                breakFrom.Break = true;
-        //            break;
-        //        }
-        //        else
-        //            Throw("No enclosing function of which to return.");
-        //    }
-        //    else if (cmd is IDefination or NamespaceWordSpan or UsingWordSpan or ExternClassDefSpan)
-        //    {
-        //        if (context != null)
-        //            Throw($"{cmd.Text} word is not expected in this context.");
-        //        continue;
-        //    }
-        //    else
-        //    {
-        //        // set an existing variable or call a func
-        //        object obj = ReadNamedValueOrPointer(out bool isArrPntr, out int arrPntrInd, cmd, allowUnknownVars: neutral, allowFuncsToNotReturn: true);
-
-        //        Variable pntr = null;
-        //        if (obj is Variable || (obj is Instance && isArrPntr) || (neutral && Spoiler() is SetSymbolSpan))
-        //        {
-        //            pntr = obj as Variable;
-        //            // take care of operations (++, --, +=, -=, etc.)
-        //            if (Spoiler() is OperatorSpan op)
-        //            {
-        //                ReadSpan();
-
-        //                object opInput = op.TwoSides ? ReadValue(allowUnknownVars: neutral) : null;
-
-        //                if (!neutral)
-        //                {
-        //                    if (isArrPntr)
-        //                    {
-        //                        var arr = (pntr?.Value ?? obj) as Instance;
-        //                        arr.ArrayValues[arrPntrInd] = op.Result(arr.ArrayValues[arrPntrInd], opInput);
-        //                    }
-        //                    else
-        //                    {
-        //                        pntr.Value = op.Result(pntr.Value, opInput);
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                // this is a variable set (not init) statement
-        //                Read<SetSymbolSpan>();
-        //                var value = ReadValue(allowUnknownVars: neutral);
-
-        //                if (neutral)
-        //                    continue;
-
-        //                if (isArrPntr)
-        //                    ((Instance)(pntr?.Value ?? obj)).ArrayValues[arrPntrInd] = value;
-        //                else
-        //                    pntr.Value = value;
-        //            }
-        //        }
-        //        // else, it was a function and it was just been called, so do nothing
-        //    }
-        //    if (cmd is ILoopContext loop)
-        //    {
-        //        loop.Break = false;
-        //        loop.Continue = false;
-        //    }
-        //}
-
-        //stack = stack?.parent;
-        //vsStack = vsStack.parent ?? vsStack;
-
-        //if (clearVars && context != null)
-        //{
-        //    context.Vars.Clear();
-        //    context.Vars.AddRange(contextVarsBefore);
-        //}
-    }
+    internal void Run(IContext context = null, bool single = false, bool neutral = false, bool clearVars = true) => throw new NotImplementedException();//Variable[] contextVarsBefore = null;//if (context != null)//{//    stack = new StackIndex(context, stack);//    vsStack = new VsStackIndex(context, vsStack);//    if (clearVars)//    {//        contextVarsBefore = context.Vars.ToArray();//        context.Vars.Clear();//    }//}//else//{//    stack = null;//    vsStack = new VsStackIndex(this, null);//}////if (BuiltinFuncs(context))////    return;//WordSpan cmd = null, prevCmd = null;//while (CodeSpans == null ? spansCursor < SourceSpans.Length : codeCursor < CodeSpans.Length)//{//    if (cmd != null && single)//        break;//    prevCmd = cmd;//    // break or continue if needed//    ILoopContext firstBroken = null;//    int ShouldBreak(StackIndex stack) // 0 No, 1 Continue, 2 Break//    {//        //if (throwing != null)//        //    return 2;//        while (stack != null)//        {//            var con = stack.context;//            if (con is ILoopContext lc)//            {//                firstBroken = lc;//                if (lc.Break)//                    return 2;//                if (lc.Continue)//                    return 1;//            }//            else if (con is FuncDefSpan func && func.Return)//                return 2;//            stack = stack.parent;//        }//        firstBroken = null;//        return 0;//    }//    int res = ShouldBreak(stack);//    if (res == 2)//        break;//    if (res == 1)//    {//        if (firstBroken == context)//            firstBroken.Continue = false;//        break;//    }//    // make next cmd//    Span nextSpan = ReadSpan();//    if (nextSpan is WordSpan _cmd)//        cmd = _cmd;//    else if (nextSpan != null)//        Throw($"Unexpected span '{nextSpan.FullText}.'");//    else//        break;// throw new Exception("cmd was null, meaning something went wrong as while condition should prevent that.");//    //if (cmd is IContext toSetCtx)//    //    toSetCtx.Context = context;//    void RunContext(IContext rctx, bool clearVars)//    {//        //var stackb = this.stack;//        Run(rctx.InnerSource, rctx, clearVars: clearVars);//        //this.stack = stackb;//    }//    if (cmd is ConditionSpan cond)//    {//        if (neutral)//            continue;//        // init counter if set//        bool delCounter = false;//        if (cond is ILoopContext counterc)//            delCounter = VarExists(counterc.Counter);//        Action TickCounter = null;//        if (cond is ILoopContext lc && lc.Counter != null)//        {//            Variable counter = SetVar(lc.Counter, 0d, cond, lc, createConst: true);//            TickCounter = () =>//            {//                if (lc.Counter != null)//                    //SetVar(lc.Counter, GetVar<double>(lc.Counter, false, lc) + 1, null, lc);//                    counter.SetSkippingConstant((double)counter.Value + 1);//            };//        }//        // if statement / while loop//        if (cond is IfConditionSpan || cond is WhileConditionSpan)//        {//            while (Run<bool>(cond.Condition))//            {//                RunContext(cond, true);//                cond.ConditionWasTrue = true;//                if (cmd is IfConditionSpan || cond is ILoopContext { Break: true } || (ShouldBreak(stack) == 2))//                    break;//                TickCounter?.Invoke();//            }//        }//        // for loop//        else if (cond is ForLoopSpan loops)//        {//            Variable[] loopVars = loops.Vars.ToArray();//            loops.Vars.Clear();//            for (Run(loops.InitExe, loops, clearVars: false); Run<bool>(cond.Condition, loops); Run(loops.StepExe, loops, clearVars: false))//            {//                RunContext(loops, false);//                if (loops.Break || ShouldBreak(stack) == 2)//                    break;//                TickCounter?.Invoke();//            }//            loops.Vars.Clear();//            loops.Vars.AddRange(loopVars);//        }//        // delete counter if set//        if (delCounter && cond is ILoopContext cc)//            DeleteVar(cc.Counter, cc);//    }//    // else statement//    else if (cmd is ElseConditionSpan elses)//    {//        if (neutral)//            continue;//        if (prevCmd is ConditionSpan conditionSpan && (!conditionSpan.ConditionWasTrue) && conditionSpan is not ForLoopSpan)//        {//            RunContext(elses, true);//        }//    }//    else if (cmd is ForEachLoopSpan fe)//    {//        if (neutral)//            continue;//        var arr = Run<Instance>(fe.ArrReadText);//        // base array//        while (arr != null && !arr.IsArray && arr.def.BaseArrayProp is Property bap)//            arr = (arr.Vars.FirstOrDefault(v => v.Name.Equals(bap.Name)) is Variable vv ? vv.Value as Instance : null);//        if (arr == null)//            ThrowRuntime("Array is null.", RuntimeException.INVALID_OPERATION);//        if (!arr.IsArray)//            Throw($"An array or basearray defining instance was expected (type read: {arr})");//        int counter = 0;//        try//        {//            Variable[] vars = fe.Vars.ToArray();//            fe.Vars.Clear();//            foreach (var obj in arr.ArrayValues)//            {//                if (fe.Counter != null)//                    SetVar(fe.Counter, counter++, fe);//                SetVar(fe.VarName, obj, fe);//                RunContext(fe, false);//                // a comment left weeks after implementing StackIndex://                // i have no idea why i did'nt check ShouldBreak(stack) here too, but it works (and in while loop it wouldn't)://                /*//                 * while true : id loop//                   {//                     while true//                     {//                      foreach x in [1, 2, 3]//                      {//                             print x//                       while true//                       {//                        break loop//                       }//                      }//                     }//                    }//                *///                if (fe.Break)//                    break;//            }//            fe.Vars.Clear();//            fe.Vars.AddRange(vars);//        }//        catch (InvalidOperationException ex)//        {//            ThrowRuntime("Invalid operation while in foreach loop: " + ex.Message, RuntimeException.INVALID_OPERATION);//        }//    }//    else if (cmd is BreakWordSpan or ContinueWordSpan)//    {//        // if id is attached, search a loop with this id//        string spoiler = Spoiler()?.FullText;//        StackIndex search = this.stack;//        while (search != null && !(search.context is ILoopContext atta && atta.Id == spoiler))//            search = search.parent;//        // if id not found, relate this as id-less break / continue//        if (search == null)//        {//            search = stack;//            while (search != null && search.context is not ILoopContext)//                search = search.parent;//        }//        if (search?.context is ILoopContext loopc)//        {//            if (loopc.Id != null && loopc.Id == spoiler)//                ReadSpan();//            if (neutral)//                continue;//            if (cmd is BreakWordSpan)//                loopc.Break = true;//            else if (cmd is ContinueWordSpan)//                loopc.Continue = true;//            break;//        }//        else//            Throw("No enclosing loop out of which to break or continue.");//    }//    else if (cmd is TryWordSpan trys)//    {//        if (neutral)//            continue;//        try//        {//            RunContext(trys, true);//        }//        catch (RuntimeException ex)//        {//            if (trys.Catch != null)//            {//                // init exception var//                if (trys.Catch.VarName != null)//                    SetVar(trys.Catch.VarName, ex.ex, specificVS: trys.Catch);//                // check "when"//                bool toCatch = true;//                if (trys.Catch.When != null)//                    toCatch = Run<bool>(trys.Catch.When.Condition, trys.Catch);//                if (toCatch)//                {//                    RunContext(trys.Catch, true);//                }//            }//        }//        finally//        {//            if (trys.Finally != null)//            {//                RunContext(trys.Finally, true);//            }//        }//    }//    else if (cmd is ThrowWordSpan)//    {//        ReadThrowStmt(readThrowKeyword: false, neutral: neutral);//    }//    else if (cmd is SectionWordSpan section)//    {//        if (neutral)//            continue;//        try//        {//            RunContext(section, true);//        }//        catch (RuntimeException ex)//        {//            if (FindParentContext<TryWordSpan>(cmd) is TryWordSpan tryb && tryb.Catch != null)//            {//                if (tryb.Catch.VarName != null)//                    SetVar(tryb.Catch.VarName, ex.ex, specificVS: tryb.Catch);//                if (tryb.Catch.When == null || Run<bool>(tryb.Catch.When.Condition, tryb.Catch))//                {//                    RunContext(tryb.Catch, true);//                }//            }//        }//    }//    else if (cmd is PrintWordSpan)//    {//        object str = ReadValue(allowUnknownVars: neutral);//        if (neutral)//            continue;//        Print(str ?? "NULL");//    }//    else if (cmd is SetWordSpan or ConstWordSpan)//    {//        string vname = ReadWord().Text;//        // if this name is catched, throw an error//        // the bug in this code will be fixed when inner sources will be of Span instead of TextSpan//        /*bool setOnOuterVS = CurrentVarSystem is IContext someContext && VarExists(vname, someContext.OuterVarSystem);//        if (setOnOuterVS || (GetPointer(vname) is Variable exists && exists.SettingSpan != cmd))//        {//            Throw($"'{vname}': This name is already in use. Pick another name for the variable.");//        }*///        Read<SetSymbolSpan>();//        object value = ReadValue(allowUnknownVars: neutral);//        if (neutral)//            continue;//        SetVar(vname, value, cmd, null, cmd is ConstWordSpan);//    }//    else if (cmd is ReturnWordSpan)//    {//        // find the func we are in//        StackIndex ctx = this.stack;//        ILoopContext breakFrom = null;//        while (ctx != null && ctx.context is not FuncDefSpan)//        {//            if (ctx.context is ILoopContext lc)//                breakFrom = lc;//            ctx = ctx.parent;//        }//        // return//        if (ctx?.context is FuncDefSpan func)//        {//            if (ctx.context is not ConstructorDefSpan)//            {//                func.Returns = ReadValue(allowUnknownVars: neutral);//                if (neutral)//                {//                    func.Returns = null;//                    continue;//                }//                func.Return = true;//            }//            if (breakFrom != null)//                breakFrom.Break = true;//            break;//        }//        else//            Throw("No enclosing function of which to return.");//    }//    else if (cmd is IDefination or NamespaceWordSpan or UsingWordSpan or ExternClassDefSpan)//    {//        if (context != null)//            Throw($"{cmd.Text} word is not expected in this context.");//        continue;//    }//    else//    {//        // set an existing variable or call a func//        object obj = ReadNamedValueOrPointer(out bool isArrPntr, out int arrPntrInd, cmd, allowUnknownVars: neutral, allowFuncsToNotReturn: true);//        Variable pntr = null;//        if (obj is Variable || (obj is Instance && isArrPntr) || (neutral && Spoiler() is SetSymbolSpan))//        {//            pntr = obj as Variable;//            // take care of operations (++, --, +=, -=, etc.)//            if (Spoiler() is OperatorSpan op)//            {//                ReadSpan();//                object opInput = op.TwoSides ? ReadValue(allowUnknownVars: neutral) : null;//                if (!neutral)//                {//                    if (isArrPntr)//                    {//                        var arr = (pntr?.Value ?? obj) as Instance;//                        arr.ArrayValues[arrPntrInd] = op.Result(arr.ArrayValues[arrPntrInd], opInput);//                    }//                    else//                    {//                        pntr.Value = op.Result(pntr.Value, opInput);//                    }//                }//            }//            else//            {//                // this is a variable set (not init) statement//                Read<SetSymbolSpan>();//                var value = ReadValue(allowUnknownVars: neutral);//                if (neutral)//                    continue;//                if (isArrPntr)//                    ((Instance)(pntr?.Value ?? obj)).ArrayValues[arrPntrInd] = value;//                else//                    pntr.Value = value;//            }//        }//        // else, it was a function and it was just been called, so do nothing//    }//    if (cmd is ILoopContext loop)//    {//        loop.Break = false;//        loop.Continue = false;//    }//}//stack = stack?.parent;//vsStack = vsStack.parent ?? vsStack;//if (clearVars && context != null)//{//    context.Vars.Clear();//    context.Vars.AddRange(contextVarsBefore);//}
 
     internal void Run(Span[] src)
     {
@@ -541,8 +97,8 @@ public partial class Interpreter
     internal void Run(Span[] src, IContext context, bool clearVars = true)
     {
         contextLoc = cursor;
-        Span[] codeSpans_backup = CodeSpans;
-        Span ls = lastSpan;
+        var codeSpans_backup = CodeSpans;
+        var ls = lastSpan;
         var stack = this.stack;
         var vstack = vsStack;
         int cur = cursor, spcur = codeCursor;
@@ -578,8 +134,8 @@ public partial class Interpreter
     private T Run<T>(Span[] src, IContext context, bool allowUnknownVars = false, bool oconst = false)
     {
         contextLoc = cursor;
-        Span[] codeSpans_backup = CodeSpans;
-        Span ls = lastSpan;
+        var codeSpans_backup = CodeSpans;
+        var ls = lastSpan;
         var stack = this.stack;
         var vstack = vsStack;
         int cur = cursor, spcur = codeCursor;
@@ -587,7 +143,7 @@ public partial class Interpreter
         codeCursor = 0;
         CodeSpans = src;
         this.stack = context == null ? this.stack : new StackIndex(context, this.stack);
-        T v = ReadValue<T>(allowUnknownVars: allowUnknownVars, oconst: oconst);
+        var v = ReadValue<T>(allowUnknownVars: allowUnknownVars, oconst: oconst);
         this.stack = stack;
         vsStack = vstack;
         CodeSpans = codeSpans_backup;
@@ -656,8 +212,8 @@ public partial class Interpreter
     private void SwitchSpans(Span[] src, Action action)
     {
         contextLoc = cursor;
-        Span[] codeSpans_backup = CodeSpans;
-        Span ls = lastSpan;
+        var codeSpans_backup = CodeSpans;
+        var ls = lastSpan;
         int cur = cursor, spcur = codeCursor;
         cursor = 0;
         codeCursor = 0;
@@ -677,7 +233,7 @@ public partial class Interpreter
         if (readThrowKeyword)
             Read<ThrowWordSpan>();
 
-        Instance ex = ReadValue<Instance>(allowUnknownVars: neutral);
+        var ex = ReadValue<Instance>(allowUnknownVars: neutral);
 
         if (neutral)
             return;
@@ -693,13 +249,13 @@ public partial class Interpreter
 
     private void CollectDefs(TextSpan[] code = null)
     {
-        bool saveSpans = code == null;
+        var saveSpans = code == null;
         code ??= SourceSpans;
 
         int cursor_bu = cursor, spcur_bu = spansCursor;
-        TextSpan[] sourceSpans_bu = SourceSpans;
+        var sourceSpans_bu = SourceSpans;
         SourceSpans = code;
-        Span lastSpan_bu = lastSpan;
+        var lastSpan_bu = lastSpan;
         bool collected = false, codeStart = false;
         string docNs = null;
 
@@ -709,7 +265,7 @@ public partial class Interpreter
         spansCursor = 0;
         while (spansCursor < code.Length)
         {
-            Span span = ReadSpan();
+            var span = ReadSpan();
             codeSpans?.Add(span);
 
             if (span is IContext ctx)
@@ -733,7 +289,7 @@ public partial class Interpreter
                     if (def is EnumDefSpan enm)
                     {
                         var vars = new ClassStaticVar[enm.Values.Length];
-                        for (int i = 0; i < vars.Length; i++)
+                        for (var i = 0; i < vars.Length; i++)
                             vars[i] = new ClassStaticVar(enm.Values[i].Name, enm.Values[i].Value.ToExp(), null, enm, false, true) { TagsCode = enm.Values[i].TagsCode };
                         ClassDefSpan enumcls = new(enm.Name, [], []) { Namespace = currNs, TagsCode = enm.TagsCode, Document = enm.Document, DocumentLocation = enm.DocumentLocation };
                         vars.ForEach(v => v.Def = enumcls);
@@ -832,7 +388,7 @@ public partial class Interpreter
 
     private IValue FuncCall(Instance inst, string fname, IContext context, out bool isFuncCall, FuncDefSpan[] usedFuncs, IValue[] parameters = null)
     {
-        parameters = parameters ?? ReadParamList();
+        parameters ??= ReadParamList();
 
         // find the function
         var func = usedFuncs.FirstOrDefault(f => fname.Equals(f.Name) && parameters.Length == f.Args.Length) ?? GetVar(fname, context ?? (IVarSystem)inst ?? this) as FuncDefSpan;
@@ -844,13 +400,13 @@ public partial class Interpreter
         ArgumentNullException.ThrowIfNull(func);
 
         // if its a recursion, backup current var values
-        bool wasRunning = func.IsRunning;
+        var wasRunning = func.IsRunning;
         func.IsRunning = true;
         IVarSystem funcAsVs = func;
-        IEnumerable<IValue> backup = wasRunning ? funcAsVs.BackupValues() : null;
+        var backup = wasRunning ? funcAsVs.BackupValues() : null;
 
         // insert arguments
-        int i = 0;
+        var i = 0;
         foreach (var param in parameters)
             func.ParamVariables[i++].Value = param;
 
@@ -923,7 +479,7 @@ public partial class Interpreter
     {
         typesStr = "(";
         Type[] types = new Type[args.Length];
-        for (int i = 0; i < types.Length; i++)
+        for (var i = 0; i < types.Length; i++)
         {
             static void Convert(object[] args, Type[] types, int i)
             {
@@ -941,7 +497,7 @@ public partial class Interpreter
                         else if (expinst.def == ClassDefSpan.ExpArrayDef)
                         {
                             Type[] _ = new Type[expinst.ArrayValues.Length];
-                            for (int j = 0; j < expinst.ArrayValues.Length; j++)
+                            for (var j = 0; j < expinst.ArrayValues.Length; j++)
                                 Convert(expinst.ArrayValues, _, j);
                             args[i] = CSBasicTypes.MinArray(expinst);
                             types[i] = args[i].GetType();
@@ -985,7 +541,7 @@ public partial class Interpreter
         try
         {
             // invoke
-            object result = method is ConstructorInfo ctor ? ctor.Invoke(args) : method.Invoke(inst, args);
+            var result = method is ConstructorInfo ctor ? ctor.Invoke(args) : method.Invoke(inst, args);
 
             return CsValToExpVal(result);
         }
@@ -1013,7 +569,7 @@ public partial class Interpreter
         else if (val is Array csarr)
         {
             var exparr = new IValue[csarr.Length];
-            for (int i = 0; i < csarr.Length; i++)
+            for (var i = 0; i < csarr.Length; i++)
                 exparr[i] = CsValToExpVal(csarr.GetValue(i));
             result = new Instance(ClassDefSpan.ExpArrayDef, exparr);
         }

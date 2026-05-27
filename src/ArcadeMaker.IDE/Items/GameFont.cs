@@ -23,10 +23,8 @@ public class GameFont : GameItem
             }
             return base.Editor as FontEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public GameFont(string name) : base(name)
@@ -44,7 +42,7 @@ public class GameFont : GameItem
         }
         else if (FontFamily.Families.Length > 0)
         {
-            family = FontFamily.Families.First().Name;
+            family = FontFamily.Families[0].Name;
         }
     }
 

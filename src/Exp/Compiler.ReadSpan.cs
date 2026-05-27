@@ -20,28 +20,28 @@ public partial class Interpreter
         if (spansCursor >= SourceSpans.Length)
             return null;
 
-        TextSpan textSpan = SourceSpans[spansCursor++];
-        string text = textSpan.text;
+        var textSpan = SourceSpans[spansCursor++];
+        var text = textSpan.text;
         cursor += text.Length;
 
         // skip spaces and comments
         if (string.IsNullOrWhiteSpace(textSpan.text) || textSpan.type == SpanType.Space || textSpan.type == SpanType.Comment || textSpan.type == SpanType.MultiLineComment)
             return ReadSpan(spoiler, spaces, def, singleWord, @throw);
 
-        bool recording = readValue_codeRecord != null;
+        var recording = readValue_codeRecord != null;
         var record_bu = readValue_codeRecord;
         readValue_codeRecord = null;
 
-        bool recordingOps = readOps_codeRecord != null;
+        var recordingOps = readOps_codeRecord != null;
         var recordOps_bu = readOps_codeRecord;
 
         Span span = null;
         if (textSpan.type == SpanType.Number)
         {
-            bool isHex = text.StartsWith("0x", ignoreCase: true, null) && text.Length >= 3;
-            if (isHex && int.TryParse(text.Substring(2), NumberStyles.HexNumber, null, out int i))
+            var isHex = text.StartsWith("0x", ignoreCase: true, null) && text.Length >= 3;
+            if (isHex && int.TryParse(text.Substring(2), NumberStyles.HexNumber, null, out var i))
                 span = new NumberSpan(i);
-            else if (!isHex && double.TryParse(text, out double d))
+            else if (!isHex && double.TryParse(text, out var d))
                 span = new NumberSpan(d);
             else
             {
@@ -51,7 +51,7 @@ public partial class Interpreter
         }
         else if (textSpan.type == SpanType.Count)
         {
-            if (int.TryParse(text.Substring(2), out int i))
+            if (int.TryParse(text.Substring(2), out var i))
             {
                 span = new CountSpan(i);
             }
@@ -75,7 +75,7 @@ public partial class Interpreter
 
                 // read attribute def name
                 code.Add(Read<WordSpan>());
-                string attrName = code[0].Text;
+                var attrName = code[0].Text;
                 if (Spoiler() is NamespaceSpecificationSpan)
                 {
                     code.Add(ReadSpan());
@@ -137,7 +137,7 @@ public partial class Interpreter
                 bool forloop = text == ForLoopSpan.Keyword, foreachloop = text == ForEachLoopSpan.Keyword, elsec = text == ElseConditionSpan.Keyword, rangeloop = false;
                 Span[] condition = [], arrReadText = [], fromReadText = [], toReadText = [], initExe = [], stepExe = [], innerSource = []; // don't init with null bc in spoiler readings these wouldn't be assigned anymore and it would throw argument null
                 string idAttr = null, counterAttr = null, varname = null;
-                bool foreachConst = false;
+                var foreachConst = false;
 
                 if (!spoiler)
                 {
@@ -194,7 +194,7 @@ public partial class Interpreter
                                     Error($"Endless for loop, {SemicolonSpan.Symbol} expected.");
                                     break;
                                 }
-                                Span ispan = ReadSpan(spaces: true);
+                                var ispan = ReadSpan(spaces: true);
                                 if (ispan is SemicolonSpan)
                                     break;
                                 initCode.Add(ispan);
@@ -221,7 +221,7 @@ public partial class Interpreter
                                     break;
                                 }
 
-                                Span ispan = ReadSpan(spaces: true);
+                                var ispan = ReadSpan(spaces: true);
                                 if (ispan is ClosingBracketSpan)
                                     break;
                                 stepCode.Add(ispan);
@@ -238,7 +238,7 @@ public partial class Interpreter
 
                         while (true)
                         {
-                            WordSpan word = ReadWord();
+                            var word = ReadWord();
                             if (word.FullText == attr[0])
                             {
                                 if (idAttr != null)
@@ -258,7 +258,7 @@ public partial class Interpreter
                                 Error($"Unexpected word '{word}'. Condition attributes are: {attr}");
                             }
 
-                            Span next = ReadSpan();
+                            var next = ReadSpan();
                             if (next is SourceOpenerSpan)
                                 break;
                             else if (next is not CommaSpan)
@@ -296,7 +296,7 @@ public partial class Interpreter
             else if (text == FuncDefSpan.Keyword || text == ConstructorDefSpan.Keyword)
             {
                 string name = null;
-                bool ctor = text == ConstructorDefSpan.Keyword;
+                var ctor = text == ConstructorDefSpan.Keyword;
 
                 if (!ctor && Spoiler() is not OpeningBracketSpan)
                     name = ReadWord().FullText;
@@ -309,7 +309,7 @@ public partial class Interpreter
                 {
                     while (true)
                     {
-                        bool notnull = true; // removing notnull word
+                        var notnull = true; // removing notnull word
                         var nspoiler = Spoiler();
                         if (Spoiler() is NotNullWordSpan)
                         {
@@ -340,12 +340,14 @@ public partial class Interpreter
 
                 // read inner source. if next is '=>' add a return span as first inner source span
                 Span[] innerSource = null;
-                Span first = ReadSpan();
+                var first = ReadSpan();
                 if (first is ReturnSymbolSpan)
                 {
-                    ReadValue(out Span[] innerSrc, allowUnknownVars: true);
-                    var ls = new List<Span>();
-                    ls.Add(new ReturnWordSpan { Document = first.Document, DocumentLocation = first.DocumentLocation });
+                    ReadValue(out var innerSrc, allowUnknownVars: true);
+                    var ls = new List<Span>
+                    {
+                        new ReturnWordSpan { Document = first.Document, DocumentLocation = first.DocumentLocation }
+                    };
                     ls.AddRange(innerSrc);
                     innerSource = ls.ToArray();
                 }
@@ -368,18 +370,18 @@ public partial class Interpreter
             }
             else if (text == ClassDefSpan.Keyword)
             {
-                bool basearrSet = false;
+                var basearrSet = false;
                 List<Property> props = [];
                 List<FuncDefSpan> funcs = [];
 
                 // read class name
-                string name = ReadWord()?.FullText;
+                var name = ReadWord()?.FullText;
 
                 // read properties
                 Read<OpeningBracketSpan>();
 
                 ignoreCanSetTag = true;
-                Span propsp = ReadSpan();
+                var propsp = ReadSpan();
                 ignoreCanSetTag = false;
                 if (propsp is not ClosingBracketSpan)
                 {
@@ -404,7 +406,7 @@ public partial class Interpreter
                         }
 
                         // read param name
-                        string pname = propsp.FullText;
+                        var pname = propsp.FullText;
 
                         // after pname
                         propsp = ReadSpan();
@@ -444,13 +446,13 @@ public partial class Interpreter
                 // func to read static set (static name = value) (this func will be called after reading the static word)
                 ClassStaticVar ReadStaticSet(Span fsp)
                 {
-                    bool constant = false;
+                    var constant = false;
                     if (fsp is ConstWordSpan)
                     {
                         constant = true;
                         fsp = ReadWord();
                     }
-                    string name = fsp.FullText;
+                    var name = fsp.FullText;
                     Span settingSpan = null;
                     Span[] initValueCode = null;
                     if (Spoiler() is SetSymbolSpan set)
@@ -475,7 +477,7 @@ public partial class Interpreter
                         Error("Endless function.");
 
                     ignoreCanSetTag = true;
-                    Span ispan = ReadSpan(spaces: false, def: cls);
+                    var ispan = ReadSpan(spaces: false, def: cls);
                     bool statdef = false, prvtdef = false;
                     List<Span[]> tagsCode = [];
                     while (ispan is TagSpan tag)
@@ -538,7 +540,7 @@ public partial class Interpreter
                         Error($"Missing {(member as IExpItem)?.GetItemName() ?? "class member"} name.");
                     else
                     {
-                        int args = member is FuncDefSpan f ? f.Args.Length : -1;
+                        var args = member is FuncDefSpan f ? f.Args.Length : -1;
                         ValidateDefNameLegallity(null, member.Name, args);
                         if (members.Any(m => m != member && m.Name == member.Name && (m is FuncDefSpan fn && fn.Args.Length == args)))
                             Error(cls.GetExpTypeName(false) + $" already contains a member named '{member.Name}'.");
@@ -554,7 +556,7 @@ public partial class Interpreter
             else if (text == EnumDefSpan.Keyword)
             {
                 // read enum name
-                string ename = ReadWord().FullText;
+                var ename = ReadWord().FullText;
 
                 // read content
                 List<EnumValueSpan> evalues = [];
@@ -580,7 +582,7 @@ public partial class Interpreter
                         break;
 
                     string vname;
-                    bool specific = false;
+                    var specific = false;
 
                     // read value name
                     vname = next.FullText;
@@ -638,7 +640,7 @@ public partial class Interpreter
                 span = new LenofWordSpan();
             else if (text == AttributeDefSpan.Keyword)
             {
-                string defnm = ReadWord().Text;
+                var defnm = ReadWord().Text;
 
                 // read params
                 Read<OpeningBracketSpan>();
@@ -650,10 +652,10 @@ public partial class Interpreter
                         AttributeParamSpan prm;
 
                         // read param type
-                        WordSpan paramType = ReadWord();
+                        var paramType = ReadWord();
                         string[] types = ["bool", "char", "number"];
                         Type[] types_ = [typeof(BoolValue), typeof(CharValue), typeof(NumberValue)];
-                        int indexOf = Array.IndexOf(types, paramType.Text);
+                        var indexOf = Array.IndexOf(types, paramType.Text);
 
                         // if a premitive type was read, create as premitive type
                         if (indexOf >= 0)
@@ -708,12 +710,12 @@ public partial class Interpreter
                 WhenWordSpan when = null;
                 bool catc = text == CatchWordSpan.Keyword, _try = text == TryWordSpan.Keyword, section = text == SectionWordSpan.Keyword;
 
-                Span next = ReadSpan();
+                var next = ReadSpan();
 
                 if (catc)
                 {
                     // read varname
-                    if (next is WordSpan && next is not WhenWordSpan && next is not SourceOpenerSpan)
+                    if (next is WordSpan and not WhenWordSpan and not SourceOpenerSpan)
                     {
                         catchVarName = next.FullText;
                         next = ReadSpan();
@@ -731,7 +733,7 @@ public partial class Interpreter
                     Error("'{' was expected.");
 
                 // read inner source
-                Span[] innerSource = ReadInnerSource(false) ?? /*on error:*/ [];
+                var innerSource = ReadInnerSource(false) ?? /*on error:*/ [];
 
                 // create the span
                 if (catc)
@@ -756,13 +758,13 @@ public partial class Interpreter
                 span = new ThrowWordSpan();
             else if (text == NamespaceWordSpan.Keyword)
             {
-                string ns = ReadWord().FullText;
+                var ns = ReadWord().FullText;
                 ReadWord(":");
                 span = new NamespaceWordSpan(ns);
             }
             else if (text == UsingWordSpan.Keyword)
             {
-                string ns = ReadWord().FullText;
+                var ns = ReadWord().FullText;
                 span = new UsingWordSpan(ns);
             }
             else if (text == PrintWordSpan.Keyword)
@@ -787,20 +789,20 @@ public partial class Interpreter
             else if (text == ExternClassDefSpan.Keyword)
             {
                 // read class keyword
-                Span clsKword = ReadSpan(false, false, null, singleWord: true);
+                var clsKword = ReadSpan(false, false, null, singleWord: true);
                 if (clsKword is not WordSpan || clsKword.FullText != ClassDefSpan.Keyword)
                     Error($"The '{ClassDefSpan.Keyword}' keyword must appear here.");
 
                 // read ref name
-                string refName = ReadWord().FullText;
+                var refName = ReadWord().FullText;
 
                 Read<SetSymbolSpan>();
 
                 // read full type name
-                string typeName = Read<StringSpan>().Text;
+                var typeName = Read<StringSpan>().Text;
 
                 // get the actual type
-                Type type = typeof(object);
+                var type = typeof(object);
                 try
                 {
                     type = Extensions.GetTypeByName(typeName) ?? throw new Exception($"Could not find external type '{typeName}'.");

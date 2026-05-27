@@ -40,7 +40,7 @@ internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOp
         // 'this' keyword
         if (first && Known == null && name == ThisWordSpan.Keyword)
         {
-            Instance thiss = Interpreter.FindParentVarSystem<Instance>(vs);
+            var thiss = Interpreter.FindParentVarSystem<Instance>(vs);
 
             if (thiss != null)
             {
@@ -55,8 +55,8 @@ internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOp
         }
 
         // get the current item
-        int numOfParams = paramsCounter.HasValue ? paramsCounter.Value : (argLists.FirstOrDefault()?.Length ?? -1);
-        INamedValue? item = Known ?? Interpreter.Activated.GetNamedValueItem(VS, name, span, first, numOfParams);
+        var numOfParams = paramsCounter.HasValue ? paramsCounter.Value : (argLists.FirstOrDefault()?.Length ?? -1);
+        var item = Known ?? Interpreter.Activated.GetNamedValueItem(VS, name, span, first, numOfParams);
         if (item == null)
         {
             Interpreter.Activated.ThrowRuntime(numOfParams >= 0 ? $"Unknown function '{(VS as Instance)?.def.GetExpTypeName(false) ?? "(?)"}.{name}(..{numOfParams})'." : $"Unknown item '{(VS as Instance)?.def.GetExpTypeName(false) ?? "(?)"}.{name}'.", RuntimeException.INVALID_SYNTAX, span);
@@ -121,7 +121,7 @@ internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOp
                     // invoke extern method
                     var csInst = (inst as ExternTypeInstance)?.ExternInstance;
                     var args = Next.ArgLists.FirstOrDefault();
-                    value = Interpreter.Activated.FuncCall(null, FuncDefSpan.ExternInvoker, null, out bool _, [SpecialValue.From(csInst.GetType()), false.ToExp(), SpecialValue.From(Next.Name), SpecialValue.From(csInst), SpecialValue.From(Next.ArgLists.FirstOrDefault()) /*.Select(.Read()) is done in the builtin func code*/]);
+                    value = Interpreter.Activated.FuncCall(null, FuncDefSpan.ExternInvoker, null, out var _, [SpecialValue.From(csInst.GetType()), false.ToExp(), SpecialValue.From(Next.Name), SpecialValue.From(csInst), SpecialValue.From(Next.ArgLists.FirstOrDefault()) /*.Select(.Read()) is done in the builtin func code*/]);
                     goto Return;
                 }
             }
@@ -138,7 +138,7 @@ internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOp
         }
         if (item is FuncDefSpan func)
         {
-            IValue fresult = RunFunc(func, funcPntrInst); // funcPntrInst is null unless "item" was a Variable which is value was a FuncPntr. in this case, "func" is the value of this FuncPntr "Func" property
+            var fresult = RunFunc(func, funcPntrInst); // funcPntrInst is null unless "item" was a Variable which is value was a FuncPntr. in this case, "func" is the value of this FuncPntr "Func" property
             if (fresult == null)
             {
                 if (NextOrNull)
@@ -184,7 +184,7 @@ internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOp
             foreach (var ls in argLists)
             {
                 instance ??= func == FuncDefSpan.ExternInvoker || func == FuncDefSpan.ExternPropGetSet ? null : (first ? Interpreter.FindParentVarSystem<Instance>(vs) : VS as Instance);
-                val = Interpreter.Activated.FuncCall(instance, func, null, out bool _, ls.Map(a => a?.Read()));
+                val = Interpreter.Activated.FuncCall(instance, func, null, out var _, ls.Map(a => a?.Read()));
                 func = val as FuncDefSpan;
             }
             return val;

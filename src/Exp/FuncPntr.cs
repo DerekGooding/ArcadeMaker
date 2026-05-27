@@ -10,10 +10,7 @@ public readonly struct FuncPntr(FuncDefSpan func, Instance? instance) : IValue
     FuncPntr IValue.FuncPntr => this;
     public Instance? Instance => instance;
 
-    public IValue? Call(Interpreter interpreter, IEnumerable<IValue?> args)
-    {
-        return interpreter.FuncCall(instance, func, null, out bool _, args);
-    }
+    public IValue? Call(Interpreter interpreter, IEnumerable<IValue?> args) => interpreter.FuncCall(instance, func, null, out var _, args);
 
     public override string ToString() => func.ToString();
 }

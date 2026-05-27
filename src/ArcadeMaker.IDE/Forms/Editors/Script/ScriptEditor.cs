@@ -22,7 +22,7 @@ public partial class ScriptEditor : Form
     /// <exception cref="NotImplementedException"></exception>
     public static async Task TestG<Hello, World>(int param, char value) where World : unmanaged
     {
-        bool @bool = false;
+        var @bool = false;
         if (@bool) await TestG<EventArgs, int>(7, 'a');
         throw new NotImplementedException();
     }
@@ -54,10 +54,7 @@ public partial class ScriptEditor : Form
     {
     }
 
-    private string ReadInheritDoc(InheritDoc doc, Func<Relation, string> ReadRelation)
-    {
-        return null;
-    }
+    private string ReadInheritDoc(InheritDoc doc, Func<Relation, string> ReadRelation) => null;
 
     private void ScriptBox_SelectionStartChanged(object sender, int e)
     {
@@ -68,7 +65,7 @@ public partial class ScriptEditor : Form
         scriptBox.Loading = true;
         scriptBox.Enabled = false;
 
-        string script = obj.Script;
+        var script = obj.Script;
         if (obj is RoomObject ro)
             script = ro.ScriptOrDefaultCreationCode;
         if (string.IsNullOrEmpty(scriptBox.Text) && !string.IsNullOrEmpty(script))
@@ -77,7 +74,7 @@ public partial class ScriptEditor : Form
 
         // copy columns from main form's error box
         ColumnHeader[] columns = new ColumnHeader[Global.form1.errorsBox.Columns.Count];
-        for (int i = 0; i < columns.Length; i++)
+        for (var i = 0; i < columns.Length; i++)
             columns[i] = (ColumnHeader)Global.form1.errorsBox.Columns[i].Clone();
         errorsBox.Columns.AddRange(columns);
 
@@ -151,10 +148,7 @@ public partial class ScriptEditor : Form
 
     private bool changes = false;
 
-    private void scriptBox_Load(object sender, EventArgs e)
-    {
-        textChangedTimer.Tick += textChangedTimer_Tick;
-    }
+    private void scriptBox_Load(object sender, EventArgs e) => textChangedTimer.Tick += textChangedTimer_Tick;
 
     private System.Windows.Forms.Timer textChangedTimer = new() { Interval = 5000 };
 
@@ -173,10 +167,7 @@ public partial class ScriptEditor : Form
 
         // check errors
         HashSet<ExpError>? errors = null;
-        await Task.Run(() =>
-        {
-            Debugging.Debug.TryBuild(out errors);
-        });
+        await Task.Run(() => Debugging.Debug.TryBuild(out errors));
 
         Global.form1.errorsBox.Items.Clear();
         errorsBox.Items.Clear();
@@ -204,30 +195,11 @@ public partial class ScriptEditor : Form
 
     private string gameSettings = null;
 
-    private string GetGameSettings()
-    {
-        throw new NotImplementedException();
-        //            if (gameSettings == null)
-        //            {
-        //#if DEBUG
-        //                using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Settings.cs"))
-        //                {
-        //                    gameSettings = tr.ReadToEnd();
-        //                    tr.Close();
-        //                }
-        //#else
-        //                gameSettings = Properties.Resources.Settings;
-        //#endif
-        //            }
-        //            return gameSettings;
-    }
+    private string GetGameSettings() => throw new NotImplementedException();//            if (gameSettings == null)//            {//#if DEBUG//                using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Settings.cs"))//                {//                    gameSettings = tr.ReadToEnd();//                    tr.Close();//                }//#else//                gameSettings = Properties.Resources.Settings;//#endif//            }//            return gameSettings;
 
     private string gameResources = null;
 
-    private string GetGameResources()
-    {
-        throw new NotImplementedException();
-        /*
+    private string GetGameResources() => throw new NotImplementedException();/*
         if (gameResources == null)
         {
 #if DEBUG
@@ -242,16 +214,12 @@ public partial class ScriptEditor : Form
         }
         return gameResources;
         */
-    }
 
-    private void ColorScriptEditor()
-    {
-        throw new NotImplementedException();
-    }
+    private void ColorScriptEditor() => throw new NotImplementedException();
 
     private int FindSpan(int searchFrom, char startsWith)
     {
-        for (int span = searchFrom; span >= 0 && span < Spans.Count; span++)
+        for (var span = searchFrom; span >= 0 && span < Spans.Count; span++)
         {
             if (Spans[span].text.Length > 0 && Spans[span].text[0] == startsWith)
                 return span;
@@ -265,7 +233,7 @@ public partial class ScriptEditor : Form
         for (int spanIndex = 0, totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
         {
             var span = Spans[spanIndex];
-            for (int i = 0; span != null && i < span.text.Length; i++, totalCharIndex++)
+            for (var i = 0; span != null && i < span.text.Length; i++, totalCharIndex++)
             {
                 if (totalCharIndex == charIndex)
                     return spanIndex;
@@ -281,7 +249,7 @@ public partial class ScriptEditor : Form
     {
         if (loaded && /*changes &&*/ !okClose)
         {
-            DialogResult result = MessageBox.Show("Do you want to save changes?", "Close Code Editor", MessageBoxButtons.YesNoCancel);
+            var result = MessageBox.Show("Do you want to save changes?", "Close Code Editor", MessageBoxButtons.YesNoCancel);
             if (result == DialogResult.Yes)
             {
                 var handler = OKClicked;

@@ -2,7 +2,7 @@
 
 namespace Exp.Spans;
 
-public class TextSpan : IDisposable
+public class TextSpan(int location) : IDisposable
 {
     public string text
     {
@@ -18,7 +18,7 @@ public class TextSpan : IDisposable
         }
     } = "";
 
-    public int location;
+    public int location = location;
     public ScriptDocument Doc { get; set; }
     public Color color = Color.Black;
     public Color backColor = Color.Transparent;
@@ -27,22 +27,11 @@ public class TextSpan : IDisposable
     public bool isKeyword = false;
     public string link = null;
 
-    public bool isLink
-    {
-        get
-        {
-            return link != null;
-        }
-    }
+    public bool isLink => link != null;
 
     //public SyntaxKind SyntaxKind { get; set; } = SyntaxKind.None;
 
     public event EventHandler<string> TextChanged;
-
-    public TextSpan(int location)
-    {
-        this.location = location;
-    }
 
     private bool disposed = false;
 
@@ -54,15 +43,9 @@ public class TextSpan : IDisposable
         disposed = true;
     }
 
-    public TextSpan Duplicate()
-    {
-        return new TextSpan(location) { text = text, color = color, backColor = backColor, type = type, insideFormattedString = insideFormattedString };
-    }
+    public TextSpan Duplicate() => new TextSpan(location) { text = text, color = color, backColor = backColor, type = type, insideFormattedString = insideFormattedString };
 
-    public override string ToString()
-    {
-        return text;
-    }
+    public override string ToString() => text;
 
     public override bool Equals(object obj)
     {

@@ -61,7 +61,7 @@ namespace ArcadeMaker.IDE
             nameBox.Name = "nameBox";
             nameBox.Size = new Size(171, 23);
             nameBox.TabIndex = 3;
-            nameBox.TextChanged += nameBox_TextChanged;
+            nameBox.TextChanged += NameBox_TextChanged;
             // 
             // label1
             // 
@@ -83,7 +83,7 @@ namespace ArcadeMaker.IDE
             okBtn.TabIndex = 4;
             okBtn.Text = "OK";
             okBtn.UseVisualStyleBackColor = true;
-            okBtn.Click += okBtn_Click;
+            okBtn.Click += OkBtn_Click;
             // 
             // label2
             // 
@@ -105,7 +105,7 @@ namespace ArcadeMaker.IDE
             addEventBtn.TabIndex = 8;
             addEventBtn.Text = "Add Event";
             addEventBtn.UseVisualStyleBackColor = true;
-            addEventBtn.Click += addEventBtn_Click;
+            addEventBtn.Click += AddEventBtn_Click;
             // 
             // changeEventBtn
             // 
@@ -117,7 +117,7 @@ namespace ArcadeMaker.IDE
             changeEventBtn.TabIndex = 9;
             changeEventBtn.Text = "Change";
             changeEventBtn.UseVisualStyleBackColor = true;
-            changeEventBtn.Click += changeEventBtn_Click;
+            changeEventBtn.Click += ChangeEventBtn_Click;
             // 
             // solidBox
             // 
@@ -129,7 +129,7 @@ namespace ArcadeMaker.IDE
             solidBox.TabIndex = 11;
             solidBox.Text = "Solid";
             solidBox.UseVisualStyleBackColor = true;
-            solidBox.CheckedChanged += solidBox_CheckedChanged;
+            solidBox.CheckedChanged += SolidBox_CheckedChanged;
             // 
             // label5
             // 
@@ -150,7 +150,7 @@ namespace ArcadeMaker.IDE
             depthBox.Name = "depthBox";
             depthBox.Size = new Size(172, 23);
             depthBox.TabIndex = 17;
-            depthBox.ValueChanged += depthBox_ValueChanged;
+            depthBox.ValueChanged += DepthBox_ValueChanged;
             // 
             // deleteEventBtn
             // 
@@ -162,7 +162,7 @@ namespace ArcadeMaker.IDE
             deleteEventBtn.TabIndex = 18;
             deleteEventBtn.Text = "Delete";
             deleteEventBtn.UseVisualStyleBackColor = true;
-            deleteEventBtn.Click += deleteEventBtn_Click;
+            deleteEventBtn.Click += DeleteEventBtn_Click;
             // 
             // newSpriteBtn
             // 
@@ -173,7 +173,7 @@ namespace ArcadeMaker.IDE
             newSpriteBtn.TabIndex = 19;
             newSpriteBtn.Text = "New";
             newSpriteBtn.UseVisualStyleBackColor = true;
-            newSpriteBtn.Click += newSpriteBtn_Click;
+            newSpriteBtn.Click += NewSpriteBtn_Click;
             // 
             // editSpriteBtn
             // 
@@ -184,7 +184,7 @@ namespace ArcadeMaker.IDE
             editSpriteBtn.TabIndex = 20;
             editSpriteBtn.Text = "Edit";
             editSpriteBtn.UseVisualStyleBackColor = true;
-            editSpriteBtn.Click += editSpriteBtn_Click;
+            editSpriteBtn.Click += EditSpriteBtn_Click;
             // 
             // label4
             // 
@@ -206,7 +206,7 @@ namespace ArcadeMaker.IDE
             eventsListView.Name = "eventsListView";
             eventsListView.Size = new Size(139, 316);
             eventsListView.TabIndex = 25;
-            eventsListView.SelectedIndexChanged += eventsListView_SelectedIndexChanged;
+            eventsListView.SelectedIndexChanged += EventsListView_SelectedIndexChanged;
             // 
             // parentBox
             // 
@@ -215,7 +215,7 @@ namespace ArcadeMaker.IDE
             parentBox.Name = "parentBox";
             parentBox.Size = new Size(173, 38);
             parentBox.TabIndex = 23;
-            parentBox.SelectionChanged += parentBox_SelectionChanged;
+            parentBox.SelectionChanged += ParentBox_SelectionChanged;
             // 
             // spriteBox
             // 
@@ -224,7 +224,7 @@ namespace ArcadeMaker.IDE
             spriteBox.Name = "spriteBox";
             spriteBox.Size = new Size(180, 38);
             spriteBox.TabIndex = 24;
-            spriteBox.SelectionChanged += spriteBox_SelectionChanged;
+            spriteBox.SelectionChanged += SpriteBox_SelectionChanged;
             // 
             // PropertiesModifier
             // 
@@ -245,9 +245,9 @@ namespace ArcadeMaker.IDE
             scriptsListView.Name = "scriptsListView";
             scriptsListView.Size = new Size(234, 308);
             scriptsListView.TabIndex = 27;
-            scriptsListView.DrawItem += scriptsListView_DrawItem;
-            scriptsListView.SelectedIndexChanged += scriptsListView_SelectedIndexChanged;
-            scriptsListView.DoubleClick += scriptsListView_DoubleClick;
+            scriptsListView.DrawItem += ScriptsListView_DrawItem;
+            scriptsListView.SelectedIndexChanged += ScriptsListView_SelectedIndexChanged;
+            scriptsListView.DoubleClick += ScriptsListView_DoubleClick;
             // 
             // addScriptBtn
             // 
@@ -258,7 +258,7 @@ namespace ArcadeMaker.IDE
             addScriptBtn.TabIndex = 28;
             addScriptBtn.Text = "Add Script To Selected Event";
             addScriptBtn.UseVisualStyleBackColor = true;
-            addScriptBtn.Click += addScriptBtn_Click;
+            addScriptBtn.Click += AddScriptBtn_Click;
             // 
             // deleteScriptBtn
             // 
@@ -269,7 +269,7 @@ namespace ArcadeMaker.IDE
             deleteScriptBtn.TabIndex = 29;
             deleteScriptBtn.Text = "Delete Script";
             deleteScriptBtn.UseVisualStyleBackColor = true;
-            deleteScriptBtn.Click += deleteScriptBtn_Click;
+            deleteScriptBtn.Click += DeleteScriptBtn_Click;
             // 
             // ObjectEditor
             // 

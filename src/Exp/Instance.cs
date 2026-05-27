@@ -14,7 +14,7 @@ public class Instance : IVarSystem, IValue, IExpItem
 
     public string TypeName => def.Name;
     bool IValue.IsInst => true;
-    Instance IValue.Inst { get => this; }
+    Instance IValue.Inst => this;
 
     public Instance(ClassDefSpan def, IValue?[]? arrVals = null, bool addProperties = true)
     {
@@ -51,7 +51,7 @@ public class Instance : IVarSystem, IValue, IExpItem
                 return null;
             Interpreter.Activated.ThrowRuntime($"{((IDefinition)def).FullName} does not contain a property which is marked as basearray.", RuntimeException.INVALID_OPERATION);
         }
-        Instance val = Vars.FirstOrDefault(v => v.Name == basearr.Name)?.Value?.Inst;
+        var val = Vars.FirstOrDefault(v => v.Name == basearr.Name)?.Value?.Inst;
         if (val == null)
             Interpreter.Activated.ThrowRuntime($"Value of {basearr.Name} was null.", RuntimeException.INVALID_OPERATION);
         else if (val == this)

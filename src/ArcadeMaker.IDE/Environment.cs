@@ -23,8 +23,8 @@ public static class Environment
 
     private static void LoadAssembliesLocations()
     {
-        List<string> assemblies = new List<string>
-        {
+        List<string> assemblies =
+        [
             // we only want the assembly, the class does not matter
             System.Reflection.Assembly.GetAssembly(typeof(System.Linq.Expressions.Expression)).Location,
             System.Reflection.Assembly.GetAssembly(typeof(System.Random)).Location,
@@ -36,7 +36,7 @@ public static class Environment
             System.Reflection.Assembly.GetAssembly(typeof(System.ComponentModel.AddingNewEventArgs)).Location,
             //engineDllLocation,
             //System.Reflection.Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51").Location
-        };
+        ];
 
         // load NAudio NuGet package assemblies
         //Type[] NAudio_assemblies_types = new Type[] {
@@ -58,7 +58,7 @@ public static class Environment
 
     private static string[] GetNAudioAssembliesLocations()
     {
-        List<string> assemblies = new List<string>();
+        List<string> assemblies = [];
         return assemblies.ToArray();
     }
 
@@ -80,14 +80,14 @@ public static class Environment
 
     public static void GenerateExe(string savePath = null, bool run = false, bool console = true)
     {
-        IEnumerable<GameRoom> rooms = project.items.OfType<GameRoom>();
+        var rooms = project.items.OfType<GameRoom>();
         if (!rooms.Any())
         {
             MessageBox.Show("Game must have at least 1 room.");
             return;
         }
 
-        string debugPath = AppDomain.CurrentDomain.BaseDirectory + "\\DEBUG";
+        var debugPath = AppDomain.CurrentDomain.BaseDirectory + "\\DEBUG";
         const string debugPname = "debugbuild";
         project.Save(debugPath, successMsg: false, fileName: debugPname);
         Progress = 50;

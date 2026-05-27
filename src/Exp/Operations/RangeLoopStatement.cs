@@ -15,7 +15,7 @@ internal class RangeLoopStatement(RangeLoopSpan ctx, Variable var, IReadingOpera
     {
         var from = fromReadingOperation?.Read().Number ?? 0d;
         var to = ToReadingOperation.Read().Number;
-        bool toIsHigh = to > from;
+        var toIsHigh = to > from;
 
         IValue counterNum = 0d.ToExp();
         counter?.SetSkippingConstant(counterNum);

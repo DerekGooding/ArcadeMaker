@@ -42,7 +42,7 @@ public partial class GSColorPicker : UserControl
     {
         InitializeComponent();
         selectPnl.Size = new Size(baseCols.Length * rectSize + 4, (3 + lightLevels) * rectSize + 4);
-        int displaySize = selectPnl.Size.Width / 2 - 4;
+        var displaySize = selectPnl.Size.Width / 2 - 4;
         display1Pnl.Size = new Size(displaySize, displaySize);
         display1Pnl.Location = new Point(selectPnl.Location.X, selectPnl.Location.Y - display1Pnl.Height - 4);
         display2Pnl.Size = display1Pnl.Size;
@@ -71,15 +71,15 @@ public partial class GSColorPicker : UserControl
     {
         Pen pen = new Pen(Color.Black);
         int width = baseCols.Length, height = lightLevels + 2;
-        for (int w = 0; w < width; w++)
+        for (var w = 0; w < width; w++)
         {
-            for (int h = 0; h < height; h++)
+            for (var h = 0; h < height; h++)
             {
                 pen.Color = GetColor(w * rectSize, h * rectSize);
                 e.Graphics.FillRectangle(pen.Brush, w * rectSize, h * rectSize, rectSize, rectSize);
             }
         }
-        for (int w = 0; w < baseCols.Length * rectSize; w++)
+        for (var w = 0; w < baseCols.Length * rectSize; w++)
         {
             pen.Color = GetColor(w, height * rectSize);
             e.Graphics.FillRectangle(pen.Brush, w, height * rectSize, rectSize, rectSize);
@@ -88,13 +88,13 @@ public partial class GSColorPicker : UserControl
 
     private Color GetColor(Point loc)
     {
-        Color color = Color.Empty;
+        var color = Color.Empty;
 
         // get base color
-        int baseInd = loc.X / rectSize;
+        var baseInd = loc.X / rectSize;
         if (baseInd >= baseCols.Length)
             baseInd = baseCols.Length - 1;
-        Color baseCol = baseCols[baseInd];
+        var baseCol = baseCols[baseInd];
 
         if (loc.Y < rectSize)
         {
@@ -104,8 +104,8 @@ public partial class GSColorPicker : UserControl
         else if (loc.Y < (lightLevels + 1) * rectSize)
         {
             // layout 2: light levels
-            int y = loc.Y / rectSize;
-            int dif = 64;
+            var y = loc.Y / rectSize;
+            var dif = 64;
             if (y * dif <= 255)
             {
                 if (baseCol == Color.Red)
@@ -141,7 +141,7 @@ public partial class GSColorPicker : UserControl
         else if (loc.Y < (lightLevels + 2) * rectSize)
         {
             // layout 3: white levels
-            int val = (loc.X / rectSize) * 32;
+            var val = (loc.X / rectSize) * 32;
             if (val == 128)
                 val = 192;
             else if (val == 160)
@@ -151,7 +151,7 @@ public partial class GSColorPicker : UserControl
         else
         {
             // layout 4: white power
-            int val = Global.MapGPT(loc.X, 0, baseCols.Length * rectSize, 0, 255);
+            var val = Global.MapGPT(loc.X, 0, baseCols.Length * rectSize, 0, 255);
             color = Color.FromArgb(val, val, val);
         }
         return color;
@@ -159,7 +159,7 @@ public partial class GSColorPicker : UserControl
 
     private void selectPnl_MouseClick(object sender, MouseEventArgs e)
     {
-        Color color = GetColor(e.Location);
+        var color = GetColor(e.Location);
         if (e.Button == MouseButtons.Left)
         {
             Color1 = color;
@@ -194,8 +194,5 @@ public partial class GSColorPicker : UserControl
         Color2 = Color.FromArgb(alphaTrack.Value, Color2.R, Color2.G, Color2.B);
     }
 
-    private Color GetColor(int x, int y)
-    {
-        return GetColor(new Point(x, y));
-    }
+    private Color GetColor(int x, int y) => GetColor(new Point(x, y));
 }

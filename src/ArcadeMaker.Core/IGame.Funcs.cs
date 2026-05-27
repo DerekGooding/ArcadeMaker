@@ -85,7 +85,7 @@ public partial interface IGame
                 Angle = other.ImageAngle.Value!.Number
             };
 
-            bool result = SeperatingAxisTheorem.AreRectanglesIntersecting(instRect, otherRect);
+            var result = SeperatingAxisTheorem.AreRectanglesIntersecting(instRect, otherRect);
 
             if (result)
                 _ = 0;
@@ -136,12 +136,12 @@ public partial interface IGame
         Extensions.ThrowIfNull(args[0], args[1]);
 
         KeyValuePair<Runtime.Instance?, double> nearest = new(null, -1);
-        bool first = true;
+        var first = true;
         foreach (var inst in GetActivatedRoom().Instances)
         {
             if (args[2] == null || args[2] == inst.Model.Class.ExpType)
             {
-                double distance = Math.Formulas.DistanceBetween(args[0]!.Number, args[1]!.Number, inst.X.Value!.Number, inst.Y.Value!.Number);
+                var distance = Math.Formulas.DistanceBetween(args[0]!.Number, args[1]!.Number, inst.X.Value!.Number, inst.Y.Value!.Number);
                 if (first || distance < nearest.Value)
                     nearest = new(inst, distance);
                 first = false;
@@ -167,7 +167,7 @@ public partial interface IGame
         {
             if (args[2] == null || args[2] == inst.Model.Class.ExpType)
             {
-                double distance = Math.Formulas.DistanceBetween(args[0]!.Number, args[1]!.Number, inst.X.Value!.Number, inst.Y.Value!.Number);
+                var distance = Math.Formulas.DistanceBetween(args[0]!.Number, args[1]!.Number, inst.X.Value!.Number, inst.Y.Value!.Number);
                 if (distance > furthest.Value)
                     furthest = new(inst, distance);
             }
@@ -182,7 +182,7 @@ public partial interface IGame
         if (args.Length == 0)
             throw new ArgumentException("Object type (or null) must be passed.");
 
-        int count = 0;
+        var count = 0;
         foreach (var i in GetActivatedRoom().Instances)
         {
             if (args[0] == null || args[0] == i.Model.Class.ExpType)
@@ -199,7 +199,7 @@ public partial interface IGame
     Runtime.Instance CreateInstance(Exp.Instance? _, IValue?[] args)
     {
         var (x, y, type) = args.ValidateArguments<NumberValue, NumberValue, Exp.Instance>();
-        ObjectModel model = Objects.FirstOrDefault(m => m.Class.ExpType == type) ?? throw new ArgumentException("Value of argument type must be a type of a game object.");
+        var model = Objects.FirstOrDefault(m => m.Class.ExpType == type) ?? throw new ArgumentException("Value of argument type must be a type of a game object.");
         Runtime.Instance inst = new(model);
         inst.X.Value = x;
         inst.Y.Value = y;
@@ -213,12 +213,12 @@ public partial interface IGame
     [ExpFunc(6)]
     Exp.Void DrawLine(Exp.Instance? _, IValue?[] args)
     {
-        double x1 = args[0].ThrowIfNull().Number;
-        double y1 = args[1].ThrowIfNull().Number;
-        double x2 = args[2].ThrowIfNull().Number;
-        double y2 = args[3].ThrowIfNull().Number;
-        int col = (int)args[4].ThrowIfNull().Number;
-        double thickness = args[5].ThrowIfNull().Number;
+        var x1 = args[0].ThrowIfNull().Number;
+        var y1 = args[1].ThrowIfNull().Number;
+        var x2 = args[2].ThrowIfNull().Number;
+        var y2 = args[3].ThrowIfNull().Number;
+        var col = (int)args[4].ThrowIfNull().Number;
+        var thickness = args[5].ThrowIfNull().Number;
 
         DrawLine(x1, y1, x2, y2, col, thickness);
 
@@ -229,7 +229,7 @@ public partial interface IGame
     Exp.Void DrawPath(Exp.Instance? _, IValue?[] args)
     {
         // get parameters
-        Resources.Path path = Paths.FirstOrDefault(p => p.ID == (int)args[0].ThrowIfNull().Number) ?? throw new ArgumentException($"No path with ID {(int)args[4].ThrowIfNull().Number} was found.");
+        var path = Paths.FirstOrDefault(p => p.ID == (int)args[0].ThrowIfNull().Number) ?? throw new ArgumentException($"No path with ID {(int)args[4].ThrowIfNull().Number} was found.");
 
         double x = path.StartPositionX, y = path.StartPositionY;
         int col;
@@ -242,7 +242,7 @@ public partial interface IGame
         else
             col = (int)args[1].ThrowIfNull().Number;
 
-        double thickness = args.Last().ThrowIfNull().Number;
+        var thickness = args.Last().ThrowIfNull().Number;
 
         // draw path
         foreach (var point in path.Steps)
@@ -276,11 +276,11 @@ public partial interface IGame
         Runtime.Instance inst = (Runtime.Instance)expinst!;
 
         // get path
-        int id = (int)args[0].ThrowIfNull().Number;
-        Resources.Path path = Paths.FirstOrDefault(p => p.ID == id) ?? throw new ArgumentException($"No path with ID {id} was found.");
+        var id = (int)args[0].ThrowIfNull().Number;
+        var path = Paths.FirstOrDefault(p => p.ID == id) ?? throw new ArgumentException($"No path with ID {id} was found.");
 
         // get speed
-        double speed = args[1].ThrowIfNull().Number;
+        var speed = args[1].ThrowIfNull().Number;
 
         // get end action
         PathEndAction endAction = (PathEndAction)args[2].ThrowIfNull().Number;

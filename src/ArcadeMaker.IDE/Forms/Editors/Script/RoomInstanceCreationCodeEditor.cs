@@ -36,7 +36,7 @@ public partial class RoomInstanceCreationCodeEditor : Form
     {
         if (!closedWithOkBtn && codeBox.Text != obj.defaultCreationCode)
         {
-            DialogResult result = MessageBox.Show("Do you want to save changes?", "Close", MessageBoxButtons.YesNoCancel);
+            var result = MessageBox.Show("Do you want to save changes?", "Close", MessageBoxButtons.YesNoCancel);
             if (result == DialogResult.Cancel)
             {
                 e.Cancel = true;
@@ -48,8 +48,5 @@ public partial class RoomInstanceCreationCodeEditor : Form
         }
     }
 
-    private void SaveChanges()
-    {
-        obj.Script = codeBox.Text;
-    }
+    private void SaveChanges() => obj.Script = codeBox.Text;
 }

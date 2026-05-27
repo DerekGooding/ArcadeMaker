@@ -16,13 +16,10 @@ public static class Formulas
 
     public static (double hspeed, double vspeed) LengthDir(double speed, int direction) => (LengthDirX(speed, direction), LengthDirY(speed, direction));
 
-    public static (double speed, double direction) SpeedsToVelocity(double hspeed, double vspeed)
-    {
-        return (
+    public static (double speed, double direction) SpeedsToVelocity(double hspeed, double vspeed) => (
             Sqrt(hspeed * hspeed + vspeed * vspeed),
             RadiansToDegrees(Atan2(vspeed, hspeed))
         );
-    }
 
     // ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -39,8 +36,5 @@ public static class Formulas
     /// <param name="targetRangeMax">Maximum of the target range.</param>
     /// <param name="value">The number to convert.</param>
     /// <returns>A number in the target range, relative to the original number.</returns>
-    public static double LinearMapping(double originalRangeMin, double originalRangeMax, double targetRangeMin, double targetRangeMax, double value)
-    {
-        return (((value - originalRangeMin) * (targetRangeMax - targetRangeMin)) / (originalRangeMax - originalRangeMin)) + targetRangeMin;
-    }
+    public static double LinearMapping(double originalRangeMin, double originalRangeMax, double targetRangeMin, double targetRangeMax, double value) => (((value - originalRangeMin) * (targetRangeMax - targetRangeMin)) / (originalRangeMax - originalRangeMin)) + targetRangeMin;
 }

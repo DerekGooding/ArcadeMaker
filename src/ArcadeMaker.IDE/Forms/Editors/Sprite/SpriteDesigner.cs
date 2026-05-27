@@ -11,10 +11,7 @@ public partial class SpriteDesigner : Form
 
     private float penWidth
     {
-        get
-        {
-            return pen1.Width;
-        }
+        get => pen1.Width;
         set
         {
             pen1.Width = value;
@@ -24,26 +21,12 @@ public partial class SpriteDesigner : Form
 
     private Color color1
     {
-        get
-        {
-            return pen1.Color;
-        }
-        set
-        {
-            pen1.Color = value;
-        }
+        get => pen1.Color; set => pen1.Color = value;
     }
 
     private Color color2
     {
-        get
-        {
-            return pen2.Color;
-        }
-        set
-        {
-            pen2.Color = value;
-        }
+        get => pen2.Color; set => pen2.Color = value;
     }
 
     public SpriteDesigner(Bitmap image)
@@ -58,28 +41,22 @@ public partial class SpriteDesigner : Form
         {
             if (showPixelBorder && imageBox.Width >= 256 && imageBox.Height >= 256)
             {
-                Graphics g = e.Graphics;
+                var g = e.Graphics;
                 Pen pen = new Pen(Color.DarkBlue);
-                float rectSize = (float)imageBox.Width / image.Width;
-                for (float x = (float)poffsetBox.Value; x <= imageBox.Width; x += rectSize)
+                var rectSize = (float)imageBox.Width / image.Width;
+                for (var x = (float)poffsetBox.Value; x <= imageBox.Width; x += rectSize)
                 {
                     g.DrawLine(pen, x, 0, x, imageBox.Height);
                 }
-                for (float y = (float)poffsetBox.Value; y <= imageBox.Height; y += (float)imageBox.Height / image.Height)
+                for (var y = (float)poffsetBox.Value; y <= imageBox.Height; y += (float)imageBox.Height / image.Height)
                 {
                     g.DrawLine(pen, 0, y, imageBox.Width, y);
                 }
             }
         };
         toleranceNumericBox.Maximum = toleranceBox.Maximum;
-        colorPicker.Color1Changed += (s, e) =>
-        {
-            color1 = e;
-        };
-        colorPicker.Color2Changed += (s, e) =>
-        {
-            color2 = e;
-        };
+        colorPicker.Color1Changed += (s, e) => color1 = e;
+        colorPicker.Color2Changed += (s, e) => color2 = e;
 
         // color tool panel
         shape = shape;
@@ -113,8 +90,8 @@ public partial class SpriteDesigner : Form
             field = value;
 
             // set group boxes visible
-            widthGroupBox.Visible = value == Shape.Pen || value == Shape.Line || value == Shape.Ellipse || value == Shape.Rect;
-            drawFillGroupBox.Visible = value == Shape.Ellipse || value == Shape.Rect;
+            widthGroupBox.Visible = value is Shape.Pen or Shape.Line or Shape.Ellipse or Shape.Rect;
+            drawFillGroupBox.Visible = value is Shape.Ellipse or Shape.Rect;
             toleranceGroupBox.Visible = value == Shape.Fill;
 
             // color tool's button
@@ -192,11 +169,11 @@ public partial class SpriteDesigner : Form
     {
         using (Graphics graphics = Graphics.FromImage(image))
         {
-            Pen pen = pen1;
+            var pen = pen1;
             if (e.Button == MouseButtons.Right)
                 pen = pen2;
 
-            PointF mouseUpLoc = ImageLocation(e.Location);
+            var mouseUpLoc = ImageLocation(e.Location);
             if (shape == Shape.Pen)
             {
                 return;
@@ -217,30 +194,26 @@ public partial class SpriteDesigner : Form
         imageBox.Invalidate();
     }
 
-    private void zoomOutBtn_Click(object sender, EventArgs e)
-    {
+    private void zoomOutBtn_Click(object sender, EventArgs e) =>
         /*
-        if (imageBox.Size.Width <= image.Size.Width || imageBox.Size.Height <= imageBox.Size.Height)
-            imageBox.Size = new Size(imageBox.Size.Width - 10, imageBox.Size.Height - 10);
-        else
-            imageBox.Size -= image.Size;
-        */
+if (imageBox.Size.Width <= image.Size.Width || imageBox.Size.Height <= imageBox.Size.Height)
+imageBox.Size = new Size(imageBox.Size.Width - 10, imageBox.Size.Height - 10);
+else
+imageBox.Size -= image.Size;
+*/
         Zoom(ZOOM_OUT);
-    }
 
-    private void zoomInBtn_Click(object sender, EventArgs e)
-    {
+    private void zoomInBtn_Click(object sender, EventArgs e) =>
         //imageBox.Size += image.Size;
         Zoom(ZOOM_IN);
-    }
 
     private static readonly int zoomRatio = 32;
 
     private void Zoom(bool inOut)
     {
         // set the zoomed width and height
-        int widthZoom = imageBox.Width * zoomRatio / 100;
-        int heightZoom = imageBox.Height * zoomRatio / 100;
+        var widthZoom = imageBox.Width * zoomRatio / 100;
+        var heightZoom = imageBox.Height * zoomRatio / 100;
 
         // inOut = true --> zoom in
         // inOut = false --> zoom out
@@ -254,7 +227,7 @@ public partial class SpriteDesigner : Form
         zoomWidth += widthZoom;
         zoomHeight += heightZoom;
 
-        Image prevImg = imageBox.Image;
+        var prevImg = imageBox.Image;
         imageBox.Image = DisplayImage();
         if (prevImg != image)
         {
@@ -291,15 +264,9 @@ public partial class SpriteDesigner : Form
         }
     }
 
-    private void penBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.Pen;
-    }
+    private void penBtn_Click(object sender, EventArgs e) => shape = Shape.Pen;
 
-    private void lineBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.Line;
-    }
+    private void lineBtn_Click(object sender, EventArgs e) => shape = Shape.Line;
 
     private PointF previewLastEndLoc = Point.Empty;
 
@@ -314,7 +281,7 @@ public partial class SpriteDesigner : Form
             return;
 
         // preview & pen
-        PointF mouseCurrentLoc = ImageLocation(e.Location);
+        var mouseCurrentLoc = ImageLocation(e.Location);
         if (mouseDownLoc != Point.Empty && mouseCurrentLoc != previewLastEndLoc)
         {
             previewLastEndLoc = mouseCurrentLoc;
@@ -328,7 +295,7 @@ public partial class SpriteDesigner : Form
                 }
                 return;
             }
-            else if (shape == Shape.Line || shape == Shape.Rect || shape == Shape.Ellipse)
+            else if (shape is Shape.Line or Shape.Rect or Shape.Ellipse)
             {
                 imageBox.Image.Dispose();
                 Bitmap image = new Bitmap(this.image.Width, this.image.Height);
@@ -386,7 +353,7 @@ public partial class SpriteDesigner : Form
             else if (drawStyle == DrawStyle.DrawAndFill)
             {
                 g.DrawEllipse(pen, startX, startY, endX - startX, endY - startY);
-                float dif = 0.5F;
+                var dif = 0.5F;
                 g.FillEllipse((pen == pen1 ? pen2 : pen1).Brush, startX + dif, startY + dif, endX - startX - dif, endY - startY - dif);
             }
         }
@@ -410,10 +377,7 @@ public partial class SpriteDesigner : Form
         return floc;
     }
 
-    private void fillBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.Fill;
-    }
+    private void fillBtn_Click(object sender, EventArgs e) => shape = Shape.Fill;
 
     private int fillTolerance = 30;
 
@@ -425,7 +389,7 @@ public partial class SpriteDesigner : Form
         }
         catch (Exception ex)
         {
-            string err = "Error filling the area.";
+            var err = "Error filling the area.";
 #if DEBUG
             err += "\n\n[Debug Mode]\nError Message:\n" + ex;
 #endif
@@ -433,60 +397,27 @@ public partial class SpriteDesigner : Form
         }
     }
 
-    private void shapeDrawBtn_Click(object sender, EventArgs e)
-    {
-        drawStyle = DrawStyle.Draw;
-    }
+    private void shapeDrawBtn_Click(object sender, EventArgs e) => drawStyle = DrawStyle.Draw;
 
-    private void shapeDrawFillBtn_Click(object sender, EventArgs e)
-    {
-        drawStyle = DrawStyle.DrawAndFill;
-    }
+    private void shapeDrawFillBtn_Click(object sender, EventArgs e) => drawStyle = DrawStyle.DrawAndFill;
 
-    private void shapeFillBtn_Click(object sender, EventArgs e)
-    {
-        drawStyle = DrawStyle.Fill;
-    }
+    private void shapeFillBtn_Click(object sender, EventArgs e) => drawStyle = DrawStyle.Fill;
 
-    private void ellipseBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.Ellipse;
-    }
+    private void ellipseBtn_Click(object sender, EventArgs e) => shape = Shape.Ellipse;
 
-    private void pickColBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.ColorPicker;
-    }
+    private void pickColBtn_Click(object sender, EventArgs e) => shape = Shape.ColorPicker;
 
-    private void width1Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 1;
-    }
+    private void width1Btn_Click(object sender, EventArgs e) => penWidth = 1;
 
-    private void width2Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 2;
-    }
+    private void width2Btn_Click(object sender, EventArgs e) => penWidth = 2;
 
-    private void width3Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 3;
-    }
+    private void width3Btn_Click(object sender, EventArgs e) => penWidth = 3;
 
-    private void width4Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 4;
-    }
+    private void width4Btn_Click(object sender, EventArgs e) => penWidth = 4;
 
-    private void width5Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 5;
-    }
+    private void width5Btn_Click(object sender, EventArgs e) => penWidth = 5;
 
-    private void width6Btn_Click(object sender, EventArgs e)
-    {
-        penWidth = 6;
-    }
+    private void width6Btn_Click(object sender, EventArgs e) => penWidth = 6;
 
     private void toleranceBox_Scroll(object sender, EventArgs e)
     {
@@ -510,10 +441,7 @@ public partial class SpriteDesigner : Form
         imageBox.Invalidate();
     }
 
-    private void poffsetBox_ValueChanged(object sender, EventArgs e)
-    {
-        imageBox.Invalidate();
-    }
+    private void poffsetBox_ValueChanged(object sender, EventArgs e) => imageBox.Invalidate();
 
     public event EventHandler<EventArgs> Finished;
 
@@ -524,10 +452,7 @@ public partial class SpriteDesigner : Form
         Close();
     }
 
-    private void rectBtn_Click(object sender, EventArgs e)
-    {
-        shape = Shape.Rect;
-    }
+    private void rectBtn_Click(object sender, EventArgs e) => shape = Shape.Rect;
 }
 
 internal enum Shape
@@ -552,22 +477,22 @@ public static class ImageSegmentation
     // d0 (color seed range) range: 0 to 441.67 (ChatGPT)
     public static Bitmap FillSegment(Bitmap image, int x, int y, Color fill_color, int d0)
     {
-        int w = image.Width;
-        int h = image.Height;
+        var w = image.Width;
+        var h = image.Height;
 
         // create a bool array to mark which pixels have been visited
-        bool[,] visited = new bool[w, h];
+        var visited = new bool[w, h];
 
         // get the segmentation of the image
-        byte[,] segment = GetSegment(image, x, y, visited, d0);
+        var segment = GetSegment(image, x, y, visited, d0);
 
         // create a new bitmap for the result
         Bitmap result = new Bitmap(w, h);
 
         // iterate over the pixels of the image
-        for (int i = 0; i < w; i++)
+        for (var i = 0; i < w; i++)
         {
-            for (int j = 0; j < h; j++)
+            for (var j = 0; j < h; j++)
             {
                 // if the pixel is part of the segment, set the color to the fill color
                 if (segment[i, j] == 1)
@@ -587,13 +512,13 @@ public static class ImageSegmentation
 
     private static byte[,] GetSegment(Bitmap image, int x, int y, bool[,] visited, int d0)
     {
-        int w = image.Width;
-        int h = image.Height;
+        var w = image.Width;
+        var h = image.Height;
 
-        byte[,] segment = new byte[w, h];
+        var segment = new byte[w, h];
 
         // get the color of the seed pixel
-        Color seed_color = image.GetPixel(x, y);
+        var seed_color = image.GetPixel(x, y);
 
         // create a queue for BFS
         Queue<Point> queue = new Queue<Point>();
@@ -606,17 +531,17 @@ public static class ImageSegmentation
         while (queue.Count > 0)
         {
             // get the next pixel from the queue
-            Point current = queue.Dequeue();
-            int current_x = current.X;
-            int current_y = current.Y;
+            var current = queue.Dequeue();
+            var current_x = current.X;
+            var current_y = current.Y;
 
             // mark the current pixel as part of the segment
             segment[current_x, current_y] = 1;
 
             // iterate over the neighbors of the current pixel
-            for (int i = current_x - 1; i <= current_x + 1; i++)
+            for (var i = current_x - 1; i <= current_x + 1; i++)
             {
-                for (int j = current_y - 1; j <= current_y + 1; j++)
+                for (var j = current_y - 1; j <= current_y + 1; j++)
                 {
                     // check if the neighbor is inside the image bounds
                     if (i >= 0 && i < w && j >= 0 && j < h)
@@ -639,9 +564,9 @@ public static class ImageSegmentation
     // Helper function to check if a given color is within the specified range of another color
     private static bool ColorWithinRange(Color c1, Color c2, int d0)
     {
-        int r_diff = Math.Abs(c1.R - c2.R);
-        int g_diff = Math.Abs(c1.G - c2.G);
-        int b_diff = Math.Abs(c1.B - c2.B);
+        var r_diff = Math.Abs(c1.R - c2.R);
+        var g_diff = Math.Abs(c1.G - c2.G);
+        var b_diff = Math.Abs(c1.B - c2.B);
         return r_diff <= d0 && g_diff <= d0 && b_diff <= d0;
     }
 

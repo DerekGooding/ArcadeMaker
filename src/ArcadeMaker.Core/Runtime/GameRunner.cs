@@ -31,10 +31,10 @@ public class GameRunner
     {
         List<ExpError> InitializersErrors = [];
 
-        foreach (ObjectModel model in Game.Objects)
+        foreach (var model in Game.Objects)
         {
             // create a script that initializes the property for an instance
-            string initializerScript = "";
+            var initializerScript = "";
 
             foreach (var extrap in model.ExtraProperties)
             {
@@ -67,10 +67,10 @@ public class GameRunner
 
         static string GetEnumCode(Type type) // converts an enum type to a string of Exp code that defines the same enum
         {
-            string code = $"namespace {ExpSrc.ExpSrc.EngineNamespace}:\n\nenum {type.Name}\n{{\n";
+            var code = $"namespace {ExpSrc.ExpSrc.EngineNamespace}:\n\nenum {type.Name}\n{{\n";
 
-            string[] names = Enum.GetNames(type);
-            int i = 0;
+            var names = Enum.GetNames(type);
+            var i = 0;
             foreach (var name in names)
             {
                 code += $"    {name.StartWithLowerCase()} = {(int)Enum.Parse(type, name)}{(i++ < names.Length - 1 ? "," : "")}\n";
@@ -110,7 +110,7 @@ public class GameRunner
                 {
                     // create Func<...> from methodInfo
                     var invoker = (Func<Exp.Instance?, IValue?[], IValue?>)Delegate.CreateDelegate(typeof(Func<Exp.Instance?, IValue?[], IValue?>), instance, methodInfo);
-                    string invokerName = attr.CustomName ?? methodInfo.Name.StartWithLowerCase();
+                    var invokerName = attr.CustomName ?? methodInfo.Name.StartWithLowerCase();
 
                     // add to interpreter
                     if (attr.IsNonStaticFuncOfGameObjects)
@@ -180,7 +180,7 @@ public class GameRunner
 
         // run all step events for the current room
         var roominsts = Game.CurrentRoom.Instances;
-        for (int i = 0; i < roominsts.Count; i++) // if we use foreach here, modifications to the list of instances (like destroying an instance and removing it from the list) will cause an exception, but with this for loop it won't
+        for (var i = 0; i < roominsts.Count; i++) // if we use foreach here, modifications to the list of instances (like destroying an instance and removing it from the list) will cause an exception, but with this for loop it won't
         {
             var instance = roominsts[i];
             if (instance.Model.EventScripts.Step != null)
@@ -190,7 +190,7 @@ public class GameRunner
             // move path
             if (instance.CurrentPathDrive != null)
             {
-                if (!instance.CurrentPathDrive.Move(out double hsp, out double vsp, out bool updated))
+                if (!instance.CurrentPathDrive.Move(out var hsp, out var vsp, out var updated))
                     instance.CurrentPathDrive = null;
                 else if (updated)
                 {
@@ -210,7 +210,7 @@ public class GameRunner
             if (!view.Visible || view.Following == null)
                 continue;
 
-            Instance? inst = roominsts.FirstOrDefault(i => i.Model == view.Following);
+            var inst = roominsts.FirstOrDefault(i => i.Model == view.Following);
             if (inst != null)
             {
                 double targetX = inst.X.Value!.Number - view.Follow_HBorder, targetY = inst.Y.Value!.Number - view.Follow_VBorder;
@@ -231,7 +231,7 @@ public class GameRunner
         if (instance.Model.Sprite != null && instance.ImageSpeed.Value!.Number > 0 && instance.Model.Sprite.NumberOfImages >= 2 && ++instance.FramesSinceLastImageIndex >= instance.ImageSpeed.Value?.Number)
         {
             instance.FramesSinceLastImageIndex = 0;
-            double nextIndex = instance.ImageIndex.Value!.Number + 1 >= instance.Model.Sprite.NumberOfImages ? 0 : instance.ImageIndex.Value.Number + 1;
+            var nextIndex = instance.ImageIndex.Value!.Number + 1 >= instance.Model.Sprite.NumberOfImages ? 0 : instance.ImageIndex.Value.Number + 1;
             instance.ImageIndex.Value = nextIndex.ToExp();
         }
     }
@@ -307,8 +307,8 @@ public class GameRunner
     public Exp.Void GoToRoom(Exp.Instance? _, IValue?[] args)
     {
         // find the room by the ID
-        double ID = args[0].ThrowIfNull().Number;
-        RoomModel model = Game.Rooms.FirstOrDefault(r => ID == r.ID) ?? throw new ArgumentException($"There is no room with ID {ID}.");
+        var ID = args[0].ThrowIfNull().Number;
+        var model = Game.Rooms.FirstOrDefault(r => ID == r.ID) ?? throw new ArgumentException($"There is no room with ID {ID}.");
 
         // go to it
         GoToRoom(model);
@@ -322,7 +322,7 @@ public class GameRunner
         if (Game.CurrentRoom == null)
             throw new NoActivatedRoomException();
 
-        int currentIndex = Game.Rooms.IndexOf(Game.CurrentRoom.Model);
+        var currentIndex = Game.Rooms.IndexOf(Game.CurrentRoom.Model);
 
         if (currentIndex + 1 >= Game.Rooms.Count)
             Interpreter.ThrowRuntime("Current room is the last room.", RuntimeException.INVALID_OPERATION);

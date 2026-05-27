@@ -92,10 +92,7 @@ internal static class Debug
             CatchErrors([new("Debugger", 0, 0, $"Uncaught build exception: {ex.Message}.")]);
         }
 
-        void CatchErrors(IEnumerable<ExpError>? ex)
-        {
-            _errors.AddRange(ex ?? []);
-        }
+        void CatchErrors(IEnumerable<ExpError>? ex) => _errors.AddRange(ex ?? []);
 
         errors = _errors;
         return errors.Count == 0;

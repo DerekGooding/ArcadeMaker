@@ -16,7 +16,7 @@ public class ArgumentSpan : WordSpan, IExpItem
     {
         get
         {
-            string s = Name;
+            var s = Name;
             if (!NotNull)
                 s += "?";
             return s;

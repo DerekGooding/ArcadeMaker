@@ -8,7 +8,7 @@ public partial class Interpreter
 
     internal void Error(string msg, Span throwing = null, bool beforeCurrentSpan = true)
     {
-        GetLocLine(beforeCurrentSpan, out int line, out int col, out string sourceName, throwing);
+        GetLocLine(beforeCurrentSpan, out var line, out var col, out var sourceName, throwing);
         var err = new ExpError(sourceName, line, col, msg);
         Errors.Add(err);
         //throw err;
@@ -28,7 +28,7 @@ public partial class Interpreter
 
         //if (beforeCurrentSpan && lastSpan != null)
         //    loc -= lastSpan.FullText.Length;
-        bool throwingAttached = throwing != null;
+        var throwingAttached = throwing != null;
         throwing ??= lastSpan;
         if (!throwingAttached)
         {
@@ -39,9 +39,9 @@ public partial class Interpreter
             }
         }
 
-        string source = this.source;
+        var source = this.source;
         sourceName = "UnknownSource";
-        int loc = 0;
+        var loc = 0;
         if (throwing != null)
         {
             loc = throwing.DocumentLocation;
@@ -54,7 +54,7 @@ public partial class Interpreter
 
         line = 1;
         col = 0;
-        for (int i = 0; i < loc; i++)
+        for (var i = 0; i < loc; i++)
         {
             col++;
             if (i >= source.Length)
@@ -93,7 +93,7 @@ public partial class Interpreter
         if (ex == null || ex.def != ClassDefSpan.ExpExceptionDef)
             ThrowRuntime(nameof(ex) + $" was not an instance of {((IDefinition)ClassDefSpan.ExpExceptionDef).FullName}.", RuntimeException.INVALID_ARGUMENT, throwing);
 
-        GetLocLine(beforeCurrentSpan, out int line, out int col, out string sourceName, throwing);
+        GetLocLine(beforeCurrentSpan, out var line, out var col, out var sourceName, throwing);
 
         ex.Vars[2].SetSkippingConstant(StringToExpString(sourceName));
         ex.Vars[3].SetSkippingConstant(((double)line).ToExp());

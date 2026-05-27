@@ -84,7 +84,7 @@ public class ClassDefSpan : WordSpan, IDefinition, IVarSystem, IKeyword, ICanSet
 
             foreach (var func in Funcs)
                 funcsStr += func.FullText + "\n";
-            string s = $"{Keyword} {Name} ( {propsStr} )\n{{\n\t{funcsStr}\n}}";
+            var s = $"{Keyword} {Name} ( {propsStr} )\n{{\n\t{funcsStr}\n}}";
             return s;
         }
     }

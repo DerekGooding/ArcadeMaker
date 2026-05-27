@@ -28,7 +28,7 @@ internal class PathDrive(Instance inst, Resources.Path path, double speed, PathE
 
         if (--stepLength <= 0)
         {
-            int reverseSign = Reverse ? -1 : 1;
+            var reverseSign = Reverse ? -1 : 1;
             PathStepIndex += reverseSign;
             if (PathStepIndex > Path.Steps.Length || PathStepIndex < -1) // if drive is over
             {
@@ -65,8 +65,8 @@ internal class PathDrive(Instance inst, Resources.Path path, double speed, PathE
             var newStep = Path.Steps[PathStepIndex - reverseSign];
 
             // calculate new direction and step length
-            double dir = newStep.Direction + (Reverse ? 180 : 0);
-            double sp = newStep.Speed * (Speed / 100);
+            var dir = newStep.Direction + (Reverse ? 180 : 0);
+            var sp = newStep.Speed * (Speed / 100);
 
             // calculate hspeed and vspeed
             hsp = Math.Formulas.LengthDirX(sp, dir);

@@ -10,7 +10,7 @@ internal class ExternInvocationOperation(ExternClassDefSpan extrn, object inst, 
 
     public IValue Read()
     {
-        bool statc = false ? false : throw new NotImplementedException();
+        var statc = false ? false : throw new NotImplementedException();
         return Interpreter.InvokeExtern(Extern.Type, statc, inst, method, [.. args.Select(a => a.Read())]);
     }
 }

@@ -19,10 +19,7 @@ public partial class SpriteEditor : Form
                 nameBox.Text = e.newName;
         };
 
-        if (sprite == null)
-        {
-            throw new ArgumentNullException("sprite");
-        }
+        ArgumentNullException.ThrowIfNull(sprite);
     }
 
     private void SetOriginBox(bool init)
@@ -64,8 +61,8 @@ public partial class SpriteEditor : Form
     {
         if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
-            string[] pathes = openFileDialog.FileNames;
-            bool fail = false;
+            var pathes = openFileDialog.FileNames;
+            var fail = false;
             try
             {
                 sprite.images.Clear();
@@ -127,10 +124,7 @@ public partial class SpriteEditor : Form
         renaming = false;
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 
     private void editBtn_Click(object sender, EventArgs e)
     {
@@ -140,10 +134,7 @@ public partial class SpriteEditor : Form
             imageBox.Image = image;
             SetOriginBox(init: false);
         };
-        manager.FormClosed += (s, ea) =>
-        {
-            SetDetails();
-        };
+        manager.FormClosed += (s, ea) => SetDetails();
         manager.ShowDialog();
     }
 
@@ -207,8 +198,8 @@ public partial class SpriteEditor : Form
     {
         if (sprite.image == null)
             return;
-        int startX = sprite.originX;
-        int startY = sprite.originY;
+        var startX = sprite.originX;
+        var startY = sprite.originY;
         e.Graphics.DrawLine(originPen, startX, 0, startX, sprite.image.Size.Height);
         e.Graphics.DrawLine(originPen, 0, startY, sprite.image.Size.Width, startY);
     }
@@ -222,15 +213,9 @@ public partial class SpriteEditor : Form
         }
     }
 
-    private void preciseMaskBtn_CheckedChanged(object sender, EventArgs e)
-    {
-        sprite.preciseMask = preciseMaskBtn.Checked;
-    }
+    private void preciseMaskBtn_CheckedChanged(object sender, EventArgs e) => sprite.preciseMask = preciseMaskBtn.Checked;
 
-    private void separateMasksBox_CheckedChanged(object sender, EventArgs e)
-    {
-        sprite.separateMask = separateMasksBox.Checked;
-    }
+    private void separateMasksBox_CheckedChanged(object sender, EventArgs e) => sprite.separateMask = separateMasksBox.Checked;
 }
 
 public static class MaskGenerator
@@ -244,12 +229,12 @@ public static class MaskGenerator
             using (Graphics g = Graphics.FromImage(image))
             {
                 // Loop through the rows and columns of pixels in the image
-                for (int y = 0; y < image.Height; y++)
+                for (var y = 0; y < image.Height; y++)
                 {
-                    for (int x = 0; x < image.Width; x++)
+                    for (var x = 0; x < image.Width; x++)
                     {
                         // Get the color of the pixel
-                        Color pixelColor = image.GetPixel(x, y);
+                        var pixelColor = image.GetPixel(x, y);
 
                         // Check if the pixel is not transparent
                         if (pixelColor.A != 0)
@@ -289,12 +274,12 @@ public static class MaskGenerator
         using (Graphics g = Graphics.FromImage(image))
         {
             // Loop through the rows and columns of pixels in the image
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
-                for (int x = 0; x < image.Width; x++)
+                for (var x = 0; x < image.Width; x++)
                 {
                     // Get the color of the pixel
-                    Color pixelColor = image.GetPixel(x, y);
+                    var pixelColor = image.GetPixel(x, y);
 
                     // Check if the pixel is not transparent
                     if (pixelColor.A != 0)
@@ -315,7 +300,7 @@ public static class MaskGenerator
             GraphicsPath flattenedPath = new GraphicsPath();
 
             // Flatten the path and add the result to the flattened path
-            while (iterator.NextSubpath(flattenedPath, out bool moreSubpaths) != 0)
+            while (iterator.NextSubpath(flattenedPath, out var moreSubpaths) != 0)
             {
                 // Do nothing, we just need to call the NextSubpath method
             }
@@ -330,17 +315,17 @@ public static class MaskGenerator
 
     public static Point[][] PointsMask(Bitmap image)
     {
-        List<List<Point>> segments = new List<List<Point>>();
+        List<List<Point>> segments = [];
         List<Point> segment = null;
-        for (int x = 0; x < image.Width; x++)
+        for (var x = 0; x < image.Width; x++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 if (image.GetPixel(x, y).A != 0)
                 {
                     if (segment == null)
                     {
-                        segment = new List<Point>();
+                        segment = [];
                         segments.Add(segment);
                     }
                     segment.Add(new Point(x, y));
@@ -350,7 +335,7 @@ public static class MaskGenerator
         }
 
         Point[][] points = new Point[segments.Count][];
-        for (int i = 0; i < segments.Count; i++)
+        for (var i = 0; i < segments.Count; i++)
         {
             points[i] = segments[i].ToArray();
         }
@@ -359,12 +344,12 @@ public static class MaskGenerator
 
     public static Point[] PointsMask1D(Bitmap image)
     {
-        List<Point> points = new List<Point>();
+        List<Point> points = [];
 
         // top
-        for (int x = 0; x < image.Width; x++)
+        for (var x = 0; x < image.Width; x++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 if (image.GetPixel(x, y).A != 0)
                 {
@@ -374,9 +359,9 @@ public static class MaskGenerator
             }
         }
         // right
-        for (int y = 0; y < image.Height; y++)
+        for (var y = 0; y < image.Height; y++)
         {
-            for (int x = image.Width - 1; x >= 0; x--)
+            for (var x = image.Width - 1; x >= 0; x--)
             {
                 if (image.GetPixel(x, y).A != 0)
                 {
@@ -386,9 +371,9 @@ public static class MaskGenerator
             }
         }
         // bottom
-        for (int x = 0; x < image.Width; x++)
+        for (var x = 0; x < image.Width; x++)
         {
-            for (int y = image.Height - 1; y >= 0; y--)
+            for (var y = image.Height - 1; y >= 0; y--)
             {
                 if (image.GetPixel(x, y).A != 0)
                 {
@@ -398,9 +383,9 @@ public static class MaskGenerator
             }
         }
         // left
-        for (int y = 0; y < image.Height; y++)
+        for (var y = 0; y < image.Height; y++)
         {
-            for (int x = 0; x < image.Width; x++)
+            for (var x = 0; x < image.Width; x++)
             {
                 if (image.GetPixel(x, y).A != 0)
                 {
@@ -415,15 +400,15 @@ public static class MaskGenerator
 
     public static Point[][] PointsMask2D2(Bitmap image)
     {
-        int[][] labelMap = new int[image.Width][];
-        for (int x = 0; x < image.Width; x++)
+        var labelMap = new int[image.Width][];
+        for (var x = 0; x < image.Width; x++)
         {
             labelMap[x] = new int[image.Height];
         }
-        int label = 1;
-        for (int x = 0; x < image.Width; x++)
+        var label = 1;
+        for (var x = 0; x < image.Width; x++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 if (image.GetPixel(x, y).A != 0 && labelMap[x][y] == 0)
                 {
@@ -431,7 +416,7 @@ public static class MaskGenerator
                     queue.Enqueue(new Point(x, y));
                     while (queue.Count > 0)
                     {
-                        Point p = queue.Dequeue();
+                        var p = queue.Dequeue();
                         if (labelMap[p.X][p.Y] == 0 && image.GetPixel(p.X, p.Y).A != 0)
                         {
                             labelMap[p.X][p.Y] = label;
@@ -447,17 +432,17 @@ public static class MaskGenerator
         }
 
         List<Point>[] pointLists = new List<Point>[label];
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
-            pointLists[i] = new List<Point>();
+            pointLists[i] = [];
         }
 
         // top
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
-            for (int x = 0; x < image.Width; x++)
+            for (var x = 0; x < image.Width; x++)
             {
-                for (int y = 0; y < image.Height; y++)
+                for (var y = 0; y < image.Height; y++)
                 {
                     if (labelMap[x][y] == i && image.GetPixel(x, y).A != 0)
                     {
@@ -469,11 +454,11 @@ public static class MaskGenerator
         }
 
         // right
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
-                for (int x = image.Width - 1; x >= 0; x--)
+                for (var x = image.Width - 1; x >= 0; x--)
                 {
                     if (labelMap[x][y] == i && image.GetPixel(x, y).A != 0)
                     {
@@ -485,11 +470,11 @@ public static class MaskGenerator
         }
 
         // bottom
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
-            for (int x = 0; x < image.Width; x++)
+            for (var x = 0; x < image.Width; x++)
             {
-                for (int y = image.Height - 1; y >= 0; y--)
+                for (var y = image.Height - 1; y >= 0; y--)
                 {
                     if (labelMap[x][y] == i && image.GetPixel(x, y).A != 0)
                     {
@@ -501,11 +486,11 @@ public static class MaskGenerator
         }
 
         // left
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
-                for (int x = 0; x < image.Width; x++)
+                for (var x = 0; x < image.Width; x++)
                 {
                     if (labelMap[x][y] == i && image.GetPixel(x, y).A != 0)
                     {
@@ -517,7 +502,7 @@ public static class MaskGenerator
         }
 
         Point[][] points = new Point[label][];
-        for (int i = 0; i < label; i++)
+        for (var i = 0; i < label; i++)
         {
             points[i] = pointLists[i].ToArray();
         }
@@ -525,10 +510,7 @@ public static class MaskGenerator
         return points;
     }
 
-    public static ObjectInfo[] AForgeMask(Bitmap image)
-    {
-        throw new NotImplementedException();
-        /*
+    public static ObjectInfo[] AForgeMask(Bitmap image) => throw new NotImplementedException();/*
         // Convert the image to grayscale
         Grayscale filter = new Grayscale(0.2125, 0.7154, 0.0721);
         Bitmap grayImage = filter.Apply(image);
@@ -575,15 +557,14 @@ public static class MaskGenerator
 
         return objectsInfo.ToArray();
         */
-    }
 
     public static Point[] MapPixels(Bitmap image, bool precise)
     {
-        List<Point> pts = new List<Point>();
+        List<Point> pts = [];
 
-        for (int x = 0; x < image.Width; x++)
+        for (var x = 0; x < image.Width; x++)
         {
-            for (int y = 0; y < image.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 if (!precise || image.GetPixel(x, y).A != 0)
                     pts.Add(new Point(x, y));

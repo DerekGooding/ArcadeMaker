@@ -13,17 +13,14 @@ public partial class SpriteManager : Form
         this.sprite = sprite;
         if (sprite.images.Any())
             images.ImageSize = sprite.images[0].Size;
-        foreach (Bitmap bitmap in sprite.images)
+        foreach (var bitmap in sprite.images)
         {
             AddImage(bitmap);
         }
         headImage = sprite.image;
     }
 
-    private void SpriteManager_Load(object sender, EventArgs e)
-    {
-        imageListView.LargeImageList = images;
-    }
+    private void SpriteManager_Load(object sender, EventArgs e) => imageListView.LargeImageList = images;
 
     private void newSpriteBtn_Click(object sender, EventArgs e)
     {
@@ -62,7 +59,7 @@ public partial class SpriteManager : Form
     {
         if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
-            foreach (string path in openFileDialog.FileNames)
+            foreach (var path in openFileDialog.FileNames)
             {
                 Bitmap image = (Bitmap)Global.ImageFromFile(path);
                 AddImage(image);
@@ -70,10 +67,7 @@ public partial class SpriteManager : Form
         }
     }
 
-    private void imageListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        EnableMoveButtons(imageListView.SelectedItems.Count == 1);
-    }
+    private void imageListView_SelectedIndexChanged(object sender, EventArgs e) => EnableMoveButtons(imageListView.SelectedItems.Count == 1);
 
     private void EnableMoveButtons(bool enabled = true)
     {
@@ -86,7 +80,7 @@ public partial class SpriteManager : Form
         if (imageListView.SelectedItems.Count > 0)
         {
             Bitmap bmp = imageListView.SelectedItems[0].Tag as Bitmap;
-            int index = imageListView.SelectedIndices[0];
+            var index = imageListView.SelectedIndices[0];
 
             SpriteDesigner designer = new SpriteDesigner(bmp);
             designer.Finished += (s, ea) =>
@@ -118,23 +112,17 @@ public partial class SpriteManager : Form
         Close();
     }
 
-    private void moveLeftBtn_Click(object sender, EventArgs e)
-    {
-        ImageMove(right: false);
-    }
+    private void moveLeftBtn_Click(object sender, EventArgs e) => ImageMove(right: false);
 
-    private void moveRightBtn_Click(object sender, EventArgs e)
-    {
-        ImageMove(right: true);
-    }
+    private void moveRightBtn_Click(object sender, EventArgs e) => ImageMove(right: true);
 
     private void ImageMove(bool right)
     {
-        int direction = -1;
+        var direction = -1;
         if (right)
             direction = 1;
 
-        int sind = imageListView.SelectedIndices[0];
+        var sind = imageListView.SelectedIndices[0];
         if (sind == (right ? images.Images.Count - 1 : 0))
             return;
         Bitmap memory = (Bitmap)images.Images[sind + direction];

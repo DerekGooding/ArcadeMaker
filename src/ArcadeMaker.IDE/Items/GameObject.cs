@@ -50,31 +50,20 @@ public class GameObject : GameItem //, IContainsScript
             }
             return base.Editor as ObjectEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public GameObject(string name) : base(name)
     {
-        getEditor += (s, e) =>
-        {
-            e = editor;
-        };
+        getEditor += (s, e) => e = editor;
         editor = new ObjectEditor(this);
-        base.NameChanged += (s, e) =>
-        {
-            compiledModelsTree = false;
-        };
+        base.NameChanged += (s, e) => compiledModelsTree = false;
     }
 
     public bool solid = false;
     public int depth;
     public GameObject parent;
 
-    internal EventScripts? GetEventScripts(ObjectEvent ev)
-    {
-        return EventScripts.FirstOrDefault(es => es.Event == ev);
-    }
+    internal EventScripts? GetEventScripts(ObjectEvent ev) => EventScripts.FirstOrDefault(es => es.Event == ev);
 }

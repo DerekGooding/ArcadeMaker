@@ -5,7 +5,7 @@ namespace ArcadeMaker.IDE;
 
 public partial class SpansTextBox : UserControl
 {
-    public readonly List<ScriptBoxSpan> Spans = new List<ScriptBoxSpan>();
+    public readonly List<ScriptBoxSpan> Spans = [];
     public float ScrollX, ScrollY;
     public int SelectionStart = 5, SelectionLength = 4;
     public Color SelectionColor = Color.Black;
@@ -23,17 +23,14 @@ public partial class SpansTextBox : UserControl
     {
         get
         {
-            string text = "";
-            foreach (ScriptBoxSpan span in Spans)
+            var text = "";
+            foreach (var span in Spans)
                 text += span.text;
             return text;
         }
     }
 
-    public SpansTextBox()
-    {
-        InitializeComponent();
-    }
+    public SpansTextBox() => InitializeComponent();
 
     private void SpansTextBox_MouseClick(object sender, MouseEventArgs e)
     {
@@ -42,14 +39,14 @@ public partial class SpansTextBox : UserControl
     private int GetCharIndexFromLocation(Point location)
     {
         // locate the char index
-        string text = Text;
+        var text = Text;
         float cx = 0, cy = 0;
-        using (Graphics g = CreateGraphics()) // to calculate char size
+        using (var g = CreateGraphics()) // to calculate char size
         {
             // for each char in the text, check if location touches it
-            for (int c = 0; c < text.Length; c++)
+            for (var c = 0; c < text.Length; c++)
             {
-                SizeF charSize = g.MeasureString(text[c].ToString(), Font);
+                var charSize = g.MeasureString(text[c].ToString(), Font);
                 float x = TextLocation.X + cx - ScrollX, y = TextLocation.Y + cy - ScrollY;
                 if (x <= location.X && x + charSize.Width > location.X &&
                     y <= location.Y && y + charSize.Height > location.Y)
@@ -70,7 +67,7 @@ public partial class SpansTextBox : UserControl
                 }
             }
 
-            int lineNumber = (int)Math.Floor((location.Y + TextLocation.Y - ScrollY) / LineSpacing) - 1;
+            var lineNumber = (int)Math.Floor((location.Y + TextLocation.Y - ScrollY) / LineSpacing) - 1;
 
             // location's y is higher than last line's y, if y < 0 then char index is 0
             if (lineNumber < 0)
@@ -103,9 +100,9 @@ public partial class SpansTextBox : UserControl
         }
 
         // insert key char at the span and char index relating to SelectionStart
-        string text = Text;
+        var text = Text;
         int spanIndex = 0, spanCharInd = 0;
-        for (int i = 0; i < text.Length; i++)
+        for (var i = 0; i < text.Length; i++)
         {
             if (spanCharInd >= Spans[spanIndex].text.Length)
             {
@@ -173,7 +170,7 @@ public partial class SpansTextBox : UserControl
         // find the span at SelectionStart, remove all the selected text and insert clipboard text at the right location of the span
         int spanIndex = 0, spanCharInd = 0, pastePos = -1;
         ScriptBoxSpan pasteSpan = null;
-        for (int i = 0; i <= SelectionStart + SelectionLength; i++)
+        for (var i = 0; i <= SelectionStart + SelectionLength; i++)
         {
             if (spanCharInd >= Spans[spanIndex].text.Length)
             {
@@ -216,7 +213,7 @@ public partial class SpansTextBox : UserControl
         hScrollBar.Location = new Point(0, DisplayRectangle.Height - hScrollBar.Size.Height);
         vScrollBar.Location = new Point(DisplayRectangle.Width - vScrollBar.Size.Width, 0);
 
-        Form owner = FindForm();
+        var owner = FindForm();
         if (owner != null)
             owner.FormClosed += (s, ea) => Dispose();
 
@@ -229,15 +226,9 @@ public partial class SpansTextBox : UserControl
         Invalidate();
     }
 
-    private void SpansTextBox_Enter(object sender, EventArgs e)
-    {
-        CaretTimer.Start();
-    }
+    private void SpansTextBox_Enter(object sender, EventArgs e) => CaretTimer.Start();
 
-    private void SpansTextBox_Leave(object sender, EventArgs e)
-    {
-        CaretTimer.Stop();
-    }
+    private void SpansTextBox_Leave(object sender, EventArgs e) => CaretTimer.Stop();
 
     private int MouseLeftDown = -1;
 
@@ -256,7 +247,7 @@ public partial class SpansTextBox : UserControl
         int lastSelectionStart = SelectionStart, lastSelectionLength = SelectionLength;
         if (MouseLeftDown >= 0)
         {
-            int charIndex = GetCharIndexFromLocation(e.Location);
+            var charIndex = GetCharIndexFromLocation(e.Location);
             if (charIndex < MouseLeftDown)
             {
                 SelectionLength = MouseLeftDown - charIndex;
@@ -282,11 +273,11 @@ public partial class SpansTextBox : UserControl
 
     private void SetScrollPos()
     {
-        string text = Text;
+        var text = Text;
         float x = 0, y = 0;
-        using (Graphics g = CreateGraphics())
+        using (var g = CreateGraphics())
         {
-            for (int i = 0; i < SelectionStart; i++)
+            for (var i = 0; i < SelectionStart; i++)
             {
                 if (text[i] == '\n')
                 {
@@ -306,15 +297,9 @@ public partial class SpansTextBox : UserControl
             ScrollY = y;
     }
 
-    private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
-    {
-        ScrollY = e.NewValue;
-    }
+    private void vScrollBar_Scroll(object sender, ScrollEventArgs e) => ScrollY = e.NewValue;
 
-    private void hScrollBar_Scroll(object sender, ScrollEventArgs e)
-    {
-        ScrollX = e.NewValue;
-    }
+    private void hScrollBar_Scroll(object sender, ScrollEventArgs e) => ScrollX = e.NewValue;
 
     public float textWidth { get; private set; } = 0;
     public float textHeight { get; private set; } = 0;
@@ -333,22 +318,22 @@ public partial class SpansTextBox : UserControl
         // draw
         float spanX = 0, spanY = 0;
 
-        int charInd = 0;
-        bool drewCaret = false;
-        foreach (ScriptBoxSpan span in Spans)
+        var charInd = 0;
+        var drewCaret = false;
+        foreach (var span in Spans)
         {
             if (span.text.Length == 0)
                 continue;
 
-            int firstCharInd = charInd;
+            var firstCharInd = charInd;
             charInd += span.text.Length;
 
-            SizeF spanSize = e.Graphics.MeasureString(span.text, Font);
+            var spanSize = e.Graphics.MeasureString(span.text, Font);
 
-            string unselectedText = span.text;
+            var unselectedText = span.text;
             string selectedText = null;
             int spanSelectStart = -1, spanSelectLength = -1;
-            int SelectionEnd = SelectionStart + SelectionLength;
+            var SelectionEnd = SelectionStart + SelectionLength;
             if (SelectionLength > 0 && charInd >= SelectionStart && firstCharInd <= SelectionEnd)
             {
                 if (span.text.Length == 1)
@@ -371,7 +356,7 @@ public partial class SpansTextBox : UserControl
                 using (Pen spanColorPen = new Pen(span.color))
                 {
                     // draw the text that is before selection
-                    string beforeSelection = span.text.Substring(0, spanSelectStart);
+                    var beforeSelection = span.text.Substring(0, spanSelectStart);
                     SizeF beforeSelection_size = new SizeF(0, 0);
                     if (beforeSelection.Length > 0)
                     {
@@ -380,9 +365,9 @@ public partial class SpansTextBox : UserControl
                     }
 
                     // highlight selected text
-                    int space = spanSelectStart == 0 ? 0 : 4;
-                    SizeF selection_size = e.Graphics.MeasureString(selectedText, Font);
-                    float selectionX = TextLocation.X + spanX + beforeSelection_size.Width - space;
+                    var space = spanSelectStart == 0 ? 0 : 4;
+                    var selection_size = e.Graphics.MeasureString(selectedText, Font);
+                    var selectionX = TextLocation.X + spanX + beforeSelection_size.Width - space;
                     using (Pen selectionBackPen = new Pen(SelectionBackColor))
                         e.Graphics.FillRectangle(selectionBackPen.Brush, selectionX, TextLocation.Y + spanY, selection_size.Width, selection_size.Height);
 
@@ -391,11 +376,11 @@ public partial class SpansTextBox : UserControl
                         e.Graphics.DrawString(selectedText, Font, selectionTextPen.Brush, selectionX, TextLocation.Y + spanY);
 
                     // draw the text that is after selection
-                    string afterSelection = span.text.Substring(spanSelectStart + spanSelectLength);
-                    float afterSelectionX = TextLocation.X + spanX + beforeSelection_size.Width + selection_size.Width - 4;
+                    var afterSelection = span.text.Substring(spanSelectStart + spanSelectLength);
+                    var afterSelectionX = TextLocation.X + spanX + beforeSelection_size.Width + selection_size.Width - 4;
                     if (afterSelection.Length > 0)
                         e.Graphics.DrawString(afterSelection, Font, spanColorPen.Brush, afterSelectionX, TextLocation.Y + spanY);
-                    SizeF afterSelection_size = e.Graphics.MeasureString(afterSelection, Font);
+                    var afterSelection_size = e.Graphics.MeasureString(afterSelection, Font);
 
                     // set text width
                     if (afterSelection_size.Width + afterSelectionX > textWidth)
@@ -403,7 +388,7 @@ public partial class SpansTextBox : UserControl
 
                     // set text height
                     SizeF[] allTextSizes = { beforeSelection_size, selection_size, afterSelection_size };
-                    foreach (SizeF size in allTextSizes)
+                    foreach (var size in allTextSizes)
                     {
                         if (size.Height + spanY > textHeight)
                         {
@@ -460,8 +445,5 @@ public partial class SpansTextBox : UserControl
         vScrollBar.Maximum = (int)textHeight;
     }
 
-    public void Dispose()
-    {
-        CaretTimer.Tick -= CaretTimer_Tick;
-    }
+    public void Dispose() => CaretTimer.Tick -= CaretTimer_Tick;
 }

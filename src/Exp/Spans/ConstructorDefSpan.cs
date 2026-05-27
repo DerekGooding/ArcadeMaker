@@ -17,12 +17,12 @@ public class ConstructorDefSpan : FuncDefSpan, IKeyword, IExpItem
     {
         get
         {
-            string argsStr = "";
+            var argsStr = "";
             foreach (var a in Args)
                 argsStr += a.ToString() + " , ";
             if (Args.Length > 0)
                 argsStr = argsStr.Substring(0, argsStr.Length - 3);
-            string s = "";
+            var s = "";
             s = $"{Keyword} ({argsStr})\n{{\n\t{InnerSource.ToString(" ")}\n}}";
             return s;
         }

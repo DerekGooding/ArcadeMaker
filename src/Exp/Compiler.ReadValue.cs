@@ -12,7 +12,7 @@ public partial class Interpreter
 
     private object ReadValue(out Span[] src, Span firstSpan = null, bool allowUnknownVars = false, bool oconst = false)
     {
-        bool deleteRecord = readValue_codeRecord == null;
+        var deleteRecord = readValue_codeRecord == null;
         readValue_codeRecord ??= [];
 
         void ThrowOnlyConst()
@@ -25,7 +25,7 @@ public partial class Interpreter
         {
             wasval = false;
             object value = null;
-            Span span = firstSpan ?? ReadSpan();
+            var span = firstSpan ?? ReadSpan();
             firstSpan = null;
             if (span is null)
                 return null;
@@ -50,7 +50,7 @@ public partial class Interpreter
             {
                 ThrowOnlyConst();
 
-                object val = ReadValue();
+                var val = ReadValue();
                 if (val is Instance inststr && inststr.def == ClassDefSpan.ExpStringDef)
                     value = (inststr.Vars[0].Value as Instance).ArrayValues.Length;
                 else if (val is Instance inst && inst.IsArray)
@@ -66,7 +66,7 @@ public partial class Interpreter
             {
                 ThrowOnlyConst();
 
-                IValue[] vals = ReadParamList(true, true, false);
+                var vals = ReadParamList(true, true, false);
                 value = new Instance(ClassDefSpan.ExpArrayDef, vals);
             }
             else if (span is InstInitSpan init)
@@ -116,7 +116,7 @@ public partial class Interpreter
                     goto endif;
                 }
 
-                value = ReadNamedValueOrPointer(out bool isArrPntr, out int arrPntrInd, word, allowUnknownVars);
+                value = ReadNamedValueOrPointer(out var isArrPntr, out var arrPntrInd, word, allowUnknownVars);
                 if (value is Variable || (value is Instance && isArrPntr))
                 {
                     var pointer = value as Variable;
@@ -128,7 +128,7 @@ public partial class Interpreter
                     {
                         ReadSpan();
 
-                        object input = op.TwoSides ? ReadValue() : null;
+                        var input = op.TwoSides ? ReadValue() : null;
 
                         if (isArrPntr)
                         {
@@ -154,7 +154,7 @@ public partial class Interpreter
             {
                 ThrowOnlyConst();
 
-                value = ReadNamedValueOrPointer(out bool isArrPntr, out int arrPntrInd, null, allowUnknownVars);
+                value = ReadNamedValueOrPointer(out var isArrPntr, out var arrPntrInd, null, allowUnknownVars);
                 if (value is Variable || (value is Instance && isArrPntr))
                 {
                     if (op.TwoSides)
@@ -188,7 +188,7 @@ public partial class Interpreter
             {
                 ReadSpan();
 
-                bool not = false;
+                var not = false;
 
                 if (Spoiler().FullText.Equals("not"))
                 {
@@ -197,8 +197,8 @@ public partial class Interpreter
                 }
 
                 // type to check
-                WordSpan type = ReadWord();
-                string typeName = type.Text;
+                var type = ReadWord();
+                var typeName = type.Text;
                 DefNameSpan defName = null;
 
                 // throw if type not exist
@@ -265,7 +265,7 @@ public partial class Interpreter
                 int openers = 1, closers = 0;
                 while (true)
                 {
-                    Span span = ReadSpan();
+                    var span = ReadSpan();
 
                     if (span == null)
                         Error("Missing ')'.");
@@ -282,12 +282,12 @@ public partial class Interpreter
 
                 var rec_bu = readValue_codeRecord;
                 readValue_codeRecord = null;
-                object subRes = Run<object>(sub.ToArray(), allowUnknownVars: allowUnknownVars, oconst: oconst);
+                var subRes = Run<object>(sub.ToArray(), allowUnknownVars: allowUnknownVars, oconst: oconst);
                 readValue_codeRecord = rec_bu;
                 val = subRes;
             }
 
-            Span spoiler = Spoiler();
+            var spoiler = Spoiler();
             if (spoiler is OperatorSpan)
             {
                 allowThrow = spoiler is NullCoalescingOperatorSpan;
@@ -308,7 +308,7 @@ public partial class Interpreter
             Error($"A value was expected.");
 
         // calculate math-first operations
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
             if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuleOperatorSpan)
             {
@@ -320,7 +320,7 @@ public partial class Interpreter
         }
 
         // calculate math-late operations
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
             if (ops[i] is PlusOperatorSpan or MinusOperatorSpan)
             {
@@ -332,9 +332,9 @@ public partial class Interpreter
         }
 
         // calculate all the rest, except for & and |
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
-            if (ops[i] is not AndOperatorSpan && ops[i] is not OrOperatorSpan)
+            if (ops[i] is not AndOperatorSpan and not OrOperatorSpan)
             {
                 nums[i] = MakeOperation(nums[i], ops[i], nums[i + 1]);
                 nums.RemoveAt(i + 1);
@@ -345,7 +345,7 @@ public partial class Interpreter
 
         // calculate the final result
         val = nums[0];
-        for (int i = 1; i < nums.Count; i++)
+        for (var i = 1; i < nums.Count; i++)
         {
             val = MakeOperation(val, ops[i - 1], nums[i]);
         }
@@ -376,12 +376,12 @@ public partial class Interpreter
             ReadSpan();
 
             allowThrow = true;
-            object tval = ReadValue(allowUnknownVars: allowUnknownVars);
+            var tval = ReadValue(allowUnknownVars: allowUnknownVars);
             if (tval is ThrowWordSpan) ReadThrowStmt(readThrowKeyword: false, neutral: allowUnknownVars, thr: !allowUnknownVars && (bool)val);
 
             ReadWord(":");
 
-            object fval = ReadValue(allowUnknownVars: allowUnknownVars);
+            var fval = ReadValue(allowUnknownVars: allowUnknownVars);
             if (fval is ThrowWordSpan) ReadThrowStmt(readThrowKeyword: false, neutral: allowUnknownVars, thr: !allowUnknownVars && !(bool)val);
             allowThrow = false;
 
@@ -401,19 +401,13 @@ public partial class Interpreter
         return val;
     }
 
-    private object ReadValue(bool allowUnknownVars = false)
-    {
-        return ReadValue(out var _, null, allowUnknownVars);
-    }
+    private object ReadValue(bool allowUnknownVars = false) => ReadValue(out var _, null, allowUnknownVars);
 
-    private T? ReadValue<T>(bool allowUnknownVars = false, bool oconst = false)
-    {
-        return ReadValue<T>(out var _, allowUnknownVars: allowUnknownVars, oconst: oconst);
-    }
+    private T? ReadValue<T>(bool allowUnknownVars = false, bool oconst = false) => ReadValue<T>(out var _, allowUnknownVars: allowUnknownVars, oconst: oconst);
 
     private T? ReadValue<T>(out Span[] src, bool allowUnknownVars = false, bool oconst = false)
     {
-        object v = ReadValue(out src, null, allowUnknownVars: allowUnknownVars, oconst: oconst);
+        var v = ReadValue(out src, null, allowUnknownVars: allowUnknownVars, oconst: oconst);
 
         if (allowUnknownVars)
             return default;
@@ -429,8 +423,8 @@ public partial class Interpreter
     private object ReadInstInitSpan(InstInitSpan init)
     {
         // get the class span
-        ClassDefSpan cls = init.DefName.Class;
-        ExternClassDefSpan ext = init.DefName.Extern;
+        var cls = init.DefName.Class;
+        var ext = init.DefName.Extern;
         if (cls == null && ext == null)
             Error($"Class name was expected, but {(init.DefName as IExpItem).GetItemName()} received.");
 
@@ -455,7 +449,7 @@ public partial class Interpreter
 
             // built in classes:
             // array
-            bool isArr = cls.Name.Equals("Array");
+            var isArr = cls.Name.Equals("Array");
             IValue[] arr = null;
             if (isArr)
             {
@@ -467,7 +461,7 @@ public partial class Interpreter
 
             // create instance and call constructor
             Instance value = new Instance(cls, arr);
-            FuncCall(value, func.Name, currentContext, out bool _, cls.Funcs, param);
+            FuncCall(value, func.Name, currentContext, out var _, cls.Funcs, param);
             return value;
         }
         else
@@ -492,7 +486,7 @@ public partial class Interpreter
         {
             var span = firstTime ? (firstSpan ?? ReadWord()) : ReadWord();
 
-            string word = span.FullText;
+            var word = span.FullText;
 
             // namespace specification
             if (!nsSpec && Spoiler() is NamespaceSpecificationSpan)
@@ -504,11 +498,11 @@ public partial class Interpreter
                 continue;
             }
 
-            IVarSystem vs = (IVarSystem)inst ?? (IVarSystem)clas;
+            var vs = (IVarSystem)inst ?? (IVarSystem)clas;
             vs ??= currentContext;
 
             // if it's a func, call it
-            bool isFunc = false;
+            var isFunc = false;
             if (!allowUnknownVars)
             {
                 if (inst?.def == ClassDefSpan.ExternTypeValueDef && Spoiler() is OpeningBracketSpan)
@@ -593,7 +587,7 @@ public partial class Interpreter
             CheckArrayIndex(val is Variable pntr ? pntr.Value : val, out isArrPointer, out arrPointerIndex, allowUnknownVars);
 
             // maybe it's an instance and it is followed by a dot
-            Span spoiler = Spoiler();
+            var spoiler = Spoiler();
 
             // if spoiler is '.', relate it as an instance
             if (spoiler is DotSpan dot || (spoiler is QuestionMarkSpan && Spoiler(1) is DotSpan))
@@ -633,7 +627,7 @@ public partial class Interpreter
             }
             else if (val == null && !isFunc && !allowUnknownVars && ext == null)
             {
-                string beforeDot = inst == null ? (clas == null ? "" : (clas.Name + '.')) : (inst.def.Name + '.');
+                var beforeDot = inst == null ? (clas == null ? "" : (clas.Name + '.')) : (inst.def.Name + '.');
                 Error($"Unknown item '{beforeDot}{word}'.");
             }
 
@@ -655,7 +649,7 @@ public partial class Interpreter
         ArgumentNullException.ThrowIfNull(s, nameof(s));
 
         var carr = new CharValue[s.Length];
-        for (int c = 0; c < s.Length; c++)
+        for (var c = 0; c < s.Length; c++)
             carr[c] = s[c];
         var expCarr = new Instance(ClassDefSpan.ExpArrayDef, carr);
         var exp = new Instance(ClassDefSpan.ExpStringDef);
@@ -666,7 +660,7 @@ public partial class Interpreter
     internal static string ExpStringToString(Instance exp)
     {
         var oarr = (exp.Vars[0].Value as Instance).ArrayValues;
-        string s = "";
+        var s = "";
         foreach (var c in oarr)
             s += c.Char;
         return s;
@@ -677,10 +671,7 @@ public partial class Interpreter
     /// </summary>
     /// <param name="vs"></param>
     /// <returns></returns>
-    private IEnumerable<FuncDefSpan> GetFuncLs(IVarSystem vs)
-    {
-        throw new NotImplementedException();
-        /*
+    private IEnumerable<FuncDefSpan> GetFuncLs(IVarSystem vs) => throw new NotImplementedException();/*
         var ls = UsedFuncs(span);
         var func = FindParentContext<FuncDefSpan>(span);
         if (func?.DefinedAt == null)
@@ -688,7 +679,6 @@ public partial class Interpreter
         foreach (var f in func.DefinedAt.Funcs)
             ls = ls.Append(f);
         return ls;*/
-    }
 
     private object CheckArrayIndex(object value, out bool isArrInd, out int index, bool allowUnknownVars = false)
     {

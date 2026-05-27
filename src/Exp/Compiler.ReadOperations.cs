@@ -10,7 +10,7 @@ public partial class Interpreter
 
     internal IOperation[] ReadOperations(Span[] spans, IVarSystem vs, out Span[] src, bool @throw = false, bool breakAfter1 = false)
     {
-        bool deleteRecord = readOps_codeRecord == null;
+        var deleteRecord = readOps_codeRecord == null;
         readOps_codeRecord ??= [];
 
         IOperation prevOperation = null;
@@ -115,7 +115,7 @@ public partial class Interpreter
                 {
                     // find the func
                     FuncDefSpan func = null;
-                    Span span = word.Container;
+                    var span = word.Container;
                     while (true)
                     {
                         if (span is FuncDefSpan fn)
@@ -139,8 +139,8 @@ public partial class Interpreter
                     CatchStatement catc = null;
                     FinallyStatement finaly = null;
 
-                    CatchWordSpan cw = trw.Catch;
-                    FinallyWordSpan fw = trw.Finally;
+                    var cw = trw.Catch;
+                    var fw = trw.Finally;
 
                     if (cw?.VarName != null)
                         cw.Vars.Add(new Variable(cw.VarName, null, null));
@@ -169,7 +169,7 @@ public partial class Interpreter
                     Dictionary<string, IReadingOperation> decs = [];
                     while (true)
                     {
-                        string name = ReadWord().Text;
+                        var name = ReadWord().Text;
                         ValidateLocalNameLegallity(name, vs);
                         var next = Spoiler();
                         IReadingOperation val = null;
@@ -221,7 +221,7 @@ public partial class Interpreter
                 else
                 {
                     // first word is a named item, so it'll be an assignment or function call
-                    var pointingOrFuncCall = ReadPointingOrFuncCall(out bool isCall, isOp: true, word);
+                    var pointingOrFuncCall = ReadPointingOrFuncCall(out var isCall, isOp: true, word);
 
                     if (pointingOrFuncCall == null) // error was occoured and is already logged
                         operation = Operation.Error;

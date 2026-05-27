@@ -10,7 +10,7 @@ public interface IVarSystem
 
     internal void RestoreValues(IEnumerable<IValue> values)
     {
-        int i = 0;
+        var i = 0;
         foreach (var val in values)
             Vars[i++].SetSkippingConstant(val);
     }

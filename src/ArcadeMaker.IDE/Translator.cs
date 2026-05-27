@@ -26,12 +26,12 @@ public static class Translator
 
     public static TranslatorItem[] TranslateItems(string src)
     {
-        List<TranslatorItem> items = new List<TranslatorItem>();
+        List<TranslatorItem> items = [];
 
-        int pos = 0;
+        var pos = 0;
         Func<string> NextWord = new Func<string>(() =>
         {
-            string word = "";
+            var word = "";
             while (pos < src.Length && src[pos] == ' ')
                 pos++;
             while (pos < src.Length && src[pos] != ' ')
@@ -42,16 +42,16 @@ public static class Translator
             return word;
         });
 
-        bool inContext = false;
+        var inContext = false;
         Type contextType = null;
-        bool contextStatic = false;
-        bool contextConst = false;
+        var contextStatic = false;
+        var contextConst = false;
         string contextHolds = null;
-        AccessModifier contextModifier = AccessModifier.None;
+        var contextModifier = AccessModifier.None;
         string contextName = null;
         string contextReturnType;
         int contextOpenBrackets = 0, contextCloseBrackets = 0;
-        string contextSrc = "";
+        var contextSrc = "";
 
         while (pos < src.Length)
         {
@@ -82,7 +82,7 @@ public static class Translator
                 }
                 else if (src[pos] == '\"')
                 {
-                    bool esc = false;
+                    var esc = false;
                     pos++;
                     while (pos < src.Length && src[pos] != '\"' && !esc)
                     {
@@ -99,7 +99,7 @@ public static class Translator
 
             if (inContext)
             {
-                char c = src[pos];
+                var c = src[pos];
                 if (c == '{')
                     contextOpenBrackets++;
                 else if (c == '}')
@@ -112,9 +112,9 @@ public static class Translator
                         if (contextType == typeof(Namespace))
                         {
                             var nitems = TranslateItems(contextSrc);
-                            foreach (TranslatorItem nitem in nitems)
+                            foreach (var nitem in nitems)
                             {
-                                if (!(nitem is NamespaceItem))
+                                if (nitem is not NamespaceItem)
                                     throw new Exception("Illegal item in namespace\n\nItem: " + nitem);
                             }
                             item = new Namespace(contextName, nitems as NamespaceItem[]);
@@ -122,9 +122,9 @@ public static class Translator
                         else if (contextType == typeof(Class))
                         {
                             var citem = TranslateItems(contextSrc);
-                            foreach (TranslatorItem nitem in citem)
+                            foreach (var nitem in citem)
                             {
-                                if (!(nitem is NamespaceItem))
+                                if (nitem is not NamespaceItem)
                                     throw new Exception("Illegal item in namespace\n\nItem: " + nitem);
                             }
                             item = new Class(contextName, contextModifier, citem as ClassItem[], contextStatic);
@@ -212,7 +212,7 @@ public static class Translator
                 else if (src[pos] == '(' && contextType == typeof(ClassItem))
                 {
                     contextType = typeof(Method);
-                    MethodArgument[] args = ReadMethodArguments(src, pos, out pos);
+                    var args = ReadMethodArguments(src, pos, out pos);
                 }
                 else if (src[pos] == '{' && contextType == typeof(ClassItem))
                 {
@@ -237,14 +237,14 @@ public static class Translator
     private static MethodArgument[] ReadMethodArguments(string src, int pos, out int cnt)
     {
         cnt = pos;
-        List<MethodArgument> args = new List<MethodArgument>();
+        List<MethodArgument> args = [];
         string argName = null, argType = null, argDefVal = null;
 
-        string word = "";
+        var word = "";
 
         while (src.Contains("//"))
         {
-            int sind = src.IndexOf("//");
+            var sind = src.IndexOf("//");
             if (src.IndexOf('\n', sind) > 0)
                 src = src.Remove(sind, src.IndexOf('\n') - sind);
             else
@@ -252,7 +252,7 @@ public static class Translator
         }
         while (src.Contains("/*"))
         {
-            int sind = src.IndexOf("/*");
+            var sind = src.IndexOf("/*");
             if (src.IndexOf("*/", sind) > 0)
                 src = src.Remove(sind, src.IndexOf("*/") - sind);
             else
@@ -271,7 +271,7 @@ public static class Translator
                 {
                     argDefVal = word;
                 }
-                if (word == "out" || word == "ref" || word == "param")
+                if (word is "out" or "ref" or "param")
                     continue;
                 else if (argType == null)
                     argType = word;
@@ -292,13 +292,13 @@ public static class Translator
 
 public class TranslatorItem
 {
-    public string Name { get; private set; }
-    public AccessModifier AccessModifier { get; private set; }
+    public string Name { get; }
+    public AccessModifier AccessModifier { get; }
 
     public TranslatorItem(string name, AccessModifier accessModifier)
     {
-        if (!name.IsLegallName())
-            throw new ArgumentException("Illegal item name", "name");
+        if (!name.IsLegalName())
+            throw new ArgumentException("Illegal item name", nameof(name));
         Name = name;
         AccessModifier = accessModifier;
     }
@@ -306,12 +306,11 @@ public class TranslatorItem
 
 public class Namespace : TranslatorItem
 {
-    public List<NamespaceItem> Items { get; private set; }
+    public List<NamespaceItem> Items { get; }
 
     public Namespace(string name, NamespaceItem[] items) : base(name, AccessModifier.None)
     {
-        if (items == null)
-            throw new ArgumentNullException("items");
+        ArgumentNullException.ThrowIfNull(items);
         Items = items.ToList();
     }
 }
@@ -320,22 +319,21 @@ public class NamespaceItem : TranslatorItem
 {
     public NamespaceItem(string name, AccessModifier accessModifier) : base(name, accessModifier)
     {
-        if (accessModifier == AccessModifier.Private || accessModifier == AccessModifier.Protected || accessModifier == AccessModifier.ProtectedInternal)
+        if (accessModifier is AccessModifier.Private or AccessModifier.Protected or AccessModifier.ProtectedInternal)
         {
-            throw new ArgumentException("Illegal class modifier", "accessModifier");
+            throw new ArgumentException("Illegal class modifier", nameof(accessModifier));
         }
     }
 }
 
 public class Class : TranslatorItem
 {
-    public List<ClassItem> Items { get; private set; }
-    public bool IsStatic { get; private set; }
+    public List<ClassItem> Items { get; }
+    public bool IsStatic { get; }
 
     public Class(string name, AccessModifier accessModifier, ClassItem[] items, bool isStatic = false) : base(name, accessModifier)
     {
-        if (items == null)
-            throw new ArgumentNullException("items");
+        ArgumentNullException.ThrowIfNull(items);
         Items = items.ToList();
         IsStatic = isStatic;
     }
@@ -343,55 +341,48 @@ public class Class : TranslatorItem
 
 public class ClassItem : TranslatorItem
 {
-    public string Type { get; private set; }
-    public bool IsStatic { get; private set; }
+    public string Type { get; }
+    public bool IsStatic { get; }
 
     public ClassItem(string name, AccessModifier accessModifier, string type, bool isStatic = false) : base(name, accessModifier)
     {
-        if (!Actions.IsLegallName(type))
-            throw new ArgumentException("Ilegall type for method or property", "type");
+        if (!type.IsLegalName())
+            throw new ArgumentException("Illegal type for method or property", nameof(type));
         Type = type;
         IsStatic = isStatic;
     }
 }
 
-public class Property : ClassItem
+public class Property(string name, AccessModifier accessModifier, string type, AccessModifier get = AccessModifier.Public, AccessModifier set = AccessModifier.Public) : ClassItem(name, accessModifier, type)
 {
-    public AccessModifier Get { get; set; }
-    public AccessModifier Set { get; private set; }
-
-    public Property(string name, AccessModifier accessModifier, string type, AccessModifier get = AccessModifier.Public, AccessModifier set = AccessModifier.Public) : base(name, accessModifier, type)
-    {
-        Get = get;
-        Set = set;
-    }
+    public AccessModifier Get { get; set; } = get;
+    public AccessModifier Set { get; } = set;
 }
 
 public class Method : ClassItem
 {
-    public List<MethodArgument> Arguments { get; private set; }
+    public List<MethodArgument> Arguments { get; }
 
     public Method(string name, AccessModifier accessModifier, string returnType, MethodArgument[] arguments) : base(name, accessModifier, returnType)
     {
-        if (arguments == null)
-            throw new ArgumentNullException("arguments");
+        ArgumentNullException.ThrowIfNull(arguments);
         Arguments = arguments.ToList();
     }
 }
 
 public class MethodArgument
 {
-    public string Name { get; private set; }
-    public string Type { get; private set; }
+    public string Name { get; }
+    public string Type { get; }
 
-    public bool HasDefaultValue { get; private set; }
+    public bool HasDefaultValue { get; }
 
     public MethodArgument(string name, string type, bool hasDefaultValue = false)
     {
-        if (!name.IsLegallName())
-            throw new ArgumentException("Ilegall name for argument", "name");
-        if (!type.IsLegallName())
-            throw new ArgumentException("Ilegall name for type", "type");
+        if (!name.IsLegalName())
+            throw new ArgumentException("Illegal name for argument", nameof(name));
+        if (!type.IsLegalName())
+            throw new ArgumentException("Illegal name for type", nameof(type));
         Name = name;
         Type = type;
         HasDefaultValue = hasDefaultValue;
@@ -412,7 +403,7 @@ public enum AccessModifier
 
 internal static class Actions
 {
-    public static bool IsLegallName(this string name)
+    public static bool IsLegalName(this string name)
     {
         if (name == null)
             return false;

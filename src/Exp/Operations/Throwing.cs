@@ -4,10 +4,7 @@ namespace Exp.Operations;
 
 internal class Throwing(IReadingOperation exread) : IOperation, IReadingOperation
 {
-    public void Make()
-    {
-        Read();
-    }
+    public void Make() => Read();
 
     public IValue Read()
     {

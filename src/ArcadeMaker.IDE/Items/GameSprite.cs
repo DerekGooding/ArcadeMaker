@@ -8,26 +8,26 @@ public class GameSprite : GameItem
     /* do not change property name!!! */
     public static Bitmap icon { get; } = Properties.Resources.sprite;
 
-    public readonly HandlerList<Bitmap> images = new HandlerList<Bitmap>();
+    public readonly HandlerList<Bitmap> images = [];
 
     public void Import(string[] pathes)
     {
         images.Clear();
-        foreach (string path in pathes)
+        foreach (var path in pathes)
         {
             Bitmap spriteSheet;
             using (Stream reader = new FileStream(path, FileMode.Open, FileAccess.Read))
                 spriteSheet = (Bitmap)Bitmap.FromStream(reader);
 
-            if (Global.ImageFileIsSpriteStrip(path, out int count))
+            if (Global.ImageFileIsSpriteStrip(path, out var count))
             {
-                int width = spriteSheet.Width / count;
-                bool dispose = true;
+                var width = spriteSheet.Width / count;
+                var dispose = true;
                 try
                 {
-                    int frameCount = spriteSheet.Width / width; // Assuming frames are stacked horizontally
+                    var frameCount = spriteSheet.Width / width; // Assuming frames are stacked horizontally
 
-                    for (int i = 0; i < frameCount; i++)
+                    for (var i = 0; i < frameCount; i++)
                     {
                         Rectangle frameRect = new Rectangle(i * width, 0, width, spriteSheet.Height);
                         images.Add(spriteSheet.Clone(frameRect, PixelFormat.Format32bppArgb));
@@ -35,7 +35,7 @@ public class GameSprite : GameItem
                 }
                 catch (Exception ex)
                 {
-                    string err = "Could not load sprite strip.\n";
+                    var err = "Could not load sprite strip.\n";
 #if DEBUG
                     err += "\n[Debug Mode]\n" + ex + "\n\n";
 #endif
@@ -66,21 +66,7 @@ public class GameSprite : GameItem
 
     public int originX = 0, originY = 0;
 
-    public Bitmap image
-    {
-        get
-        {
-            return images.FirstOrDefault();
-        }
-        /*
-        set
-        {
-            Image = value;
-            var handler = ImageChanged;
-            handler?.Invoke(this, value);
-        }
-        */
-    }
+    public Bitmap image => images.FirstOrDefault();
 
     public bool preciseMask = false, separateMask = false;
     public int maskTop, maskRight, maskLeft, maskBottom; // relevant on manual mode only
@@ -98,10 +84,8 @@ public class GameSprite : GameItem
             }
             return base.Editor as SpriteEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public GameSprite(string name) : base(name)
@@ -118,8 +102,8 @@ public class GameSprite : GameItem
             {
                 if (images.Count > 0 && images[0] != null)
                 {
-                    int w = Global.form1.treeImages.ImageSize.Width;
-                    int h = Global.form1.treeImages.ImageSize.Height;
+                    var w = Global.form1.treeImages.ImageSize.Width;
+                    var h = Global.form1.treeImages.ImageSize.Height;
                     Global.form1.treeImages.Images[treeImageIndex] = images[0].ResizeImage(w, h);
                 }
                 else
@@ -138,10 +122,7 @@ public class HandlerList<T> : List<T>
 
     public new T this[int index]
     {
-        get
-        {
-            return base[index];
-        }
+        get => base[index];
         set
         {
             base[index] = value;

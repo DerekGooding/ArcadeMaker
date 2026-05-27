@@ -30,7 +30,7 @@ internal class LocalizationManager
     public static List<CultureInfo> GetSupportedCultures()
     {
         // Create a list to hold supported cultures
-        List<CultureInfo> supportedCultures = new List<CultureInfo>();
+        List<CultureInfo> supportedCultures = [];
 
         // Get the current assembly
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -39,9 +39,9 @@ internal class LocalizationManager
         ResourceManager resourceManager = new ResourceManager("ArcadeMaker.Engines.MonoGame.Core.Localization.Resources", assembly);
 
         // Get all cultures defined in the satellite assemblies
-        CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
+        var cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
 
-        foreach (CultureInfo culture in cultures)
+        foreach (var culture in cultures)
         {
             try
             {

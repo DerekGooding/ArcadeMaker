@@ -28,7 +28,7 @@ internal class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
     {
         get
         {
-            string s = $"{Keyword} ";
+            var s = $"{Keyword} ";
             if (VarName != null)
                 s += VarName;
             if (When != null)

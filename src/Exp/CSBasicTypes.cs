@@ -29,7 +29,7 @@ public static class CSBasicTypes
 
                 int DepthOf(Type type)
                 {
-                    int d = 0;
+                    var d = 0;
                     while (type != typeof(object))
                     {
                         d++;
@@ -38,8 +38,8 @@ public static class CSBasicTypes
                     return d;
                 }
 
-                Type t = item.GetType();
-                int d = DepthOf(t);
+                var t = item.GetType();
+                var d = DepthOf(t);
                 if (d < hdepth || hdepth < 0)
                 {
                     highest = t;

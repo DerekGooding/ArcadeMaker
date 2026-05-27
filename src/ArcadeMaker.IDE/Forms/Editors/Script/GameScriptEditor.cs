@@ -59,10 +59,7 @@ public partial class GameScriptEditor : Form
     {
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 
     private void GameScriptEditor_FormClosed(object sender, FormClosedEventArgs e)
     {

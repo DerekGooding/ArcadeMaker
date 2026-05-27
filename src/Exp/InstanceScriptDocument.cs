@@ -34,7 +34,7 @@ public class InstanceScriptDocument(string name, ClassDefSpan def, string script
         }
 
         compiler.RunOpsRunning = true;
-        compiler.FuncCall(inst, Runner!, null, out bool _, args);
+        compiler.FuncCall(inst, Runner!, null, out var _, args);
         compiler.RunOpsRunning = false;
     }
 }

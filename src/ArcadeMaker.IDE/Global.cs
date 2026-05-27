@@ -23,14 +23,14 @@ public static class Global
             return false;
         if (!allowEmpty && text == "")
             return false;
-        foreach (char c in text)
+        foreach (var c in text)
         {
-            if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9'))
+            if (c is (< 'a' or > 'z') and (< 'A' or > 'Z') and (< '0' or > '9'))
             {
-                bool skip = false;
+                var skip = false;
                 if (specials != null)
                 {
-                    foreach (char sp in specials)
+                    foreach (var sp in specials)
                     {
                         if (c == sp)
                             skip = true;
@@ -79,11 +79,11 @@ public static class Global
     {
         if (name.IsEnglishLettersAndNumbers(new char[] { '_' }, false) && !Exp.Spans.Filter.Keywords.Contains(name))
         {
-            if (name[0] > '9' || name[0] < '0')
+            if (name[0] is > '9' or < '0')
             {
                 if (Environment.project != null)
                 {
-                    foreach (GameItem item in Environment.project.items)
+                    foreach (var item in Environment.project.items)
                     {
                         if (item.name == name && item.name != current)
                             return false;
@@ -98,7 +98,7 @@ public static class Global
     public static string GenerateRandomGameItemName(string type = "Item")
     {
         string name = null;
-        int testNum = 0;
+        var testNum = 0;
 
         do
         {
@@ -141,32 +141,15 @@ public static class Global
 
     private static string part2script = null;
 
-    public static string ObjectPart2Script
-    {
-        get
-        {
-            throw new NotImplementedException();
-            //                if (part2script == null)
-            //                {
-            //#if DEBUG
-            //                    TextReader tr = new StreamReader(@"C:\Users\איתן\Desktop\GameStudio\res\GameObjectUserPart.cs");
-            //                    part2script = tr.ReadToEnd();
-            //                    tr.Close();
-            //#else
-            //                    part2script = Properties.Resources.GameObjectUserPart;
-            //#endif
-            //                }
-            //                return part2script;
-        }
-    }
+    public static string ObjectPart2Script => throw new NotImplementedException();//                if (part2script == null)//                {//#if DEBUG//                    TextReader tr = new StreamReader(@"C:\Users\איתן\Desktop\GameStudio\res\GameObjectUserPart.cs");//                    part2script = tr.ReadToEnd();//                    tr.Close();//#else//                    part2script = Properties.Resources.GameObjectUserPart;//#endif//                }//                return part2script;
 
     public static int GetLineColPosition(this string input, int lineNum, int colNum)
     {
-        int currentLine = 0;
-        int currentCol = 0;
-        int position = 0;
+        var currentLine = 0;
+        var currentCol = 0;
+        var position = 0;
 
-        foreach (char c in input)
+        foreach (var c in input)
         {
             if (currentLine == lineNum && currentCol == colNum)
             {
@@ -189,16 +172,11 @@ public static class Global
         return -1;
     }
 
-    public static decimal Map(this decimal value, decimal fromSource, decimal toSource, decimal fromTarget, decimal toTarget)
-    {
-        return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
-    }
+    public static decimal Map(this decimal value, decimal fromSource, decimal toSource, decimal fromTarget, decimal toTarget) => (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
 
-    public static int MapGPT(int value, int fromLow, int fromHigh, int toLow, int toHigh)
-    {
+    public static int MapGPT(int value, int fromLow, int fromHigh, int toLow, int toHigh) =>
         //return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
-        return MapBing(value, fromLow, fromHigh, toLow, toHigh);
-    }
+        MapBing(value, fromLow, fromHigh, toLow, toHigh);
 
     public static int MapBing(int value, int fromLow, int fromHigh, int toLow, int toHigh)
     {
@@ -230,7 +208,7 @@ public static class Global
         }
         catch (Exception ex)
         {
-            string err = $"Failed to load image from file path \"{path}\".";
+            var err = $"Failed to load image from file path \"{path}\".";
             if (!ShowDebugMessage(err + "\n\n" + ex))
                 MessageBox.Show(err, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -240,12 +218,12 @@ public static class Global
     public static double GetDifference(this Color color1, Color color2)
     {
         // Calculate the difference between the red, green, and blue values
-        int diffR = Math.Abs(color1.R - color2.R);
-        int diffG = Math.Abs(color1.G - color2.G);
-        int diffB = Math.Abs(color1.B - color2.B);
+        var diffR = Math.Abs(color1.R - color2.R);
+        var diffG = Math.Abs(color1.G - color2.G);
+        var diffB = Math.Abs(color1.B - color2.B);
 
         // Calculate the total difference as the average of the differences in each channel
-        double totalDiff = (diffR + diffG + diffB) / 3.0;
+        var totalDiff = (diffR + diffG + diffB) / 3.0;
 
         // Return the total difference
         return totalDiff;
@@ -260,10 +238,10 @@ public static class Global
             endIndex = src.Length - 1;
         if (startIndex < 0 || startIndex >= src.Length || endIndex < startIndex || endIndex >= src.Length)
             throw new IndexOutOfRangeException("start or end index is out of range");
-        int count = 0;
-        for (int i = startIndex; i <= endIndex; i++)
+        var count = 0;
+        for (var i = startIndex; i <= endIndex; i++)
         {
-            char cc = src[i];
+            var cc = src[i];
             if (ignoreCase ? cc.EqualsIgnoreCase(c) : cc == c)
                 count++;
         }
@@ -272,7 +250,7 @@ public static class Global
 
     public static string FileName(this string path)
     {
-        int index = path.LastIndexOf('\\');
+        var index = path.LastIndexOf('\\');
         if (index >= 0 && index < path.Length - 1)
         {
             return path.Substring(index + 1);
@@ -285,7 +263,7 @@ public static class Global
 
     public static string FileNameWithoutExtension(this string path)
     {
-        string fn = path.FileName();
+        var fn = path.FileName();
         if (fn.Contains('.'))
             fn = fn.Substring(0, fn.LastIndexOf('.'));
         return fn;
@@ -293,7 +271,7 @@ public static class Global
 
     public static string FileLocation(this string path)
     {
-        int index = path.LastIndexOf('\\');
+        var index = path.LastIndexOf('\\');
         if (index >= 0)
         {
             return path.Substring(0, index);
@@ -355,16 +333,16 @@ public static class Global
         count = 0;
         try
         {
-            string name = path.FileNameWithoutExtension();
-            string widthStr = "";
+            var name = path.FileNameWithoutExtension();
+            var widthStr = "";
 
-            int readInd = 0;
+            var readInd = 0;
             char c;
             do
             {
-                int where = name.Length - readInd++ - 1;
+                var where = name.Length - readInd++ - 1;
                 c = name[where];
-                if (c >= '0' && c <= '9')
+                if (c is >= '0' and <= '9')
                 {
                     widthStr = c + widthStr;
                 }
@@ -410,19 +388,19 @@ public static class Global
 
     public static ScriptBoxSpan[] GetScriptBoxSpans(string text, string replaceTabSpaceWith = null, bool splitMultiCommentsLines = false)
     {
-        List<ScriptBoxSpan> spans = new List<ScriptBoxSpan>();
+        List<ScriptBoxSpan> spans = [];
 
         ScriptBoxSpan span = new ScriptBoxSpan();
-        string spanText = "";
-        int length = text.Length;
-        bool first = false;
-        int ignore = 0; // 0: do not ignore; 1: ignore next; 2: ignore this
+        var spanText = "";
+        var length = text.Length;
+        var first = false;
+        var ignore = 0; // 0: do not ignore; 1: ignore next; 2: ignore this
 
         // run over each char in the text
-        int insideFormattedStringLength = 0;
-        for (int i = 0; i < text.Length; i++)
+        var insideFormattedStringLength = 0;
+        for (var i = 0; i < text.Length; i++)
         {
-            char c = text[i];
+            var c = text[i];
             if (c == '\t' && replaceTabSpaceWith != null)
             {
                 text = text.Remove(i, 1).Insert(i, replaceTabSpaceWith);
@@ -430,12 +408,12 @@ public static class Global
                 i--;
                 continue;
             }
-            bool nextSpan = false;
-            bool nextSpanInsideFormattedString = span.insideFormattedString;
+            var nextSpan = false;
+            var nextSpanInsideFormattedString = span.insideFormattedString;
             if (span.insideFormattedString)
                 insideFormattedStringLength++;
 
-            bool isSep = false;
+            var isSep = false;
 
             if (ignore < 2 && spanText.Length == 0)
             {
@@ -500,7 +478,7 @@ public static class Global
                         case '/':
                             if (i < length - 1)
                             {
-                                char nextChar = text[i + 1];
+                                var nextChar = text[i + 1];
                                 if (nextChar == '/')
                                 {
                                     span.type = SpanType.Comment;
@@ -515,7 +493,7 @@ public static class Global
                             break;
 
                         default:
-                            bool minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
+                            var minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
                             if ((c >= '0' && c <= '9') || minusNumber)
                             {
                                 span.type = SpanType.Number;
@@ -535,11 +513,11 @@ public static class Global
 
             if (ignore < 2 && (span.type == SpanType.FormattedString || !first))
             {
-                // check if current char is a seperator
+                // check if current char is a separator
                 switch (span.type)
                 {
                     case SpanType.Space:
-                        isSep = c != ' ' && c != '\n';
+                        isSep = c is not ' ' and not '\n';
                         if (isSep)
                             nextSpan = true;
                         break;
@@ -556,7 +534,7 @@ public static class Global
                         break;
 
                     case SpanType.Number:
-                        bool isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
+                        var isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
                         if (isHex)
                             isSep = (c < '0' || c > '9') && !(spanText.Length == 2 && (c == 'x' || c == 'X')) && (c < 'a' || c > 'f') && (c < 'A' || c > 'F');
                         else
@@ -569,10 +547,10 @@ public static class Global
                                        || (!spanText.Contains('.') && (c == 'u' || c == 'U' || c == 'L' || c == 'l')));
 
                             // take care of case of UL suffix
-                            char lastChar = spanText[spanText.Length - 2];
-                            bool lastCharIsNum = lastChar >= '0' && lastChar <= '9';
-                            char nextChar = i + 1 < text.Length ? text[i + 1] : (char)0;
-                            bool uSuffix = c == 'U' || c == 'u', lSuffix = c == 'L' || c == 'l';
+                            var lastChar = spanText[spanText.Length - 2];
+                            var lastCharIsNum = lastChar is >= '0' and <= '9';
+                            var nextChar = i + 1 < text.Length ? text[i + 1] : (char)0;
+                            bool uSuffix = c is 'U' or 'u', lSuffix = c is 'L' or 'l';
                             if (!nextSpan && (uSuffix || lSuffix) && lastCharIsNum && nextChar.EqualsIgnoreCase(uSuffix ? 'L' : 'U'))
                             {
                                 isSep = false;
@@ -602,11 +580,11 @@ public static class Global
                             isSep = true;
                             break;
                         }
-                        if (c == ((span.type == SpanType.String || span.type == SpanType.FormattedString) ? '\"' : '\''))
+                        if (c == ((span.type is SpanType.String or SpanType.FormattedString) ? '\"' : '\''))
                         {
                             // check if quot is escaped
-                            bool esc = false;
-                            int left = 1;
+                            var esc = false;
+                            var left = 1;
                             while (i >= left && text[i - left++] == '\\')
                             {
                                 esc = !esc;
@@ -620,8 +598,8 @@ public static class Global
                         {
                             if (text.Length > i + 1 && text[i + 1] == '{')
                             {
-                                int lefts = 0;
-                                int left = 0;
+                                var lefts = 0;
+                                var left = 0;
                                 while (i - left >= 0 && text[i - left++] == '{')
                                     lefts++;
                                 if (text.Length > i + 2 && text[i + 2] != '{' && lefts % 2 == 0)
@@ -668,10 +646,10 @@ public static class Global
                     // it will be the end of the span if the current char is '}' and there wasn't a '{' relating to this
                     if (c == '}')
                     {
-                        int numberOfOpenersRequired = 1;
-                        for (int left = 1; left <= insideFormattedStringLength; left++)
+                        var numberOfOpenersRequired = 1;
+                        for (var left = 1; left <= insideFormattedStringLength; left++)
                         {
-                            char leftC = text[i - left];
+                            var leftC = text[i - left];
                             if (leftC == '}')
                                 numberOfOpenersRequired++;
                             else if (leftC == '{')
@@ -699,8 +677,8 @@ public static class Global
 
                     if (span.type == SpanType.MultiLineComment && splitMultiCommentsLines)
                     {
-                        string line = "";
-                        for (int j = 0; j < span.text.Length; j++)
+                        var line = "";
+                        for (var j = 0; j < span.text.Length; j++)
                         {
                             if (span.text[j] == '\n')
                             {
@@ -717,7 +695,7 @@ public static class Global
                     }
 
                     spans.Add(span);
-                    bool nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
+                    var nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
                     span = new ScriptBoxSpan { insideFormattedString = nextSpanInsideFormattedString };
                     if (nextSpanFormattedStringContinue)
                         span.type = SpanType.FormattedString;
@@ -738,7 +716,7 @@ public static class Global
 
         foreach (var sp in spans.ToArray())
         {
-            bool checkLink = false;
+            var checkLink = false;
 
             // set span color
             switch (sp.type)
@@ -795,7 +773,7 @@ public static class Global
                     startSearch = 2;
                     endSearch = sp.text.Length - 3;
                 }
-                else if (sp.type == SpanType.String || sp.type == SpanType.EscapedString || sp.type == SpanType.FormattedString)
+                else if (sp.type is SpanType.String or SpanType.EscapedString or SpanType.FormattedString)
                 {
                     startSearch = sp.text.IndexOf('"') + 1;
                     endSearch = sp.text.Length - 2;
@@ -806,11 +784,11 @@ public static class Global
                     endSearch = sp.text.Length - 2;
                 }
 
-                bool skipLinkSearch = startSearch >= sp.text.Length || endSearch < startSearch;
+                var skipLinkSearch = startSearch >= sp.text.Length || endSearch < startSearch;
                 if (!skipLinkSearch)
                 {
                     // detect links
-                    List<int[]> links = sp.text.FindLinks(startSearch, endSearch); // returns List<int[2] { startIndex, length }>
+                    var links = sp.text.FindLinks(startSearch, endSearch); // returns List<int[2] { startIndex, length }>
                     {
                         //bool beginningOfWord = true;
                         //char[] splitters = { ' ', '\n', '\t' };
@@ -844,14 +822,14 @@ public static class Global
                     } // another code for link detection (not working)
 
                     // split span
-                    List<ScriptBoxSpan> splittedSpan = new List<ScriptBoxSpan>();
+                    List<ScriptBoxSpan> splittedSpan = [];
                     if (links.Count > 0)
                     {
                         links.Add(new int[2] { sp.text.Length, -1 }); // make the loop collect the last comment part
 
                         for (int link = 0, charIndex = 0; link < links.Count && charIndex < sp.text.Length; link++)
                         {
-                            bool invalidLink = links[link][1] <= -1;
+                            var invalidLink = links[link][1] <= -1;
 
                             var originalSpan = sp.Duplicate();
                             originalSpan.text = sp.text.Substring(charIndex, links[link][0] - charIndex);
@@ -903,9 +881,9 @@ public static class Global
             endSearch = text.Length - 1;
 
         var match = Regex.Matches(text.Substring(startSearch, (endSearch + 1) - startSearch), @"((?<=^|\s)(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?)");
-        List<int[]> links = new List<int[]>();
+        List<int[]> links = [];
 
-        for (int m = 0; m < match.Count; m++)
+        for (var m = 0; m < match.Count; m++)
         {
             links.Add(new int[2] { match[m].Index + startSearch, match[m].Length });
         }
@@ -932,11 +910,10 @@ public static class Global
     /// <exception cref="ArgumentNullException"></exception>
     public static int IndexOf(this string src, char c, int index)
     {
-        if (src == null)
-            throw new ArgumentNullException("src");
+        ArgumentNullException.ThrowIfNull(src);
 
-        int currentIndex = 0;
-        for (int i = 0; i < src.Length; i++)
+        var currentIndex = 0;
+        for (var i = 0; i < src.Length; i++)
         {
             if (src[i] == c)
             {
@@ -948,14 +925,11 @@ public static class Global
         return -1;
     }
 
-    public static int IndexOf<T>(this T[] array, T item)
-    {
-        return Array.IndexOf(array, item);
-    }
+    public static int IndexOf<T>(this T[] array, T item) => Array.IndexOf(array, item);
 
     public static T Find<T>(this T[] array, Func<T, bool> matchFunc)
     {
-        foreach (T obj in array)
+        foreach (var obj in array)
         {
             if (matchFunc(obj))
                 return obj;
@@ -964,16 +938,12 @@ public static class Global
     }
 
     public static bool EqualsIgnoreCase(this char c, char value)
-    {
-        return c.ToString().Equals(value.ToString(), StringComparison.CurrentCultureIgnoreCase);
-    }
+        => c.ToString().Equals(value.ToString(), StringComparison.CurrentCultureIgnoreCase);
 
     public static string ReadLine(this string source, int lineNumber)
     {
-        if (source == null)
-            throw new ArgumentNullException("source");
-        if (lineNumber <= 0)
-            throw new ArgumentOutOfRangeException("lineNumber");
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lineNumber);
 
         int i, line;
         for (i = 0, line = 1; i < source.Length && line < lineNumber; i++)
@@ -998,14 +968,14 @@ public static class Global
         try
         {
             // Split the assembly full name into its components
-            string[] parts = assemblyFullName.Split(',');
+            var parts = assemblyFullName.Split(',');
 
             // Extract the assembly name
-            string assemblyName = parts[0].Trim();
+            var assemblyName = parts[0].Trim();
 
             // Extract the version
             Version version = null;
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 if (part.Trim().StartsWith("Version="))
                 {
@@ -1016,7 +986,7 @@ public static class Global
 
             // Extract the culture
             string culture = null;
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 if (part.Trim().StartsWith("Culture="))
                 {
@@ -1027,7 +997,7 @@ public static class Global
 
             // Extract the public key token
             string publicKeyToken = null;
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 if (part.Trim().StartsWith("PublicKeyToken="))
                 {
@@ -1059,28 +1029,19 @@ public static class Global
         if (hexString == null)
             return null;
 
-        byte[] bytes = new byte[hexString.Length / 2];
-        for (int i = 0; i < bytes.Length; i++)
+        var bytes = new byte[hexString.Length / 2];
+        for (var i = 0; i < bytes.Length; i++)
         {
             bytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
         }
         return bytes;
     }
 
-    public static double DistanceTo(this Point p1, Point p2)
-    {
-        return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
-    }
+    public static double DistanceTo(this Point p1, Point p2) => Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
 
-    public static Point WithX(this Point point, int value, bool relative = false)
-    {
-        return new Point((relative ? point.X : 0) + value, point.Y);
-    }
+    public static Point WithX(this Point point, int value, bool relative = false) => new Point((relative ? point.X : 0) + value, point.Y);
 
-    public static Point WithY(this Point point, int value, bool relative = false)
-    {
-        return new Point(point.X, (relative ? point.Y : 0) + value);
-    }
+    public static Point WithY(this Point point, int value, bool relative = false) => new Point(point.X, (relative ? point.Y : 0) + value);
 
     public static Rectangle AddSize(this Rectangle rectangle, Size size)
     {
@@ -1088,16 +1049,13 @@ public static class Global
         return rectangle;
     }
 
-    public static Point ToPoint(this PointF point)
-    {
-        return new Point((int)point.X, (int)point.Y);
-    }
+    public static Point ToPoint(this PointF point) => new Point((int)point.X, (int)point.Y);
 
     public static string GetDirectoryPath(this Assembly assembly)
     {
-        string codeBase = assembly.CodeBase;
+        var codeBase = assembly.CodeBase;
         UriBuilder uri = new UriBuilder(codeBase);
-        string path = Uri.UnescapeDataString(uri.Path);
+        var path = Uri.UnescapeDataString(uri.Path);
         return Path.GetDirectoryName(path);
     }
 
@@ -1115,8 +1073,8 @@ public static class Global
     {
         if (substrings.Length != indices.Length)
             throw new ArgumentException("Length of substring[] must be equal for the length of indices[]");
-        int diff = 0;
-        for (int i = 0; i < indices.Length; i++)
+        var diff = 0;
+        for (var i = 0; i < indices.Length; i++)
         {
             src = src.Insert(indices[i] + diff, substrings[i]);
             diff += substrings[i].Length;
@@ -1134,8 +1092,8 @@ public static class Global
     /// <returns>the given <see cref="IEnumerable{A}"/> converted to <typeparamref name="R"/>[]</returns>
     public static R[] ToArray<R, T>(this IEnumerable<T> src, Func<T, R> Convert)
     {
-        List<R> array = new List<R>();
-        foreach (T element in src)
+        List<R> array = [];
+        foreach (var element in src)
         {
             array.Add(Convert(element));
         }
@@ -1155,24 +1113,24 @@ public static class Global
         return added;
     }
 
-    public static string ToDisplayString<T>(this IEnumerable<T> arr, string seperator = ", ")
+    public static string ToDisplayString<T>(this IEnumerable<T> arr, string separator = ", ")
     {
-        string text = "[";
-        for (int i = 0; i < arr.Count(); i++)
-            text += arr.ElementAt(i) + (i >= arr.Count() - 1 ? "" : seperator);
+        var text = "[";
+        for (var i = 0; i < arr.Count(); i++)
+            text += arr.ElementAt(i) + (i >= arr.Count() - 1 ? "" : separator);
         return text + ']';
     }
 
     public static void PushRecentProject(string projectPath)
     {
         if (Properties.Settings.Default.RecentProjects == null)
-            Properties.Settings.Default.RecentProjects = new System.Collections.Specialized.StringCollection();
-        int indexOfProjectInRecents = Properties.Settings.Default.RecentProjects.IndexOf(projectPath);
+            Properties.Settings.Default.RecentProjects = [];
+        var indexOfProjectInRecents = Properties.Settings.Default.RecentProjects.IndexOf(projectPath);
         if (indexOfProjectInRecents < 0)
             Properties.Settings.Default.RecentProjects.Insert(0, projectPath);
         else if (indexOfProjectInRecents > 0)
         {
-            string oldFirst = Properties.Settings.Default.RecentProjects[0];
+            var oldFirst = Properties.Settings.Default.RecentProjects[0];
             Properties.Settings.Default.RecentProjects[0] = projectPath;
             Properties.Settings.Default.RecentProjects[indexOfProjectInRecents] = oldFirst;
         }
@@ -1181,7 +1139,7 @@ public static class Global
 
     public static bool Contains(this string src, char value, bool ignoreCase)
     {
-        foreach (char c in src)
+        foreach (var c in src)
         {
             //bool a_to_A() => c >= 'a' && c <= 'z' && value >= 'A' && value <= 'Z' && c + ('A' - 'a') == value;
             //bool A_to_a() => c >= 'A' && c <= 'Z' && value >= 'a' && value <= 'z' && c - ('A' - 'a') == value;

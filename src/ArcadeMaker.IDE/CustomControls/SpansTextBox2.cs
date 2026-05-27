@@ -5,21 +5,18 @@ namespace ArcadeMaker.IDE;
 
 public partial class SpansTextBox2 : UserControl
 {
-    private readonly List<ScriptBoxSpan> OldSpans = new List<ScriptBoxSpan>();
-    public readonly List<ScriptBoxSpan> Spans = new List<ScriptBoxSpan>();
-    public readonly List<char> CharAlerts = new List<char>();
+    private readonly List<ScriptBoxSpan> OldSpans = [];
+    public readonly List<ScriptBoxSpan> Spans = [];
+    public readonly List<char> CharAlerts = [];
 
-    public float LineSpacing
-    {
-        get => Font.Size * Font.FontFamily.GetLineSpacing(FontStyle.Regular) / Font.FontFamily.GetEmHeight(FontStyle.Regular) + 2;
-    }
+    public float LineSpacing => Font.Size * Font.FontFamily.GetLineSpacing(FontStyle.Regular) / Font.FontFamily.GetEmHeight(FontStyle.Regular) + 2;
 
     public string Text
     {
         get
         {
-            string text = "";
-            for (int span = 0; span < Spans.Count; span++)
+            var text = "";
+            for (var span = 0; span < Spans.Count; span++)
                 text += Spans[span].text;
             return text;
         }
@@ -39,17 +36,14 @@ public partial class SpansTextBox2 : UserControl
         }
     } = false;
 
-    public string TextRange(int endIndex)
-    {
-        return TextRange(0, endIndex);
-    }
+    public string TextRange(int endIndex) => TextRange(0, endIndex);
 
     public string TextRange(int startIndex, int endIndex)
     {
-        string text = "";
+        var text = "";
         for (int span = 0, totalCharIndex = 0; span < Spans.Count; span++)
         {
-            for (int c = 0; c < Spans[span].text.Length; c++, totalCharIndex++)
+            for (var c = 0; c < Spans[span].text.Length; c++, totalCharIndex++)
             {
                 if (startIndex <= totalCharIndex)
                 {
@@ -64,11 +58,11 @@ public partial class SpansTextBox2 : UserControl
 
     private string GetTextStats(out int lineCount)
     {
-        string text = "";
+        var text = "";
         lineCount = 0;
         foreach (var span in Spans)
         {
-            foreach (char c in span.text)
+            foreach (var c in span.text)
             {
                 if (c == '\n')
                     lineCount++;
@@ -82,7 +76,7 @@ public partial class SpansTextBox2 : UserControl
     {
         get
         {
-            int length = 0;
+            var length = 0;
             foreach (var span in Spans)
                 length += span.text.Length;
             return length;
@@ -198,15 +192,9 @@ public partial class SpansTextBox2 : UserControl
     private float textStartLocX = textMinStartLocX, textStartLocY = textMinStartLocY;
     private bool drawCaret = false;
 
-    private new float HScroll(SizeF textSize)
-    {
-        return hScrollBar.Maximum > 0 ? Global.MapGPT(hScrollBar.Value, hScrollBar.Minimum, hScrollBar.Maximum, 0, (int)textSize.Width) : 0;
-    }
+    private new float HScroll(SizeF textSize) => hScrollBar.Maximum > 0 ? Global.MapGPT(hScrollBar.Value, hScrollBar.Minimum, hScrollBar.Maximum, 0, (int)textSize.Width) : 0;
 
-    private new float VScroll(SizeF textSize)
-    {
-        return vScrollBar.Maximum > 0 ? Global.MapGPT(vScrollBar.Value, vScrollBar.Minimum, vScrollBar.Maximum, 0, (int)textSize.Height) : 0;
-    }
+    private new float VScroll(SizeF textSize) => vScrollBar.Maximum > 0 ? Global.MapGPT(vScrollBar.Value, vScrollBar.Minimum, vScrollBar.Maximum, 0, (int)textSize.Height) : 0;
 
     private new float VScroll(int lineCount = -1)
     {
@@ -226,12 +214,12 @@ public partial class SpansTextBox2 : UserControl
     private string displayedText = null;
     private float[] displayCharWidthes = null;
 
-    private List<char> knownCharWidthes_chars = new List<char>();
-    private List<float> knownCharWidthes_widthes = new List<float>();
+    private List<char> knownCharWidthes_chars = [];
+    private List<float> knownCharWidthes_widthes = [];
 
     private void SpanTextBox2_Paint(object sender, PaintEventArgs e)
     {
-        string Text = GetTextStats(out int lineCount);
+        var Text = GetTextStats(out var lineCount);
         SizeF textSize;
         if (lastTextSize == null || !lastTextSize.HasValue || displayedText != Text)
         {
@@ -242,9 +230,9 @@ public partial class SpansTextBox2 : UserControl
         else
             textSize = lastTextSize.Value;
         PointF? caretLocation = null;
-        bool canScrollH = hScrollBar.Maximum > 0;
-        bool canScrollV = vScrollBar.Maximum > 0;
-        int Length = this.Length;
+        var canScrollH = hScrollBar.Maximum > 0;
+        var canScrollV = vScrollBar.Maximum > 0;
+        var Length = this.Length;
         float hscroll = 0, vscroll = 0;
         displayTextLineCount = lineCount;
         if (canScrollH || canScrollV)
@@ -258,16 +246,16 @@ public partial class SpansTextBox2 : UserControl
             float x = textStartLocX, y = textStartLocY;
 
             // number lines (calculation part)
-            float lineNumberWidth = MeasureString((lineCount + 1).ToString(), e.Graphics).Width;
+            var lineNumberWidth = MeasureString((lineCount + 1).ToString(), e.Graphics).Width;
             textStartLocX = vScrollBar.Width + textMinStartLocX + lineNumberWidth;
 
-            int totalCharIndex = 0;
+            var totalCharIndex = 0;
             char? previousChar = null;
 
-            List<ScriptBoxSpan> Spans = this.Spans;
+            var Spans = this.Spans;
 
             // if text is empty, simulate single line text to draw caret & line highlight
-            bool foundText = false;
+            var foundText = false;
             foreach (var span in Spans)
             {
                 if (span.text.Length > 0)
@@ -279,45 +267,45 @@ public partial class SpansTextBox2 : UserControl
             if (!foundText)
             {
                 Spans.Clear();
-                Spans = new List<ScriptBoxSpan>
-                {
+                Spans =
+                [
                     new ScriptBoxSpan { text = "\n" }
-                };
+                ];
                 Length = 1; // we're talking about the local parameter 'Length', not the property << int Length { get; } >>
             }
 
             displayCharWidthes = new float[Text.Length];
             bool outsideView_up = y + LineSpacing < vscroll, outsideView_down = y + LineSpacing > vscroll + DisplayRectangle.Height;
 
-            for (int spanIndex = 0; spanIndex < Spans.Count; spanIndex++)
+            for (var spanIndex = 0; spanIndex < Spans.Count; spanIndex++)
             {
                 var span = Spans[spanIndex];
-                for (int charIndex = 0; charIndex < span.text.Length; charIndex++, totalCharIndex++)
+                for (var charIndex = 0; charIndex < span.text.Length; charIndex++, totalCharIndex++)
                 {
-                    char c = span.text[charIndex];
+                    var c = span.text[charIndex];
 
                     outsideView_up = false;
                     outsideView_down = false;
-                    bool outsideView = false;
+                    var outsideView = false;
 
-                    Action CalculateOutsideView = () =>
+                    void CalculateOutsideView()
                     {
                         outsideView_up = y + LineSpacing < vscroll;
                         outsideView_down = y + LineSpacing > vscroll + DisplayRectangle.Height;
                         outsideView = outsideView_up || outsideView_down;
-                    };
+                    }
 
                     CalculateOutsideView();
 
-                    bool highlightLineCheck = totalCharIndex == 0;
-                    bool currentCharIsNewLine = false;
-                    bool drawCaretAfterLineHighlight = false;
+                    var highlightLineCheck = totalCharIndex == 0;
+                    var currentCharIsNewLine = false;
+                    var drawCaretAfterLineHighlight = false;
                     if (c == '\n')
                     {
                         x = textStartLocX;
 
                         // if previous char was endline too, then we need to draw here the caret
-                        bool lastCharInText = Length - 1 == totalCharIndex;
+                        var lastCharInText = Length - 1 == totalCharIndex;
                         if (!outsideView && drawCaret)
                         {
                             if (totalCharIndex == SelectionStart && previousChar == '\n')
@@ -342,7 +330,7 @@ public partial class SpansTextBox2 : UserControl
                         // check if caret is in this line
                         if (totalCharIndex < SelectionStart || (totalCharIndex == SelectionStart && SelectionStart == 0))
                         {
-                            bool caretAtCurrentLine = true;
+                            var caretAtCurrentLine = true;
                             for (int sc = charIndex + 1, lc = totalCharIndex + 1, lspan = spanIndex; lc < SelectionStart; lc++, sc++)
                             {
                                 while (sc >= Spans[lspan].text.Length)
@@ -364,7 +352,7 @@ public partial class SpansTextBox2 : UserControl
                         HighlightLine:
                             if (caretAtCurrentLine)
                             {
-                                float highlightY = (SelectionStart == 0 ? textStartLocY : y) + 2;
+                                var highlightY = (SelectionStart == 0 ? textStartLocY : y) + 2;
                                 e.Graphics.FillRectangle(CurrentLineHighlightBrush, textStartLocX, highlightY, textSize.Width + DisplayRectangle.Width, LineSpacing);
                             }
                         }
@@ -388,7 +376,7 @@ public partial class SpansTextBox2 : UserControl
                     if (drawCaretAfterLineHighlight)
                     {
                         pen.Color = Color.Black;
-                        float caretY = y + 2;
+                        var caretY = y + 2;
                         if (totalCharIndex == 0)
                             caretY -= LineSpacing;
                         caretLocation = new PointF(x, caretY);
@@ -399,10 +387,10 @@ public partial class SpansTextBox2 : UserControl
                         if (!outsideView)
                         {
                             float charWidth;
-                            int knownCharsWidthes_index = knownCharWidthes_chars.IndexOf(c);
+                            var knownCharsWidthes_index = knownCharWidthes_chars.IndexOf(c);
                             if (knownCharsWidthes_index < 0)
                             {
-                                SizeF charSize = MeasureString(c, e.Graphics);
+                                var charSize = MeasureString(c, e.Graphics);
                                 charWidth = charSize.Width;
                                 knownCharWidthes_chars.Add(c);
                                 knownCharWidthes_widthes.Add(charWidth);
@@ -427,7 +415,7 @@ public partial class SpansTextBox2 : UserControl
                                 e.Graphics.DrawLine(pen, x, y + LineSpacing, x + charWidth, y + LineSpacing);
                             e.Graphics.DrawString(c.ToString(), Font, pen.Brush, x, y, drawTextFormat);
 
-                            bool caretInFirstChar = SelectionStart == 0;
+                            var caretInFirstChar = SelectionStart == 0;
 
                             if (!caretInFirstChar)
                                 x += charWidth;
@@ -435,7 +423,7 @@ public partial class SpansTextBox2 : UserControl
                             // draw caret
                             pen.Color = Color.Black;
                             float caretX = x, caretY = y + 2;
-                            bool drawCaretNow = false;
+                            var drawCaretNow = false;
                             if (totalCharIndex == SelectionStart - (caretInFirstChar ? 0 : 1))
                             {
                                 drawCaretNow = true;
@@ -466,13 +454,13 @@ public partial class SpansTextBox2 : UserControl
             }
 
             // set scroll bars
-            int vert = (int)((y + LineSpacing) + textStartLocY), hor = (int)(textSize.Width + textStartLocX);
+            int vert = (int)(y + LineSpacing + textStartLocY), hor = (int)(textSize.Width + textStartLocX);
             if (!invalidatedByTimer)
             {
                 if (vert > DisplayRectangle.Height)
                 {
                     vScrollBar.Height = DisplayRectangle.Height;
-                    int oldMaximum = vScrollBar.Maximum;
+                    var oldMaximum = vScrollBar.Maximum;
                     if (oldMaximum != vert - DisplayRectangle.Height)
                     {
                         vScrollBar.Maximum = vert - DisplayRectangle.Height;
@@ -487,7 +475,7 @@ public partial class SpansTextBox2 : UserControl
                 if (hor > DisplayRectangle.Width)
                 {
                     hScrollBar.Width = DisplayRectangle.Width - hScrollBar.Location.X;
-                    int oldMaximum = hScrollBar.Maximum;
+                    var oldMaximum = hScrollBar.Maximum;
                     if (oldMaximum != hor - DisplayRectangle.Width)
                     {
                         hScrollBar.Maximum = hor - DisplayRectangle.Width;
@@ -504,8 +492,8 @@ public partial class SpansTextBox2 : UserControl
                 if (false && invalidatedByKeyPress && caretLocation.HasValue && caretLocation.Value != null)
                 {
                     invalidatedByKeyPress = false;
-                    bool scrolled = false;
-                    int v_fromHigh = (int)(lineCount * LineSpacing + textStartLocY);
+                    var scrolled = false;
+                    var v_fromHigh = (int)(lineCount * LineSpacing + textStartLocY);
                     if (caretLocation.Value.Y < vscroll)
                     {
                         //vScrollBar.Value = Global.MapGPT((int)caretLocation.Value.Y, 0, v_fromHigh, vScrollBar.Minimum, vScrollBar.Maximum);
@@ -538,9 +526,9 @@ public partial class SpansTextBox2 : UserControl
 
             // number lines (drawing part)
             pen.Color = LineNumbersColor;
-            float lineNumbersX = (vScrollBar.Visible ? vScrollBar.Width : 0) + hscroll;
+            var lineNumbersX = (vScrollBar.Visible ? vScrollBar.Width : 0) + hscroll;
             e.Graphics.FillRectangle(Brushes.DarkSlateGray, lineNumbersX, vscroll/*0*/, textStartLocX - (vScrollBar.Visible ? vScrollBar.Width : 0), DisplayRectangle.Height/*vert + DisplayRectangle.Height * 2*/);
-            for (int line = (int)(vscroll / LineSpacing) + 1; line * LineSpacing <= vscroll + DisplayRectangle.Height && line <= lineCount + 1; line++)
+            for (var line = (int)(vscroll / LineSpacing) + 1; line * LineSpacing <= vscroll + DisplayRectangle.Height && line <= lineCount + 1; line++)
             {
                 e.Graphics.DrawString(line.ToString(), Font, pen.Brush, lineNumbersX + 1, (line - 1) * LineSpacing + textStartLocY + 2);
             }
@@ -556,7 +544,7 @@ public partial class SpansTextBox2 : UserControl
                     float rwidth = textSize.Width + 50, rheight = textSize.Height + 50;
                     e.Graphics.FillRectangle(pen.Brush, Width / 2 - rwidth / 2, Height / 2 - rheight / 2, rwidth, rheight);
                     /* using (*/
-                    Brush textBrush = Brushes.White;
+                    var textBrush = Brushes.White;
                     e.Graphics.DrawString(text, Font, textBrush, Width / 2 - textSize.Width / 2, Height / 2 - textSize.Height / 2);
                 }
             }
@@ -583,11 +571,11 @@ public partial class SpansTextBox2 : UserControl
         {
             await Task.Run(() =>
             {
-                int spanIndex = 0;
-                bool @break = false;
-                for (int totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
+                var spanIndex = 0;
+                var @break = false;
+                for (var totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
                 {
-                    for (int charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
+                    for (var charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
                     {
                         if (totalCharIndex == SelectionStart)
                         {
@@ -606,7 +594,7 @@ public partial class SpansTextBox2 : UserControl
                     }
                     catch (System.Exception ex)
                     {
-                        string err = "Could not open link in browser.";
+                        var err = "Could not open link in browser.";
 #if DEBUG
                         err += "\n\n[Debug Mode]\n" + ex;
 #endif
@@ -622,7 +610,7 @@ public partial class SpansTextBox2 : UserControl
         if (position.Y < textStartLocY)
             return 0;
 
-        string Text = displayedText ?? this.Text;
+        var Text = displayedText ?? this.Text;
 
         SizeF textSize;
         if (lastTextSize.HasValue && lastTextSize.Value != null)
@@ -636,10 +624,10 @@ public partial class SpansTextBox2 : UserControl
         }
         float x = textStartLocX, y = textStartLocY;
 
-        for (int index = 0; index < Text.Length; index++)
+        for (var index = 0; index < Text.Length; index++)
         {
-            bool endl = Text[index] == '\n';
-            float charWidth = displayCharWidthes == null ? MeasureString(Text[index]).Width : displayCharWidthes[index];
+            var endl = Text[index] == '\n';
+            var charWidth = displayCharWidthes == null ? MeasureString(Text[index]).Width : displayCharWidthes[index];
 
             if (!endl && position.Y >= y && position.Y <= y + LineSpacing)
             {
@@ -693,11 +681,11 @@ public partial class SpansTextBox2 : UserControl
 
     public PointF GetPositionOfCharIndex(int charIndex, bool ignoreScrolling = false)
     {
-        string Text = displayedText ?? this.Text;
+        var Text = displayedText ?? this.Text;
         float x = 0, y = 0;
         SizeF textSize = new SizeF(0, 0);
-        int lineCount = 1;
-        for (int c = 0; c < charIndex; c++)
+        var lineCount = 1;
+        for (var c = 0; c < charIndex; c++)
         {
             if (c < Text.Length) // prevent async work bugs
             {
@@ -749,14 +737,14 @@ public partial class SpansTextBox2 : UserControl
             if (!interceptEnterKeyPress)
             {
                 //// insert new line, with correct tabbing space
-                string Text = this.Text;
+                var Text = this.Text;
 
                 // get depth
-                int caretLoc = SelectionStart;
-                int depth = 0;
-                for (int i = 0; i < caretLoc; i++)
+                var caretLoc = SelectionStart;
+                var depth = 0;
+                for (var i = 0; i < caretLoc; i++)
                 {
-                    char c = Text[i];
+                    var c = Text[i];
                     if (c == '{')
                         depth++;
                     else if (c == '}')
@@ -764,8 +752,8 @@ public partial class SpansTextBox2 : UserControl
                 }
 
                 // insert <depth> tabs
-                string tabs = "";
-                for (int t = 0; t < depth; t++)
+                var tabs = "";
+                for (var t = 0; t < depth; t++)
                     tabs += TabSpace;
 
                 InsertText("\n" + tabs);
@@ -777,12 +765,12 @@ public partial class SpansTextBox2 : UserControl
         }
         else if (e.KeyChar == '\t')
         {
-            int selectionStart = SelectionStart;
-            string text = Text;
+            var selectionStart = SelectionStart;
+            var text = Text;
 
             // check if selection start is the first character (excluding spaces) in the line
-            bool firstCharInLine = true;
-            for (int i = selectionStart - 1; i >= 0 && text[i] != '\n'; i--)
+            var firstCharInLine = true;
+            for (var i = selectionStart - 1; i >= 0 && text[i] != '\n'; i--)
             {
                 if (text[i] != ' ')
                 {
@@ -794,9 +782,9 @@ public partial class SpansTextBox2 : UserControl
             // if it is, insert TAB at each line in the selected area
             if (firstCharInLine && SelectionLength > 0)
             {
-                bool newLine = true;
-                int tabsCount = 0;
-                for (int i = selectionStart; i <= selectionStart + SelectionLength && i < text.Length; i++)
+                var newLine = true;
+                var tabsCount = 0;
+                for (var i = selectionStart; i <= selectionStart + SelectionLength && i < text.Length; i++)
                 {
                     if (text[i] == '\n')
                         newLine = true;
@@ -867,7 +855,7 @@ public partial class SpansTextBox2 : UserControl
         {
             if (!completionBox.Visible)
             {
-                PointF loc = GetPositionOfCharIndex(SelectionStart);
+                var loc = GetPositionOfCharIndex(SelectionStart);
                 loc.Y -= (LineSpacing - 1);
                 SelectionStart = GetCharIndexByPosition(loc, true);
             }
@@ -877,7 +865,7 @@ public partial class SpansTextBox2 : UserControl
         {
             if (!completionBox.Visible)
             {
-                PointF loc = GetPositionOfCharIndex(SelectionStart);
+                var loc = GetPositionOfCharIndex(SelectionStart);
                 loc.Y += LineSpacing + 1;
                 SelectionStart = GetCharIndexByPosition(loc, true);
             }
@@ -925,9 +913,9 @@ public partial class SpansTextBox2 : UserControl
             // select up
             mouseDownCharInd = SelectionStart + SelectionLength;
 
-            bool selectionStartAndEndAreInSameLine = true;
-            string text = Text;
-            for (int i = SelectionStart; i < SelectionStart + SelectionLength; i++)
+            var selectionStartAndEndAreInSameLine = true;
+            var text = Text;
+            for (var i = SelectionStart; i < SelectionStart + SelectionLength; i++)
             {
                 if (text[i] == '\n')
                 {
@@ -937,7 +925,7 @@ public partial class SpansTextBox2 : UserControl
             }
 
             // implement this operation by simulating selection with mouse move
-            PointF loc = GetPositionOfCharIndex(SelectionStart + (selectionStartAndEndAreInSameLine ? SelectionLength : 0));
+            var loc = GetPositionOfCharIndex(SelectionStart + (selectionStartAndEndAreInSameLine ? SelectionLength : 0));
             SpansTextBox2_MouseMove(this, new MouseEventArgs(MouseButtons.Left, 1, (int)loc.X, (int)(loc.Y - (LineSpacing - 1)), 0));
 
             return true;
@@ -950,9 +938,9 @@ public partial class SpansTextBox2 : UserControl
             // select down
             mouseDownCharInd = SelectionStart + SelectionLength;
 
-            bool selectionStartAndEndAreInSameLine = true;
-            string text = Text;
-            for (int i = SelectionStart; i < SelectionStart + SelectionLength; i++)
+            var selectionStartAndEndAreInSameLine = true;
+            var text = Text;
+            for (var i = SelectionStart; i < SelectionStart + SelectionLength; i++)
             {
                 if (text[i] == '\n')
                 {
@@ -962,7 +950,7 @@ public partial class SpansTextBox2 : UserControl
             }
 
             // implement this operation by simulating selection with mouse move
-            PointF loc = GetPositionOfCharIndex(SelectionStart + (selectionStartAndEndAreInSameLine ? SelectionLength : 0));
+            var loc = GetPositionOfCharIndex(SelectionStart + (selectionStartAndEndAreInSameLine ? SelectionLength : 0));
             SpansTextBox2_MouseMove(this, new MouseEventArgs(MouseButtons.Left, 1, (int)loc.X, (int)(loc.Y + (LineSpacing + 1)), 0));
 
             return true;
@@ -972,7 +960,7 @@ public partial class SpansTextBox2 : UserControl
 
     public void Copy()
     {
-        string text = Text.Substring(SelectionStart, SelectionLength);
+        var text = Text.Substring(SelectionStart, SelectionLength);
         Clipboard.SetText(text);
     }
 
@@ -1001,7 +989,7 @@ public partial class SpansTextBox2 : UserControl
                 ScriptBoxSpan span = null;
                 for (spanIndex = 0, totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
                 {
-                    for (int charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
+                    for (var charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
                     {
                         if (totalCharIndex == SelectionStart - 2)
                         {
@@ -1047,16 +1035,16 @@ public partial class SpansTextBox2 : UserControl
             }
             return;
         }
-        int spanIndex = 0;
-        int totalCharIndex = 0;
+        var spanIndex = 0;
+        var totalCharIndex = 0;
         foreach (var span in Spans)
         {
-            for (int c = 0; c < span.text.Length; c++, totalCharIndex++)
+            for (var c = 0; c < span.text.Length; c++, totalCharIndex++)
             {
                 if (totalCharIndex == SelectionStart)
                 {
                     // first, remove selected text
-                    bool removedSelection = SelectionLength > 0;
+                    var removedSelection = SelectionLength > 0;
                     if (removeSelected)
                     {
                         for (int removeSpanCharInd = c, removeSpanInd = spanIndex, removeInd = 0; removeInd < SelectionLength; removeInd++)
@@ -1133,15 +1121,15 @@ public partial class SpansTextBox2 : UserControl
             return;
         }
 
-        int spanIndex = 0;
-        int totalCharIndex = 0;
+        var spanIndex = 0;
+        var totalCharIndex = 0;
         foreach (var span in Spans)
         {
-            for (int c = 0; c < span.text.Length; c++, totalCharIndex++)
+            for (var c = 0; c < span.text.Length; c++, totalCharIndex++)
             {
                 if (totalCharIndex == SelectionStart)
                 {
-                    bool removed = false;
+                    var removed = false;
                     if (c > 0)
                     {
                         span.text = span.text.Remove(c - 1, 1);
@@ -1149,7 +1137,7 @@ public partial class SpansTextBox2 : UserControl
                     }
                     else if (spanIndex > 0)
                     {
-                        ScriptBoxSpan rspan = Spans[--spanIndex];
+                        var rspan = Spans[--spanIndex];
                         while (rspan.text.Length == 0)
                         {
                             Spans.Remove(rspan);
@@ -1185,8 +1173,7 @@ public partial class SpansTextBox2 : UserControl
         }
     }
 
-    private string SetSpans()
-    {
+    private string SetSpans() =>
         //string text = "";
         //while (Spans.Any())
         //{
@@ -1199,8 +1186,7 @@ public partial class SpansTextBox2 : UserControl
 
         //return text;
 
-        return SetSpansLocateChanges(out int a, out int b);
-    }
+        SetSpansLocateChanges(out var a, out var b);
 
     private string SetSpansLocateChanges(out int lastSpanEqualBefore, out int firstSpanEqualAfter)
     {
@@ -1209,12 +1195,12 @@ public partial class SpansTextBox2 : UserControl
         lastSpanEqualBefore = -1;
         firstSpanEqualAfter = -1;
 
-        string Text = this.Text;
+        var Text = this.Text;
         var newSpans = GetScriptBoxSpans(Text);
 
         // location algorithm: iterates from start to end & from end to start, and stops a direction when meeting non-equality:  >>>they  will make  cookies<<<
         //                                                                                                                       >>>they >have made< cookies<<<
-        for (int i = 0; i < newSpans.Length && i < Spans.Count && (lastSpanEqualBefore < 0 || firstSpanEqualAfter < 0); i++)
+        for (var i = 0; i < newSpans.Length && i < Spans.Count && (lastSpanEqualBefore < 0 || firstSpanEqualAfter < 0); i++)
         {
             if (lastSpanEqualBefore == -1)
             {
@@ -1246,10 +1232,7 @@ public partial class SpansTextBox2 : UserControl
         return Text;
     }
 
-    public ScriptBoxSpan[] GetScriptBoxSpans(string text)
-    {
-        return Global.GetScriptBoxSpans(text, replaceTabSpaceWith: TabSpace);
-    }
+    public ScriptBoxSpan[] GetScriptBoxSpans(string text) => Global.GetScriptBoxSpans(text, replaceTabSpaceWith: TabSpace);
 
     private void SpansTextBox2_Load(object sender, EventArgs e)
     {
@@ -1263,7 +1246,7 @@ public partial class SpansTextBox2 : UserControl
             {
                 while (Spans.Any())
                 {
-                    var span = Spans.First();
+                    var span = Spans[0];
                     span.Dispose();
                     Spans.RemoveAt(0);
                 }
@@ -1283,10 +1266,10 @@ public partial class SpansTextBox2 : UserControl
     private void SpansTextBox2_MouseWheel(object sender, MouseEventArgs e)
     {
         // set scroll jump for 3 lines per wheel rotation
-        int scrollJump = (int)(LineSpacing * 3);
+        var scrollJump = (int)(LineSpacing * 3);
 
         // convert to scroll bar scale
-        int textHeight = (int)((displayedText ?? Text).CountOf('\n') * LineSpacing);
+        var textHeight = (int)((displayedText ?? Text).CountOf('\n') * LineSpacing);
         scrollJump = Global.MapGPT(scrollJump, 0, textHeight, vScrollBar.Minimum, vScrollBar.Maximum);
 
         if (e.Delta > 0)
@@ -1317,7 +1300,7 @@ public partial class SpansTextBox2 : UserControl
     {
         if (e.Button == MouseButtons.Left)
         {
-            int charIndex = GetCharIndexByPosition(e.Location);
+            var charIndex = GetCharIndexByPosition(e.Location);
             if (charIndex != SelectionStart)
             {
                 SelectionLength = Math.Abs(mouseDownCharInd - charIndex);
@@ -1351,10 +1334,10 @@ public partial class SpansTextBox2 : UserControl
             mouseLoc = Cursor.Position;
         await Task.Run(() =>
         {
-            int charIndex = GetCharIndexByPosition(mouseLoc.Value);
+            var charIndex = GetCharIndexByPosition(mouseLoc.Value);
             for (int span = 0, totalCharIndex = 0; span < Spans.Count; span++)
             {
-                for (int i = 0; i < Spans[span].text.Length; i++, totalCharIndex++)
+                for (var i = 0; i < Spans[span].text.Length; i++, totalCharIndex++)
                 {
                     if (totalCharIndex == charIndex)
                     {
@@ -1362,7 +1345,7 @@ public partial class SpansTextBox2 : UserControl
                         {
                             if (InvokeRequired)
                             {
-                                Invoke(new MethodInvoker(() => { Cursor = Cursors.Hand; }));
+                                Invoke(new MethodInvoker(() => Cursor = Cursors.Hand));
                             }
                             else
                             {
@@ -1373,7 +1356,7 @@ public partial class SpansTextBox2 : UserControl
                         {
                             if (InvokeRequired)
                             {
-                                Invoke(new MethodInvoker(() => { Cursor = Cursors.IBeam; }));
+                                Invoke(new MethodInvoker(() => Cursor = Cursors.IBeam));
                             }
                             else
                             {
@@ -1394,7 +1377,7 @@ public partial class SpansTextBox2 : UserControl
             // select the span the user clicked on
 
             // first, find the char index of the click
-            int charIndex = GetCharIndexByPosition(e.Location);
+            var charIndex = GetCharIndexByPosition(e.Location);
 
             // find the span that this char belongs to
             int spanIndex = 0, spanStartCharIndex = 0;
@@ -1426,15 +1409,9 @@ public partial class SpansTextBox2 : UserControl
             e.IsInputKey = true;
     }
 
-    private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
-    {
-        Invalidate();
-    }
+    private void vScrollBar_Scroll(object sender, ScrollEventArgs e) => Invalidate();
 
-    private void hScrollBar_Scroll(object sender, ScrollEventArgs e)
-    {
-        Invalidate();
-    }
+    private void hScrollBar_Scroll(object sender, ScrollEventArgs e) => Invalidate();
 
     private void SpansTextBox2_GotFocus(object sender, EventArgs e)
     {
@@ -1444,10 +1421,7 @@ public partial class SpansTextBox2 : UserControl
         skipNextCaretTimerTick = true;
     }
 
-    private void completionBox_MouseClick(object sender, MouseEventArgs e)
-    {
-        SelectSuggestion();
-    }
+    private void completionBox_MouseClick(object sender, MouseEventArgs e) => SelectSuggestion();
 
     private void SpansTextBox2_LostFocus(object sender, EventArgs e)
     {
@@ -1494,7 +1468,7 @@ public partial class SpansTextBox2 : UserControl
         SpansTextBox2Suggestion matchSug = null;
         if (end > start)
         {
-            string span = TextRange(start, end - 1);
+            var span = TextRange(start, end - 1);
             Array.Sort(suggestions, new SuggestionsSorter(span));
             matchSug = suggestions.Find(s => s.DisplayText.Equals(span, StringComparison.CurrentCultureIgnoreCase));
         }
@@ -1502,7 +1476,7 @@ public partial class SpansTextBox2 : UserControl
 
         completionBox.Visible = suggestions.Length >= 1;
 
-        PointF caretPos = GetPositionOfCharIndex(SelectionStart, ignoreScrolling: true);
+        var caretPos = GetPositionOfCharIndex(SelectionStart, ignoreScrolling: true);
         Point loc = new Point((int)caretPos.X, (int)(caretPos.Y + LineSpacing));
         if (loc.X + completionBox.Size.Width >= DisplayRectangle.Width)
             loc.X -= loc.X + completionBox.Size.Width - DisplayRectangle.Width;
@@ -1545,9 +1519,9 @@ public partial class SpansTextBox2 : UserControl
             //    SelectionStart += sug.Text.Length;
             //}
 
-            string oldText = Text;
+            var oldText = Text;
             Spans.Clear();
-            string newText = oldText.Insert(suggestionSpanEnd, sug.Text).Remove(suggestionSpanStart, suggestionSpanEnd - suggestionSpanStart);
+            var newText = oldText.Insert(suggestionSpanEnd, sug.Text).Remove(suggestionSpanStart, suggestionSpanEnd - suggestionSpanStart);
             Spans.Add(new ScriptBoxSpan { text = newText });
             SelectionStart += newText.Length - oldText.Length;
 
@@ -1577,10 +1551,7 @@ public partial class SpansTextBox2 : UserControl
         ToolTipShowLoc = position;
     }
 
-    public void ShowHint(string text, string title = null)
-    {
-        ShowHint(text, PointToClient(Cursor.Position).WithY(+(int)LineSpacing, relative: true), title);
-    }
+    public void ShowHint(string text, string title = null) => ShowHint(text, PointToClient(Cursor.Position).WithY(+(int)LineSpacing, relative: true), title);
 
     public bool HintIsShown => ToolTipShowLoc.X != -1 && ToolTipShowLoc.Y != -1;
 
@@ -1617,7 +1588,7 @@ public partial class SpansTextBox2 : UserControl
 
     private void toolTip_Popup(object sender, PopupEventArgs e)
     {
-        using (Graphics graphics = CreateGraphics())
+        using (var graphics = CreateGraphics())
         {
             if (string.IsNullOrWhiteSpace(toolTip.ToolTipTitle))
                 toolTipTitleSize = new SizeF(0, 0);
@@ -1656,7 +1627,7 @@ public partial class SpansTextBox2 : UserControl
     {
         for (int spanIndex = 0, totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
         {
-            for (int charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
+            for (var charIndex = 0; charIndex < Spans[spanIndex].text.Length; charIndex++, totalCharIndex++)
             {
                 if (totalCharIndex == index)
                     return spanIndex;
@@ -1667,24 +1638,18 @@ public partial class SpansTextBox2 : UserControl
 
     public ScriptBoxSpan GetSpanByCharIndex(int index)
     {
-        int spanIndex = GetSpanIndexByCharIndex(index);
+        var spanIndex = GetSpanIndexByCharIndex(index);
         if (spanIndex >= 0)
             return Spans[spanIndex];
         return null;
     }
 
-    private readonly List<KnownCharSize> knownCharSizes = new List<KnownCharSize>();
+    private readonly List<KnownCharSize> knownCharSizes = [];
 
-    private class KnownCharSize
+    private class KnownCharSize(char c, SizeF size)
     {
-        public char Char { get; }
-        public SizeF Size { get; }
-
-        public KnownCharSize(char c, SizeF size)
-        {
-            Char = c;
-            Size = size;
-        }
+        public char Char { get; } = c;
+        public SizeF Size { get; } = size;
     }
 
     private SizeF GetKnownCharSize(char c)
@@ -1693,18 +1658,14 @@ public partial class SpansTextBox2 : UserControl
         return known != null ? known.Size : new SizeF(-1, -1);
     }
 
-    private bool CharSizeIsKnown(char c)
-    {
-        return GetKnownCharSize(c).Width >= 0;
-    }
+    private bool CharSizeIsKnown(char c) => GetKnownCharSize(c).Width >= 0;
 
     private SizeF MeasureString(string str, Graphics g = null)
     {
-        if (str == null)
-            throw new ArgumentNullException("str");
+        ArgumentNullException.ThrowIfNull(str);
 
         SizeF size;
-        bool dispose = g == null;
+        var dispose = g == null;
         if (dispose)
             g = CreateGraphics();
         try
@@ -1749,10 +1710,7 @@ public partial class SpansTextBox2 : UserControl
         */
     }
 
-    private SizeF MeasureString(char str, Graphics g = null)
-    {
-        return MeasureString(str.ToString(), g);
-    }
+    private SizeF MeasureString(char str, Graphics g = null) => MeasureString(str.ToString(), g);
 }
 
 public enum TextChangedKind
@@ -1762,30 +1720,17 @@ public enum TextChangedKind
     Replace
 }
 
-public class SpansTextBox2TextChangedEventArgs : EventArgs
+public class SpansTextBox2TextChangedEventArgs(TextChangedKind kind, bool bySuggestion) : EventArgs
 {
-    public TextChangedKind Kind { get; set; }
-    public bool BySuggestion { get; set; }
-
-    public SpansTextBox2TextChangedEventArgs(TextChangedKind kind, bool bySuggestion)
-    {
-        Kind = kind;
-        BySuggestion = bySuggestion;
-    }
+    public TextChangedKind Kind { get; set; } = kind;
+    public bool BySuggestion { get; set; } = bySuggestion;
 }
 
-public class SpansTextBox2CharAlertEventArgs : EventArgs
+public class SpansTextBox2CharAlertEventArgs(char alert, int index, ScriptBoxSpan spanBefore = null) : EventArgs
 {
-    public char Alert { get; private set; }
-    public int Index { get; private set; }
-    public ScriptBoxSpan SpanBefore { get; private set; }
-
-    public SpansTextBox2CharAlertEventArgs(char alert, int index, ScriptBoxSpan spanBefore = null)
-    {
-        Alert = alert;
-        Index = index;
-        SpanBefore = spanBefore;
-    }
+    public char Alert { get; } = alert;
+    public int Index { get; } = index;
+    public ScriptBoxSpan SpanBefore { get; } = spanBefore;
 }
 
 public class SpansTextBox2Suggestion
@@ -1802,19 +1747,16 @@ public class SpansTextBox2Suggestion
         Text = text;
     }
 
-    public override string ToString()
-    {
-        return DisplayText;
-    }
+    public override string ToString() => DisplayText;
 }
 
-public class SuggestionsSorter : IComparer<SpansTextBox2Suggestion>
+public class SuggestionsSorter(string span) : IComparer<SpansTextBox2Suggestion>
 {
-    public string Span { get; set; }
+    public string Span { get; set; } = span;
 
     public int Compare(SpansTextBox2Suggestion a, SpansTextBox2Suggestion b)
     {
-        if (Span == "" || Span == null)
+        if (Span is "" or null)
             return 0;
 
         var ignoreCase = StringComparison.CurrentCultureIgnoreCase;
@@ -1825,21 +1767,10 @@ public class SuggestionsSorter : IComparer<SpansTextBox2Suggestion>
             return -1;
         return 1;
     }
-
-    public SuggestionsSorter(string span)
-    {
-        Span = span;
-    }
 }
 
-public class CompletionItemInfoEventArgs : EventArgs
+public class CompletionItemInfoEventArgs(string text, SpansTextBox2Suggestion item) : EventArgs
 {
-    public CompletionItemInfoEventArgs(string text, SpansTextBox2Suggestion item)
-    {
-        Text = text;
-        Item = item;
-    }
-
-    public string Text { get; set; }
-    public SpansTextBox2Suggestion Item { get; set; }
+    public string Text { get; set; } = text;
+    public SpansTextBox2Suggestion Item { get; set; } = item;
 }

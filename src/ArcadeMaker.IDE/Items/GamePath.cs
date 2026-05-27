@@ -5,7 +5,7 @@ public class GamePath : GameItem
     /* do not change property name!!! */
     public static Bitmap icon { get; } = Properties.Resources.path;
 
-    public List<PathPoint> points = new List<PathPoint>();
+    public List<PathPoint> points = [];
     public bool close = false;
 
     public new PathEditor editor
@@ -18,10 +18,8 @@ public class GamePath : GameItem
             }
             return base.Editor as PathEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public GamePath(string name) : base(name)
@@ -43,7 +41,7 @@ public class PathPoint
         this.x = x;
         this.y = y;
 
-        if (speed < 0 || speed > 100)
+        if (speed is < 0 or > 100)
             throw new Exception("PathPoint speed range is 0-100");
 
         this.speed = speed;
@@ -58,13 +56,7 @@ public class PathPoint
     public PathPoint()
     { }
 
-    public static Point operator -(PathPoint left, Size right)
-    {
-        return new Point(left.x - right.Width, left.y - right.Height);
-    }
+    public static Point operator -(PathPoint left, Size right) => new Point(left.x - right.Width, left.y - right.Height);
 
-    public override string ToString()
-    {
-        return $"({x}, {y})     sp: {speed}%";
-    }
+    public override string ToString() => $"({x}, {y})     sp: {speed}%";
 }

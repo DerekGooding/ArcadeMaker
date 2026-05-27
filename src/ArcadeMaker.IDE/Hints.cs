@@ -43,18 +43,18 @@ namespace ArcadeMaker.IDE.Scripting
     {
         public interface IInnerElement;
 
-        public List<string> TextSpans { get; set; } = new List<string>();
-        public List<IInnerElement> InnerElements { get; set; } = new List<IInnerElement>();
-        public List<int> InnerElementsIndices { get; set; } = new List<int>();
+        public List<string> TextSpans { get; set; } = [];
+        public List<IInnerElement> InnerElements { get; set; } = [];
+        public List<int> InnerElementsIndices { get; set; } = [];
 
         public string GetContent(Func<Relation, string> ReadRelation, Func<InheritDoc, string> ReadInheritDoc)
         {
-            string content = "";
-            foreach (string span in TextSpans)
+            var content = "";
+            foreach (var span in TextSpans)
                 content += span;
 
-            string[] relationsTexts = new string[InnerElements.Count];
-            for (int i = 0; i < InnerElements.Count; i++)
+            var relationsTexts = new string[InnerElements.Count];
+            for (var i = 0; i < InnerElements.Count; i++)
             {
                 if (InnerElements[i] is Relation relation)
                     relationsTexts[i] = ReadRelation(relation) ?? "";
@@ -95,8 +95,8 @@ namespace ArcadeMaker.IDE.Scripting
                 return;
             }
 
-            int index = 0;
-            foreach (XNode node in element.Nodes())
+            var index = 0;
+            foreach (var node in element.Nodes())
             {
                 if (node is XText text)
                 {
@@ -105,7 +105,7 @@ namespace ArcadeMaker.IDE.Scripting
                 }
                 else if (node is XElement innerElement)
                 {
-                    using (XmlReader relationReader = innerElement.CreateReader())
+                    using (var relationReader = innerElement.CreateReader())
                     {
                         try
                         {
@@ -152,10 +152,7 @@ namespace ArcadeMaker.IDE.Scripting
             }
         }
 
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
+        public XmlSchema GetSchema() => null;
     }
 
     [XmlRoot(Roots.TypeParam)]
@@ -187,10 +184,7 @@ namespace ArcadeMaker.IDE.Scripting
             Description = serializer.Deserialize(reader) as Description;
         }
 
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
+        public XmlSchema GetSchema() => null;
     }
 
     [XmlRoot(Roots.Exception)]
@@ -332,8 +326,8 @@ namespace ArcadeMaker.IDE.Scripting
 
                 try
                 {
-                    List<PathNode> nodes = new List<PathNode>();
-                    for (int i = 0; i < value.Length; i++)
+                    List<PathNode> nodes = [];
+                    for (var i = 0; i < value.Length; i++)
                     {
                         if (value[i] == '/')
                             nodes.Add(new PathNode { NodeName = "" });
@@ -342,7 +336,7 @@ namespace ArcadeMaker.IDE.Scripting
                             nodes.Last().SpecificAttributeName = "";
                             nodes.Last().SpecificAttributeValue = "";
                             int s;
-                            bool setName = true;
+                            var setName = true;
                             for (s = i + 1; value[s] != ']'; s++)
                             {
                                 if (s == i + 1)
@@ -354,7 +348,7 @@ namespace ArcadeMaker.IDE.Scripting
                                 }
                                 if (setName)
                                 {
-                                    if (value[s] == ' ' || value[s] == '=')
+                                    if (value[s] is ' ' or '=')
                                         setName = false;
                                     else
                                     {
@@ -364,13 +358,13 @@ namespace ArcadeMaker.IDE.Scripting
                                 }
                                 if (value[s] == '=')
                                 {
-                                    int start = value.IndexOf('\'', s + 1) + 1;
-                                    int length = value.IndexOf('\'', start + 1) - start;
+                                    var start = value.IndexOf('\'', s + 1) + 1;
+                                    var length = value.IndexOf('\'', start + 1) - start;
 
                                     nodes.Last().SpecificAttributeValue = value.Substring(start, length);
 
                                     s = start + length + 1;
-                                    char nextChar = value[s];
+                                    var nextChar = value[s];
                                     if (nextChar != ']')
                                         throw new System.Exception($"Index {start + length}: Unexpected symbol '{nextChar}'");
                                     else
@@ -388,7 +382,7 @@ namespace ArcadeMaker.IDE.Scripting
                     }
                     PathNodes = nodes.ToArray();
 
-                    string nodesText = "";
+                    var nodesText = "";
                     foreach (var node in PathNodes)
                     {
                         nodesText += node.NodeName;
@@ -476,9 +470,9 @@ namespace ArcadeMaker.IDE.Scripting
             {
                 if (item != null)
                 {
-                    string text = "";
+                    var text = "";
                     if (item.Terms != null && item.Terms.Length >= 1)
-                        text += item.Terms.First().GetContent(ReadRelation, ReadInheritDoc) + ": ";
+                        text += item.Terms[0].GetContent(ReadRelation, ReadInheritDoc) + ": ";
                     if (item.Description != null)
                         text += item.Description.GetContent(ReadRelation, ReadInheritDoc);
 
@@ -487,33 +481,33 @@ namespace ArcadeMaker.IDE.Scripting
                 return "";
             }
 
-            string content = "";
+            var content = "";
             if (Type != ListType.Table)
             {
                 content = ReadItem(ListHeader);
 
-                string[] itemsTexts = new string[Items.Length];
-                for (int i = 0; i < Items.Length; i++)
+                var itemsTexts = new string[Items.Length];
+                for (var i = 0; i < Items.Length; i++)
                     itemsTexts[i] = ReadItem(Items[i]);
 
-                string itemSpacing = "  ";
+                var itemSpacing = "  ";
                 if (Type == ListType.Bullet)
                 {
-                    foreach (string item in itemsTexts)
+                    foreach (var item in itemsTexts)
                         content += itemSpacing + "• " + item;
                 }
                 else if (Type == ListType.Number)
                 {
-                    for (int i = 0; i < itemsTexts.Length; i++)
+                    for (var i = 0; i < itemsTexts.Length; i++)
                         content += itemSpacing + (i + 1) + ": " + itemsTexts[i];
                 }
             }
             else
             {
-                List<string[]> rows = new List<string[]>();
+                List<string[]> rows = [];
                 if (ListHeader != null)
                     rows.Add(ListHeader.Terms.ToArray(term => term.GetContent(ReadRelation, ReadInheritDoc)));
-                foreach (Item item in Items)
+                foreach (var item in Items)
                 {
                     rows.Add(item.Terms.ToArray(term => term.GetContent(ReadRelation, ReadInheritDoc)));
                 }
@@ -577,19 +571,19 @@ namespace ArcadeMaker.IDE.TextSharp
         public static string BuildTable(string[][] table)
         {
             // get widths and max lines
-            int[] widths = new int[table[0].Length];
-            int[] maxLines = new int[table.Length];
-            for (int w = 0; w < widths.Length; w++)
+            var widths = new int[table[0].Length];
+            var maxLines = new int[table.Length];
+            for (var w = 0; w < widths.Length; w++)
             {
-                int max = 0;
-                for (int row = 0; row < table.Length; row++)
+                var max = 0;
+                for (var row = 0; row < table.Length; row++)
                 {
                     if (table[row][w] == null)
                         table[row][w] = "null";
-                    string[] lines = table[row][w].Split('\n');
+                    var lines = table[row][w].Split('\n');
                     if (lines.Length > maxLines[row])
                         maxLines[row] = lines.Length;
-                    foreach (string line in lines)
+                    foreach (var line in lines)
                     {
                         if (line.Length > max)
                             max = line.Length;
@@ -598,26 +592,26 @@ namespace ArcadeMaker.IDE.TextSharp
                 widths[w] = max;
             }
             // create border
-            string border = "+";
-            for (int i = 0; i < widths.Length; i++)
+            var border = "+";
+            for (var i = 0; i < widths.Length; i++)
             {
-                for (int c = 0; c < widths[i] + 4; c++)
+                for (var c = 0; c < widths[i] + 4; c++)
                     border += '-';
                 border += '+';
             }
             // fill values
-            string panel = border + '\n';
-            for (int i = 0; i < table.Length; i++)
+            var panel = border + '\n';
+            for (var i = 0; i < table.Length; i++)
             {
-                string[] vals = table[i];
-                for (int line = 0; line < maxLines[i]; line++)
+                var vals = table[i];
+                for (var line = 0; line < maxLines[i]; line++)
                 {
-                    for (int j = 0; j < vals.Length; j++)
+                    for (var j = 0; j < vals.Length; j++)
                     {
-                        string val = vals[j];
-                        string[] lines = val.Split('\n');
-                        string currentLine = line < lines.Length ? lines[line] : "";
-                        string spaces = "  ";
+                        var val = vals[j];
+                        var lines = val.Split('\n');
+                        var currentLine = line < lines.Length ? lines[line] : "";
+                        var spaces = "  ";
                         string rect;
                         if (i > 0)
                         { // text alignment: left
@@ -627,7 +621,7 @@ namespace ArcadeMaker.IDE.TextSharp
                         }
                         else
                         { // text alignment: center
-                            for (int s = 0; s < (widths[j] / 2.0) - (currentLine.Length / 2.0); s++) spaces += ' ';
+                            for (var s = 0; s < (widths[j] / 2.0) - (currentLine.Length / 2.0); s++) spaces += ' ';
                             rect = '|' + spaces + currentLine;
                             if (rect.Length + spaces.Length > widths[j] + 5)
                             {

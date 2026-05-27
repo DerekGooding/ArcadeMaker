@@ -2,7 +2,7 @@
 
 namespace ArcadeMaker.Core.Resources;
 
-public class Path : ISetsID
+public class Path(string name, double startX, double startY, Path.Step[] steps) : ISetsID
 {
     public readonly record struct Step
     {
@@ -21,22 +21,14 @@ public class Path : ISetsID
         }
     }
 
-    public string Name { get; }
+    public string Name { get; } = name;
 
     private static int idCounter = 0;
     public int ID { get; } = idCounter++;
 
-    public double StartPositionX { get; }
-    public double StartPositionY { get; }
-    public Step[] Steps { get; }
-
-    public Path(string name, double startX, double startY, Step[] steps)
-    {
-        Name = name;
-        StartPositionX = startX;
-        StartPositionY = startY;
-        Steps = steps;
-    }
+    public double StartPositionX { get; } = startX;
+    public double StartPositionY { get; } = startY;
+    public Step[] Steps { get; } = steps;
 }
 
 [ExpEnum]

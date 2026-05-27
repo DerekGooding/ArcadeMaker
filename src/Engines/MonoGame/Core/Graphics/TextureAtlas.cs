@@ -23,10 +23,7 @@ public class TextureAtlas
     /// <summary>
     /// Creates a new texture atlas.
     /// </summary>
-    public TextureAtlas()
-    {
-        _regions = [];
-    }
+    public TextureAtlas() => _regions = [];
 
     /// <summary>
     /// Creates a new texture atlas instance using the given texture.
@@ -59,10 +56,7 @@ public class TextureAtlas
     /// <param name="sprite">The sprite containing the image of the region to retrieve.</param>
     /// <param name="imageIndex">The image index.</param>
     /// <returns>The TextureRegion with the specified name.</returns>
-    public TextureRegion GetRegion(Sprite sprite, int imageIndex)
-    {
-        return _regions.First(reg => reg.Key.Sprite == sprite && reg.Key.Index == imageIndex).Value;
-    }
+    public TextureRegion GetRegion(Sprite sprite, int imageIndex) => _regions.First(reg => reg.Key.Sprite == sprite && reg.Key.Index == imageIndex).Value;
 
     /// <summary>
     /// Removes the region from this texture atlas with the specified name.
@@ -70,18 +64,12 @@ public class TextureAtlas
     /// <param name="sprite">The sprite containing the image of the region to remove.</param>
     /// <param name="imageIndex">The image index.</param>
     /// <returns></returns>
-    public bool RemoveRegion(Sprite sprite, int imageIndex)
-    {
-        return _regions.Remove(_regions.First(reg => reg.Key.Sprite == sprite && reg.Key.Index == imageIndex).Key);
-    }
+    public bool RemoveRegion(Sprite sprite, int imageIndex) => _regions.Remove(_regions.First(reg => reg.Key.Sprite == sprite && reg.Key.Index == imageIndex).Key);
 
     /// <summary>
     /// Removes all regions from this texture atlas.
     /// </summary>
-    public void Clear()
-    {
-        _regions.Clear();
-    }
+    public void Clear() => _regions.Clear();
 
     /*
     /// <summary>

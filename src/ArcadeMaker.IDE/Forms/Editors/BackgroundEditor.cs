@@ -18,10 +18,7 @@ public partial class BackgroundEditor : Form
         };
     }
 
-    private void BackgroundEditor_Load(object sender, EventArgs e)
-    {
-        imageBox.Image = background.image;
-    }
+    private void BackgroundEditor_Load(object sender, EventArgs e) => imageBox.Image = background.image;
 
     private bool renaming = false;
 
@@ -41,10 +38,7 @@ public partial class BackgroundEditor : Form
         renaming = false;
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 
     private void importBtn_Click(object sender, EventArgs e)
     {

@@ -12,8 +12,5 @@ internal class InstInitSpan : WordSpan, IKeyword, IExpItem
         DefName = defName;
     }
 
-    internal override string FullText
-    {
-        get => Keyword + " " + DefName;
-    }
+    internal override string FullText => Keyword + " " + DefName;
 }

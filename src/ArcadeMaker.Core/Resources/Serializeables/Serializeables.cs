@@ -69,10 +69,7 @@ public class SerializeableGameFont : SerializeableGameItem
     public SerializeableGameFont()
     { }
 
-    public SerializeableGameFont(GameFont font)
-    {
-        this.font = font;
-    }
+    public SerializeableGameFont(GameFont font) => this.font = font;
 }
 
 public class SerializeableGameObject : SerializeableGameItem
@@ -95,7 +92,7 @@ public class EventScript : IContainsScript
             field = value;
 
             // update description
-            ScriptDocument.ReadDocSettings("", Spanner.GetTextSpans(value), out var _, out string? description, out var _, out var _, out var _);
+            ScriptDocument.ReadDocSettings("", Spanner.GetTextSpans(value), out var _, out var description, out var _, out var _, out var _);
             if (string.IsNullOrWhiteSpace(description))
                 description = "<No Description>";
             Description = description;
@@ -104,10 +101,7 @@ public class EventScript : IContainsScript
 
     public string Description { get; set; }
 
-    public EventScript(string script)
-    {
-        Script = script;
-    }
+    public EventScript(string script) => Script = script;
 
     public EventScript() : this("")
     {
@@ -215,10 +209,7 @@ public class RoomBackground
     public bool stretch = false;
     public int horSpd = 0, verSpd = 0;
 
-    public RoomBackground()
-    {
-        index = count++;
-    }
+    public RoomBackground() => index = count++;
 }
 
 public class ObjectProperty

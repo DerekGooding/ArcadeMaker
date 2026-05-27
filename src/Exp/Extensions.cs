@@ -7,10 +7,7 @@ public static class Extensions
 {
     internal static T FirstOrNull<T>(this IEnumerable<T> ts, Func<T, bool> cond = null) where T : class => cond == null ? ts.FirstOrDefault() : ts.FirstOrDefault(cond);
 
-    public static bool IsDigit(this char c)
-    {
-        return c >= '0' && c <= '9';
-    }
+    public static bool IsDigit(this char c) => c is >= '0' and <= '9';
 
     public static T Print<T>(this T s, object plus = null)
     {
@@ -56,20 +53,17 @@ public static class Extensions
             endIndex = src.Length - 1;
         if (startIndex < 0 || startIndex >= src.Length || endIndex < startIndex || endIndex >= src.Length)
             throw new IndexOutOfRangeException("start or end index is out of range");
-        int count = 0;
-        for (int i = startIndex; i <= endIndex; i++)
+        var count = 0;
+        for (var i = startIndex; i <= endIndex; i++)
         {
-            char cc = src[i];
+            var cc = src[i];
             if (ignoreCase ? cc.EqualsIgnoreCase(c) : cc == c)
                 count++;
         }
         return count;
     }
 
-    public static bool EqualsIgnoreCase(this char c, char value)
-    {
-        return c.ToString().Equals(value.ToString(), StringComparison.CurrentCultureIgnoreCase);
-    }
+    public static bool EqualsIgnoreCase(this char c, char value) => c.ToString().Equals(value.ToString(), StringComparison.CurrentCultureIgnoreCase);
 
     public static string StartWithLowerCase(this string str)
     {
@@ -81,15 +75,15 @@ public static class Extensions
         return char.ToLower(str[0]) + (str.Length >= 2 ? str.Substring(1) : "");
     }
 
-    public static string ToString<T>(this IEnumerable<T> arr, string seperator)
+    public static string ToString<T>(this IEnumerable<T> arr, string separator)
     {
-        string s = "";
-        int len = arr.Count();
+        var s = "";
+        var len = arr.Count();
         if (arr != null)
         {
-            int i = 0;
+            var i = 0;
             foreach (var item in arr)
-                s += item + (++i < len ? seperator : "");
+                s += item + (++i < len ? separator : "");
         }
         return s;
     }
@@ -103,10 +97,7 @@ public static class Extensions
         return new Instance(ClassDefSpan.ExpArrayDef, objs);
     }
 
-    public static Instance ToExpString(this string str)
-    {
-        return Interpreter.StringToExpString(str);
-    }
+    public static Instance ToExpString(this string str) => Interpreter.StringToExpString(str);
 
     public static BoolValue ToExp(this bool b) => b;
 
@@ -140,14 +131,14 @@ public static class Extensions
 
     public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
     {
-        foreach (T obj in collection)
+        foreach (var obj in collection)
             action(obj);
     }
 
     public static void ForEach<T>(this IEnumerable<T> collection, Action<T, int> action)
     {
-        int counter = 0;
-        foreach (T obj in collection)
+        var counter = 0;
+        foreach (var obj in collection)
             action(obj, counter++);
     }
 
@@ -185,10 +176,7 @@ public static class Extensions
         return null;
     }
 
-    internal static bool IsString(this object obj)
-    {
-        return obj.IsString(out var _);
-    }
+    internal static bool IsString(this object obj) => obj.IsString(out var _);
 
     internal static bool IsString(this object obj, out Instance str)
     {
@@ -211,7 +199,7 @@ public static class Extensions
         if (a.Length != b.Length)
             return false;
 
-        for (int i = 0; i < a.Length; i++)
+        for (var i = 0; i < a.Length; i++)
         {
             if (a[i].Char != b[i].Char)
                 return false;
@@ -277,9 +265,9 @@ public static class Extensions
         return System.IO.File.ReadAllText("/storage/emulated/0/Android/data/com.radinc.csharpshell/files/Exp21/Exp22/Exp22/libs/" + fileNameWithoutExt + ".txt");
 #else
         var assembly = Assembly.GetExecutingAssembly();
-        string resourceName = "Exp.libs." + fileNameWithoutExt + ".txt";
+        var resourceName = "Exp.libs." + fileNameWithoutExt + ".txt";
 
-        using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+        using (var stream = assembly.GetManifestResourceStream(resourceName))
         {
             if (stream == null)
             {
@@ -303,9 +291,9 @@ public static class Extensions
 
     public static bool IsLiterallyValidName(this string name)
     {
-        static bool IsAbcOr_(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+        static bool IsAbcOr_(char c) => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_';
 
-        bool valid = !string.IsNullOrWhiteSpace(name) &&
+        var valid = !string.IsNullOrWhiteSpace(name) &&
                      IsAbcOr_(name[0]) &&
                      name.All(c => IsAbcOr_(c) || (c >= '0' && c <= '9')) &&
                      !Filter.Keywords.Contains(name);
@@ -323,7 +311,7 @@ public static class Extensions
     public static T1 ValidateArguments<T1>(this object[] args)
     {
         ValidateCount(args, 1);
-        return (GetArgument<T1>(args, 0));
+        return GetArgument<T1>(args, 0);
     }
 
     public static (T1, T2) ValidateArguments<T1, T2>(this object[] args)
@@ -398,8 +386,8 @@ public static class Extensions
         if (types.Length != args.Length)
             throw new ArgumentException($"{args.Length} arguments were given, but validation list contains {types.Length} types.");
 
-        int i = 0;
-        foreach (Type type in types)
+        var i = 0;
+        foreach (var type in types)
         {
             if (args[i].GetType() != type)
                 throw new ArgumentException($"Argument {i} must be of type {type.FullName}.");

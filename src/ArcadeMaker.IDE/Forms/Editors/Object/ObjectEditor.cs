@@ -7,23 +7,14 @@ public partial class ObjectEditor : Form
 {
     private GameObject obj = null;
 
-    public GameSprite sprite
-    {
-        get
-        {
-            return obj.sprite;
-        }
-    }
+    public GameSprite sprite => obj.sprite;
 
     public ObjectEditor(GameObject obj)
     {
         InitializeComponent();
 
         this.obj = obj;
-        if (obj == null)
-        {
-            throw new ArgumentNullException("obj");
-        }
+        ArgumentNullException.ThrowIfNull(obj);
 
         // update name box when object is renamed
         obj.NameChanged += (s, e) =>
@@ -37,7 +28,7 @@ public partial class ObjectEditor : Form
 
     private bool renaming = false;
 
-    private void nameBox_TextChanged(object sender, EventArgs e)
+    private void NameBox_TextChanged(object sender, EventArgs e)
     {
         renaming = true;
         try
@@ -53,25 +44,19 @@ public partial class ObjectEditor : Form
         renaming = false;
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void OkBtn_Click(object sender, EventArgs e) => Close();
 
     private void ObjectEditor_Load(object sender, EventArgs e)
     {
         PropertiesModifier.Init(obj);
-        foreach (EventScripts ev in obj.EventScripts)
+        foreach (var ev in obj.EventScripts)
         {
             var item = ev.Event;
             eventsListView.Items.Add(item);
         }
         solidBox.Checked = obj.solid;
         depthBox.Value = obj.depth;
-        Environment.project.items.CollectionChanged += (s, ea) =>
-        {
-            LoadSpriteBox();
-        };
+        Environment.project.items.CollectionChanged += (s, ea) => LoadSpriteBox();
         SelectEventDialog.EventSelected += (s, ea) =>
         {
             if (!obj.EventScripts.Any(sc => sc.Event == ea))
@@ -99,15 +84,9 @@ public partial class ObjectEditor : Form
 
     private SelectEventDialog SelectEventDialog = new SelectEventDialog();
 
-    private void addEventBtn_Click(object sender, EventArgs e)
-    {
-        SelectEventDialog.ShowDialog();
-    }
+    private void AddEventBtn_Click(object sender, EventArgs e) => SelectEventDialog.ShowDialog();
 
-    private void solidBox_CheckedChanged(object sender, EventArgs e)
-    {
-        obj.solid = solidBox.Checked;
-    }
+    private void SolidBox_CheckedChanged(object sender, EventArgs e) => obj.solid = solidBox.Checked;
 
     private bool firstEdit = true;
     //private void fullCodeBtn_Click(object sender, EventArgs e)
@@ -156,12 +135,9 @@ public partial class ObjectEditor : Form
     //    editor.ShowDialog();
     //}
 
-    private void depthBox_ValueChanged(object sender, EventArgs e)
-    {
-        obj.depth = (int)depthBox.Value;
-    }
+    private void DepthBox_ValueChanged(object sender, EventArgs e) => obj.depth = (int)depthBox.Value;
 
-    private void deleteEventBtn_Click(object sender, EventArgs e)
+    private void DeleteEventBtn_Click(object sender, EventArgs e)
     {
         if (eventsListView.SelectedItems.Count == 0) return;
 
@@ -175,7 +151,7 @@ public partial class ObjectEditor : Form
         }
         catch (Exception ex)
         {
-            string err = "Cannot delete or change event";
+            var err = "Cannot delete or change event";
 #if DEBUG
             err += "\n\nException:\n" + ex;
 #endif
@@ -183,13 +159,13 @@ public partial class ObjectEditor : Form
         }
     }
 
-    private void changeEventBtn_Click(object sender, EventArgs e)
+    private void ChangeEventBtn_Click(object sender, EventArgs e)
     {
-        deleteEventBtn_Click(null, null);
-        addEventBtn_Click(null, null);
+        DeleteEventBtn_Click(null, null);
+        AddEventBtn_Click(null, null);
     }
 
-    private void editSpriteBtn_Click(object sender, EventArgs e)
+    private void EditSpriteBtn_Click(object sender, EventArgs e)
     {
         if (sprite != null)
         {
@@ -206,7 +182,7 @@ public partial class ObjectEditor : Form
         }
     }
 
-    private void newSpriteBtn_Click(object sender, EventArgs e)
+    private void NewSpriteBtn_Click(object sender, EventArgs e)
     {
         // create sprite by simulating click on the 'create sprite' button on form1
         var args = new CreateGameItemEventArgs(null);
@@ -220,7 +196,7 @@ public partial class ObjectEditor : Form
         catch { }
     }
 
-    private void parentBox_SelectionChanged(object sender, GameObject e)
+    private void ParentBox_SelectionChanged(object sender, GameObject e)
     {
         if (e != obj)
             obj.parent = e;
@@ -231,12 +207,9 @@ public partial class ObjectEditor : Form
         }
     }
 
-    private void spriteBox_SelectionChanged(object sender, GameSprite e)
-    {
-        obj.sprite = spriteBox.Resource;
-    }
+    private void SpriteBox_SelectionChanged(object sender, GameSprite e) => obj.sprite = spriteBox.Resource;
 
-    private void addScriptBtn_Click(object sender, EventArgs e)
+    private void AddScriptBtn_Click(object sender, EventArgs e)
     {
         if (eventsListView.SelectedItem is not ObjectEvent ev)
         {
@@ -249,10 +222,7 @@ public partial class ObjectEditor : Form
         scriptsListView.Items.Add(script);
     }
 
-    private void eventsListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        LoadScriptsListView();
-    }
+    private void EventsListView_SelectedIndexChanged(object sender, EventArgs e) => LoadScriptsListView();
 
     private void LoadScriptsListView()
     {
@@ -266,7 +236,7 @@ public partial class ObjectEditor : Form
         scriptsListView.Items.AddRange(obj.EventScripts.FirstOrDefault(es => es.Event == ev)?.Scripts.ToArray() ?? []);
     }
 
-    private void scriptsListView_DoubleClick(object sender, EventArgs e)
+    private void ScriptsListView_DoubleClick(object sender, EventArgs e)
     {
         if (scriptsListView.SelectedItem is not EventScript script)
             return;
@@ -283,7 +253,7 @@ public partial class ObjectEditor : Form
         editor.ShowDialog();
     }
 
-    private void deleteScriptBtn_Click(object sender, EventArgs e)
+    private void DeleteScriptBtn_Click(object sender, EventArgs e)
     {
         if (eventsListView.SelectedItem is not ObjectEvent ev)
             return;
@@ -295,29 +265,26 @@ public partial class ObjectEditor : Form
         scriptsListView.Items.Remove(script);
     }
 
-    private void scriptsListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        scriptsListView.Invalidate();
-    }
+    private void ScriptsListView_SelectedIndexChanged(object sender, EventArgs e) => scriptsListView.Invalidate();
 
-    private void scriptsListView_DrawItem(object sender, DrawItemEventArgs e)
+    private void ScriptsListView_DrawItem(object sender, DrawItemEventArgs e)
     {
         if (e.Index < 0) return;
 
-        Font font = e.Font!;
+        var font = e.Font!;
 
         // draw rectangle
         //if (scriptsListView.SelectedIndex == e.Index)
         //    e.Graphics.FillRectangle(Brushes.RoyalBlue, e.Bounds.X, e.Bounds.Y, e.Bounds.Width, font.Height);
         e.DrawBackground();
 
-        bool selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+        var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
 
         // draw row index
         e.Graphics.DrawString((e.Index + 1).ToString(), font, Brushes.Red, new PointF(0, e.Bounds.Y));
 
         // get the item
-        object? item = scriptsListView.Items[e.Index];
+        var item = scriptsListView.Items[e.Index];
 
         // draw the item text
         e.Graphics.DrawString(item?.ToString(), font, selected ? Brushes.White : Brushes.Black, new PointF(30, e.Bounds.Y));

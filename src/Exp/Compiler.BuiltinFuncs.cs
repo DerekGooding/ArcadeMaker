@@ -33,13 +33,13 @@ public partial class Interpreter
         //if (skipBuiltinFuncs)
         //    return false;
         skipBuiltinFuncs = true;
-        bool bin = false;
+        var bin = false;
 
         if (ctx is FuncDefSpan binfunc)
         {
             func = binfunc;
 
-            if (ExternInvokers.TryGetValue(func, out ExternFunc? extrn))
+            if (ExternInvokers.TryGetValue(func, out var extrn))
             {
                 func.Return = true;
                 func.Returns = extrn.Func?.Invoke(instance, [.. func.ParamVariables.Map(p => p.Value)]);
@@ -47,7 +47,7 @@ public partial class Interpreter
             }
             else if (func == FuncDefSpan.ArrayIndexGetter)
             {
-                int i = (int)GetArg<IValue>(0).Number;
+                var i = (int)GetArg<IValue>(0).Number;
 
                 if (i >= instance.ArrayValues.Length)
                     ThrowRuntime("Index is out of range.", RuntimeException.INDEX_OUT_OF_RANGE);
@@ -57,7 +57,7 @@ public partial class Interpreter
             }
             else if (func == FuncDefSpan.ArrayIndexSetter)
             {
-                int i = (int)GetArg<IValue>(0).Number;
+                var i = (int)GetArg<IValue>(0).Number;
                 if (i >= instance.ArrayValues.Length)
                     ThrowRuntime("Index is out of range.", RuntimeException.INDEX_OUT_OF_RANGE);
                 ActionOperator op = (ActionOperator)GetArg<IValue>(1).Number;
@@ -80,7 +80,7 @@ public partial class Interpreter
             else if (func == FuncDefSpan.ExternInvoker)
             {
                 var type = GetArg<SpecialValue<Type>>(0).Value;
-                bool statc = GetArg<IValue>(1).Bool;
+                var statc = GetArg<IValue>(1).Bool;
                 var method = GetArg<SpecialValue<string>>(2).Value;
                 var obj = GetArg<SpecialValue<object>>(3, allowDefault: true)?.Value;
                 var args = GetArg<SpecialValue<IReadingOperation[]>>(4).Value.Map(r => r.Read());
@@ -94,7 +94,7 @@ public partial class Interpreter
                 var pinfo = GetArg<SpecialValue<System.Reflection.PropertyInfo>>(1).Value;
                 var obj = GetArg<SpecialValue<object>>(2, allowDefault: true)?.Value;
                 var val = GetArg<IValue>(3, allowDefault: true);
-                bool isSet = GetArg<IValue>(4).Bool;
+                var isSet = GetArg<IValue>(4).Bool;
                 if (isSet)
                     pinfo.SetValue(obj, ExpValToCsVal(val));
                 else
@@ -107,7 +107,7 @@ public partial class Interpreter
             {
                 if (func.DefinedAt.Name == "Date" && func.Name == "setToNow")
                 {
-                    DateTime now = DateTime.Now;
+                    var now = DateTime.Now;
                     //instance.Vars.First(v => v.Name == "day").Value = (double)now.Day;
                     //instance.Vars.First(v => v.Name == "month").Value = (double)now.Month;
                     //instance.Vars.First(v => v.Name == "year").Value = (double)now.Year;
@@ -128,8 +128,7 @@ public partial class Interpreter
                 }
                 else if (func.Static && func.DefinedAt == ClassDefSpan.ExpTypeDef && func.Name == "get")
                 {
-                    var arg = func.Vars[0].Value as Instance;
-                    if (arg == null)
+                    if (func.Vars[0].Value is not Instance arg)
                         ThrowRuntime($"Invalid Argument: {func.Args[0].Name} must be a non-premitive type (received: {func.Vars[0].Value}).", RuntimeException.INVALID_ARGUMENT);
                     else
                     {
@@ -217,8 +216,8 @@ public partial class Interpreter
             }
             else if (func.Name == "setTimeout")
             {
-                double millis = GetArg<IValue>(0).Number;
-                FuncPntr action = GetArg<FuncPntr>(1);
+                var millis = GetArg<IValue>(0).Number;
+                var action = GetArg<FuncPntr>(1);
 
                 async Task Make()
                 {
@@ -233,8 +232,8 @@ public partial class Interpreter
             }
             else if (func.Name == "runAsync" && func.Args.Length == 2)
             {
-                FuncPntr action = GetArg<FuncPntr>(0);
-                FuncPntr onComplete = GetArg<FuncPntr>(1, allowDefault: true);
+                var action = GetArg<FuncPntr>(0);
+                var onComplete = GetArg<FuncPntr>(1, allowDefault: true);
 
                 async Task Make()
                 {
@@ -266,11 +265,11 @@ public partial class Interpreter
                 {
                     if (func.Args.Length == 2) // for property
                     {
-                        Instance type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
+                        var type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
                         ClassDefSpan cls = (ClassDefSpan)type.Vars[2].Value;
 
-                        string propName = GetInstArg(1, ClassDefSpan.ExpStringDef).ToString();
-                        ICanSetAttr prop = (ICanSetAttr)cls.Props.FirstOrDefault(p => p.Name == propName) ?? cls.Vars.OfType<ClassStaticVar>().FirstOrDefault(p => p.Name == propName);
+                        var propName = GetInstArg(1, ClassDefSpan.ExpStringDef).ToString();
+                        var prop = (ICanSetAttr)cls.Props.FirstOrDefault(p => p.Name == propName) ?? cls.Vars.OfType<ClassStaticVar>().FirstOrDefault(p => p.Name == propName);
                         if (prop == null)
                             ThrowRuntime($"'{((IDefinition)cls).FullName}' does not contain a property named '{propName}'.", RuntimeException.INVALID_ARGUMENT);
                         if (prop.AttrInfo == null)
@@ -282,12 +281,12 @@ public partial class Interpreter
                     }
                     else if (func.Args.Length == 3) // for funcs
                     {
-                        Instance type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
+                        var type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
                         ClassDefSpan cls = (ClassDefSpan)type.Vars[2].Value;
 
-                        string funcName = GetInstArg(1, ClassDefSpan.ExpStringDef).ToString();
-                        int paramsCount = (int)GetArg<IValue>(2).Number;
-                        FuncDefSpan fn = cls.Funcs.FirstOrDefault(p => p.Args.Length == paramsCount && p.Name == funcName);
+                        var funcName = GetInstArg(1, ClassDefSpan.ExpStringDef).ToString();
+                        var paramsCount = (int)GetArg<IValue>(2).Number;
+                        var fn = cls.Funcs.FirstOrDefault(p => p.Args.Length == paramsCount && p.Name == funcName);
                         if (fn == null)
                             ThrowRuntime($"'{((IDefinition)cls).FullName}' does not contain a function named '{funcName}' taking {paramsCount} parameters.", RuntimeException.INVALID_ARGUMENT);
                         if (fn.AttrInfo == null)
@@ -299,7 +298,7 @@ public partial class Interpreter
                     }
                     else if (func.Args.Length == 1) // for class
                     {
-                        Instance type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
+                        var type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
                         ClassDefSpan cls = (ClassDefSpan)type.Vars[2].Value;
 
                         func.Returns = cls.AttrInfo.ToExpArray();
@@ -365,16 +364,16 @@ public partial class Interpreter
 
                     bin = true;
                 }
-                else if (func.Name == "getFunctions" || func.Name == "getConstructors")
+                else if (func.Name is "getFunctions" or "getConstructors")
                 {
-                    bool ctors = func.Name == "getConstructors";
+                    var ctors = func.Name == "getConstructors";
 
-                    Instance type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
+                    var type = GetInstArg(0, ClassDefSpan.ExpTypeDef);
                     ClassDefSpan cls = (ClassDefSpan)type.Vars[2].Value.Object;
 
                     var funcDefs = !ctors ? cls.Funcs.Where(ff => ff is not ConstructorDefSpan) : cls.Funcs.OfType<ConstructorDefSpan>();
                     var funcs = new Instance[funcDefs.Count()];
-                    for (int i = 0; i < funcs.Length; i++)
+                    for (var i = 0; i < funcs.Length; i++)
                     {
                         var funcInfoDef = definations.FirstOrDefault(d => d is ClassDefSpan && d.Namespace == "reflection" && d.Name == (ctors ? "ConstructorInfo" : "FunctionInfo")) as ClassDefSpan ?? throw new Exception("reflection::(Function/Constructor)Info class not found.");
                         var f = new Instance(funcInfoDef);
@@ -415,7 +414,7 @@ public partial class Interpreter
                     ValidateAccess(f, input.def, currentContext);
 
                     // invoke
-                    func.Returns = FuncCall(input, f, currentContext, out bool _, args.ArrayValues);
+                    func.Returns = FuncCall(input, f, currentContext, out var _, args.ArrayValues);
                     func.Return = func.Returns is not Void;
                     bin = true;
                 }
@@ -443,7 +442,7 @@ public partial class Interpreter
 
                     // invoke
                     Instance create = new Instance(cls);
-                    FuncCall(create, c, currentContext, out bool _, args.ArrayValues);
+                    FuncCall(create, c, currentContext, out var _, args.ArrayValues);
                     func.Returns = create;
                     func.Return = true;
                     bin = true;
@@ -451,7 +450,7 @@ public partial class Interpreter
                 else if (func.Name == "getTypeByName")
                 {
                     // get type name
-                    string[] tname = GetInstArg(0, ClassDefSpan.ExpStringDef).ToString().Split(NamespaceSpecificationSpan.Symbol);
+                    var tname = GetInstArg(0, ClassDefSpan.ExpStringDef).ToString().Split(NamespaceSpecificationSpan.Symbol);
 
                     // get type
                     if (tname.Length > 2 || (tname.Length == 2 && string.IsNullOrWhiteSpace(tname[1])))
@@ -459,7 +458,7 @@ public partial class Interpreter
                     ClassDefSpan cls = definations.FirstOrDefault(d => d is ClassDefSpan && d.Namespace == (tname.Length == 2 ? tname[0] : null) && d.Name == (tname.Length == 0 ? tname[0] : tname[1])) as ClassDefSpan;
                     if (cls == null)
                         ThrowRuntime($"Class '{tname[0] + (tname.Length == 2 ? $"::{tname[1]}" : "")}' was not found.", RuntimeException.NOT_FOUND);
-                    Instance type = cls.ExpType;
+                    var type = cls.ExpType;
 
                     func.Return = true;
                     func.Returns = type;

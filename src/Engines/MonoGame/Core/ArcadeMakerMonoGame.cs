@@ -62,10 +62,7 @@ public partial class ArcadeMakerMonoGame : Game, IGame
                 {
                     BoxingViewportAdapter viewportAdapter = new(Window, GraphicsDevice, (int)view.Width, (int)view.Height);
                     var camera = new OrthographicCamera(viewportAdapter);
-                    view.PositionChanged += (s, e) =>
-                    {
-                        camera.Position = new Vector2((float)view.X, (float)view.Y);
-                    };
+                    view.PositionChanged += (s, e) => camera.Position = new Vector2((float)view.X, (float)view.Y);
                     Cameras.Add((new(view.PortX, view.PortY, view.PortWidth, view.PortHeight), camera));
                 }
             }
@@ -124,9 +121,9 @@ public partial class ArcadeMakerMonoGame : Game, IGame
         IsMouseVisible = true;
 
         // Load supported languages and set the default language.
-        List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
+        var cultures = LocalizationManager.GetSupportedCultures();
         var languages = new List<CultureInfo>();
-        for (int i = 0; i < cultures.Count; i++)
+        for (var i = 0; i < cultures.Count; i++)
         {
             languages.Add(cultures[i]);
         }
@@ -150,52 +147,49 @@ public partial class ArcadeMakerMonoGame : Game, IGame
     /// <summary>
     /// Loads game content, such as textures and particle systems.
     /// </summary>
-    protected override void LoadContent()
-    {
-        Try(() =>
-        {
-            base.LoadContent();
+    protected override void LoadContent() => Try(() =>
+                                                  {
+                                                      base.LoadContent();
 
-            // load background textures
-            Backgrounds.ForEach(bg => BackgroundTextures.Add(bg, Texture2D.FromFile(GraphicsDevice, bg.FilePath)));
+                                                      // load background textures
+                                                      Backgrounds.ForEach(bg => BackgroundTextures.Add(bg, Texture2D.FromFile(GraphicsDevice, bg.FilePath)));
 
-            // load fonts
-            Fonts.All.Clear();
-            Fonts.Current = null;
-            foreach (var fontd in FontsData)
-                Fonts.All.Add(Fonts.FromGameFont(fontd, GraphicsDevice));
-            if (Fonts.All.Count > 0)
-                Fonts.Current = Fonts.All[0];
+                                                      // load fonts
+                                                      Fonts.All.Clear();
+                                                      Fonts.Current = null;
+                                                      foreach (var fontd in FontsData)
+                                                          Fonts.All.Add(Fonts.FromGameFont(fontd, GraphicsDevice));
+                                                      if (Fonts.All.Count > 0)
+                                                          Fonts.Current = Fonts.All[0];
 
-            // load main texture atlas
-            var mainAtlasTexture = Texture2D.FromFile(GraphicsDevice, MainTextureAtlasMap.AtlasFilePath);
-            MainTextureAtlas = new(mainAtlasTexture);
-            foreach (var item in MainTextureAtlasMap.Items)
-                MainTextureAtlas.AddRegion(Sprites.First(sprite => sprite.Name == item.SpriteName), item.ImageIndex, item.X, item.Y, item.W, item.H);
+                                                      // load main texture atlas
+                                                      var mainAtlasTexture = Texture2D.FromFile(GraphicsDevice, MainTextureAtlasMap.AtlasFilePath);
+                                                      MainTextureAtlas = new(mainAtlasTexture);
+                                                      foreach (var item in MainTextureAtlasMap.Items)
+                                                          MainTextureAtlas.AddRegion(Sprites.First(sprite => sprite.Name == item.SpriteName), item.ImageIndex, item.X, item.Y, item.W, item.H);
 
-            // load sounds
-            foreach (var sound in Sounds)
-            {
-                try
-                {
-                    if (sound.Type == Sound.Types.SoundEffect)
-                    {
-                        var effect = SoundEffect.FromFile(sound.FilePath);
-                        soundEffects.Add(sound, effect);
-                    }
-                    else if (sound.Type == Sound.Types.BackgroundMusic)
-                    {
-                        var song = Song.FromUri(sound.Name, new Uri(sound.FilePath, UriKind.Absolute));
-                        backgroundMusics.Add(sound, song);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException($"Error loading sound {sound.Name}: {ex.Message}.");
-                }
-            }
-        });
-    }
+                                                      // load sounds
+                                                      foreach (var sound in Sounds)
+                                                      {
+                                                          try
+                                                          {
+                                                              if (sound.Type == Sound.Types.SoundEffect)
+                                                              {
+                                                                  var effect = SoundEffect.FromFile(sound.FilePath);
+                                                                  soundEffects.Add(sound, effect);
+                                                              }
+                                                              else if (sound.Type == Sound.Types.BackgroundMusic)
+                                                              {
+                                                                  var song = Song.FromUri(sound.Name, new Uri(sound.FilePath, UriKind.Absolute));
+                                                                  backgroundMusics.Add(sound, song);
+                                                              }
+                                                          }
+                                                          catch (Exception ex)
+                                                          {
+                                                              throw new ArgumentException($"Error loading sound {sound.Name}: {ex.Message}.");
+                                                          }
+                                                      }
+                                                  });
 
     private bool isOnError;
 
@@ -333,10 +327,7 @@ public partial class ArcadeMakerMonoGame : Game, IGame
         graphicsDeviceManager.ApplyChanges();
     }
 
-    public void SetCaption(string caption)
-    {
-        Window.Title = caption;
-    }
+    public void SetCaption(string caption) => Window.Title = caption;
 
     public Exp.Void ShowMessage(Exp.Instance? _, IValue[] args)
     {
@@ -384,7 +375,7 @@ public partial class ArcadeMakerMonoGame : Game, IGame
             throw new ArgumentException("2 arguments of type number were expected.");
 
         // check if the specified key is currently pressed.
-        GamePadState? gamepad = args[0].Number switch
+        var gamepad = args[0].Number switch
         {
             1 => Gamepad1State,
             2 => Gamepad2State,
@@ -425,10 +416,7 @@ public partial class ArcadeMakerMonoGame : Game, IGame
         return Exp.Void.Return;
     }
 
-    public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness = 1f)
-    {
-        SpriteBatch.DrawLine(new Vector2((float)x1, (float)y1), new Vector2((float)x2, (float)y2), new Color((uint)col), (float)thickness);
-    }
+    public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness = 1f) => SpriteBatch.DrawLine(new Vector2((float)x1, (float)y1), new Vector2((float)x2, (float)y2), new Color((uint)col), (float)thickness);
 
     public IValue GetMouseX(Exp.Instance? _, IValue?[] args) => MouseState.Value.X.ToExp();
 

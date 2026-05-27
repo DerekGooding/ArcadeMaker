@@ -4,8 +4,5 @@ internal class NotOperation(IReadingOperation readingOperation) : IReadingOperat
 {
     internal IReadingOperation ReadingOperation => readingOperation ?? throw new ArgumentNullException();
 
-    public IValue Read()
-    {
-        return new BoolValue(!ReadingOperation.Read().Bool);
-    }
+    public IValue Read() => new BoolValue(!ReadingOperation.Read().Bool);
 }

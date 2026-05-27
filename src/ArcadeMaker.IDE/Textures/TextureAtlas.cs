@@ -13,14 +13,14 @@ internal static class TextureAtlas
 
         // pack
         var rects = textures.Map(r => r.Rect).ToArray();
-        RectanglePacker.Pack(rects, out PackingRectangle bounds);
+        RectanglePacker.Pack(rects, out var bounds);
 
         // create empty atlas image
         var atlas = new Bitmap((int)bounds.Width, (int)bounds.Height);
 
         // fill atlas image
         using var graphics = Graphics.FromImage(atlas);
-        int i = 0;
+        var i = 0;
         foreach (var texture in textures)
         {
             texture.Rect = rects[i++];
@@ -35,7 +35,7 @@ internal static class TextureAtlas
         List<SpriteImageRect> allImages = [];
         foreach (var sprite in project.items.OfType<GameSprite>())
         {
-            int i = 0;
+            var i = 0;
             allImages.AddRange(sprite.images.Map(_ => new SpriteImageRect(sprite, i++)));
         }
 

@@ -80,7 +80,7 @@ public class Instance : Exp.Instance
         var isBoolChecker = new Func<IValue?, bool>(v => v?.IsBool == true);
 
         NumberValue zero = 0d.ToExp(), one = 1d.ToExp();
-        BoolValue expFalse = false.ToExp();
+        var expFalse = false.ToExp();
 
         X = InitVar("x", zero, isNumChecker, ValueHelper.tnum);
         Y = InitVar("y", zero, isNumChecker, ValueHelper.tnum);

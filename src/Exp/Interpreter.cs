@@ -27,28 +27,17 @@ internal interface INamedValue
     bool IsVar { get; }
 }
 
-public class Property : IClassMember, IExpItem
+public class Property(ClassDefSpan def, bool cons, string name, bool prvt, bool baseArr, Span[] initVal = null, List<Span[]> tagsCode = null) : IClassMember, IExpItem
 {
     public static string ItemName { get; } = "class property";
-    public string Name { get; }
-    internal bool Const { get; }
-    internal bool Private { get; }
-    internal bool BaseArray { get; }
-    internal Span[] InitValueReadText;
+    public string Name { get; } = name;
+    internal bool Const { get; } = cons;
+    internal bool Private { get; } = prvt;
+    internal bool BaseArray { get; } = baseArr;
+    internal Span[] InitValueReadText = initVal;
     public Instance[] AttrInfo { get; set; }
-    public List<Span[]> TagsCode { get; set; }
-    public ClassDefSpan Def { get; set; }
-
-    public Property(ClassDefSpan def, bool cons, string name, bool prvt, bool baseArr, Span[] initVal = null, List<Span[]> tagsCode = null)
-    {
-        Const = cons;
-        Name = name;
-        Private = prvt;
-        BaseArray = baseArr;
-        InitValueReadText = initVal;
-        TagsCode = tagsCode ?? [];
-        Def = def;
-    }
+    public List<Span[]> TagsCode { get; set; } = tagsCode ?? [];
+    public ClassDefSpan Def { get; set; } = def;
 }
 
 /// <summary>
@@ -120,10 +109,10 @@ public partial class Interpreter : IVarSystem
     {
         ArgumentNullException.ThrowIfNull(fn);
 
-        foreach (int paramsCount in fn.ParamsCountOptions)
+        foreach (var paramsCount in fn.ParamsCountOptions)
         {
             List<ArgumentSpan> prms = [];
-            for (int i = 1; i <= paramsCount; i++)
+            for (var i = 1; i <= paramsCount; i++)
                 prms.Add(new("p" + i));
             FuncDefSpan invoker = new(fn.Name, prms.ToArray(), [], def) { Namespace = fn.Namespace, Static = statc };
             invoker.Operations = [new ReturnStatement(invoker, new ExternFuncInvocationOperation(invoker, fn), null)];
@@ -139,10 +128,7 @@ public partial class Interpreter : IVarSystem
 
     internal IEnumerable<ClassDefSpan> UsedClasses(Span from) => UsedDefinations(from).OfType<ClassDefSpan>();
 
-    internal IEnumerable<IDefinition> UsedDefinations(Span from)
-    {
-        return definations.Where(d => d.Namespace == null || from.Document.Namespace == d.Namespace || from.Document.Usings?.Contains(d.Namespace) == true);
-    }
+    internal IEnumerable<IDefinition> UsedDefinations(Span from) => definations.Where(d => d.Namespace == null || from.Document.Namespace == d.Namespace || from.Document.Usings?.Contains(d.Namespace) == true);
 
     internal List<ExternClassDefSpan> externs = [];
 
@@ -169,10 +155,7 @@ public partial class Interpreter : IVarSystem
     /// </summary>
     /// <param name="source">Script to run.</param>
     /// <param name="imports">Libraries codes.</param>
-    public Interpreter()
-    {
-        CurrentVarSystem = this;
-    }
+    public Interpreter() => CurrentVarSystem = this;
 
     public void Build(ScriptDocument source, IEnumerable<IDefinition>? defsToImport = null, params ScriptDocument[] imports)
     {
@@ -209,10 +192,7 @@ public partial class Interpreter : IVarSystem
 
         ResolveAttributes();
 
-        void OperateFunc(FuncDefSpan func)
-        {
-            func.Operations = ReadOperations(func.InnerSource, func);
-        }
+        void OperateFunc(FuncDefSpan func) => func.Operations = ReadOperations(func.InnerSource, func);
         definations.OfType<FuncDefSpan>().ForEach(OperateFunc);
         definations.OfType<ClassDefSpan>().ForEach(cls => cls.Funcs.ForEach(OperateFunc));
         operations = ReadOperations(null, this);
@@ -231,7 +211,7 @@ public partial class Interpreter : IVarSystem
 
     private WordSpan ReadWord(string specific = null)
     {
-        Span span = ReadSpan();
+        var span = ReadSpan();
 
         if (specific != null && span?.FullText != specific)
             Error($"Word '{specific}' was expected.");
@@ -246,7 +226,7 @@ public partial class Interpreter : IVarSystem
 
     private T Read<T>() where T : Span
     {
-        Span span = ReadSpan();
+        var span = ReadSpan();
         if (span == null)
             Error($"{GetSymbolOrKeyword(typeof(T))} expected.");
         else if (span is not T)
@@ -289,7 +269,7 @@ public partial class Interpreter : IVarSystem
             var val = ReadValue(out var src);
             args.Add(val);
 
-            Span symb = Spoiler();
+            var symb = Spoiler();
             if (arrayBrackets ? symb is ArrayCloserSpan : symb is ClosingBracketSpan)
             {
                 ReadSpan();
@@ -328,7 +308,7 @@ public partial class Interpreter : IVarSystem
             var reading = ReadReadingOperation(out var src);
             readings.Add(reading);
 
-            Span symb = Spoiler();
+            var symb = Spoiler();
             if (arrayBrackets ? symb is ArrayCloserSpan : symb is ClosingBracketSpan)
             {
                 ReadSpan();
@@ -385,7 +365,7 @@ public partial class Interpreter : IVarSystem
                 return null;
             }
 
-            Span ispan = ReadSpan(spaces: false);
+            var ispan = ReadSpan(spaces: false);
 
             if (ispan is SourceCloserSpan)
                 break;
@@ -400,7 +380,7 @@ public partial class Interpreter : IVarSystem
         if (spoiler && firstSpan != null)
             throw new Exception($"{nameof(spoiler)} cannot be true when {nameof(firstSpan)} is not null.");
 
-        WordSpan name = firstSpan;
+        var name = firstSpan;
         if (name == null)
         {
             if (Spoiler() is WordSpan ws)
@@ -434,11 +414,11 @@ public partial class Interpreter : IVarSystem
 
     private Span Spoiler(int skip = 0)
     {
-        Span last = lastSpan;
-        int cur = cursor;
-        int spcur = CodeSpans == null ? spansCursor : codeCursor;
+        var last = lastSpan;
+        var cur = cursor;
+        var spcur = CodeSpans == null ? spansCursor : codeCursor;
         Span span = null;
-        for (int i = 0; i <= skip; i++)
+        for (var i = 0; i <= skip; i++)
             span = ReadSpan(true);
         cursor = cur;
         if (CodeSpans == null)
@@ -472,7 +452,7 @@ public partial class Interpreter : IVarSystem
 
         // scan the current VS inner, then in its outers, then outers' outers and so on
         // if specific VS is attached, start from it
-        IVarSystem vs = from;
+        var vs = from;
         while (vs != null)
         {
             pointer = Scan(vs);
@@ -503,12 +483,12 @@ public partial class Interpreter : IVarSystem
             return;
         }
         taggedItem.AttrInfo = new Instance[taggedItem.TagsCode.Count];
-        int counter = 0;
+        var counter = 0;
         foreach (var code in taggedItem.TagsCode)
         {
             // set source properties before reading spans
-            Span[] sourceSpans_backup = CodeSpans;
-            Span ls = lastSpan;
+            var sourceSpans_backup = CodeSpans;
+            var ls = lastSpan;
             int cur = cursor, spcur = codeCursor;
             cursor = 0;
             codeCursor = 0;
@@ -523,7 +503,7 @@ public partial class Interpreter : IVarSystem
             // read args
             List<IValue> args = [];
             var spoiler = Spoiler();
-            if (spoiler == null || spoiler is not OpeningBracketSpan)
+            if (spoiler is null or not OpeningBracketSpan)
             {
                 if (attr.Params.Length >= 1)
                     Error("Expected '('" + (spoiler != null ? $", but '{spoiler.FullText}' was read" : "") + ".");
@@ -531,7 +511,7 @@ public partial class Interpreter : IVarSystem
                     goto AfterReadingArgs;
             }
             Read<OpeningBracketSpan>();
-            for (int i = 0; i < attr.Params.Length; i++)
+            for (var i = 0; i < attr.Params.Length; i++)
             {
                 var valop = ReadReadingOperation();
                 if (valop is not ConstValueReadingOperation or ConstArrayReadingOperation)
@@ -539,7 +519,7 @@ public partial class Interpreter : IVarSystem
                 var val = valop.Read();
 
                 // check type match
-                bool typeMismatch = false;
+                var typeMismatch = false;
                 if (attr.Params[i].ExpType != null)
                     typeMismatch = val is not Instance inst || attr.Params[i].ExpType != inst.def.ExpType;
                 else
@@ -607,9 +587,9 @@ public partial class Interpreter : IVarSystem
                 foreach (var info in attr.GetAttrInfoOf(AttributeDefSpan.ExpectFuncAttr))
                 {
                     var infoVals = info.Vars.First(v => v.Name == "values").Value.Inst;
-                    string func1 = infoVals.ArrayValues[0].Inst.ToString();
-                    int paramsc = (int)infoVals.ArrayValues[1].Number;
-                    bool stat = infoVals.ArrayValues[2].Bool;
+                    var func1 = infoVals.ArrayValues[0].Inst.ToString();
+                    var paramsc = (int)infoVals.ArrayValues[1].Number;
+                    var stat = infoVals.ArrayValues[2].Bool;
                     if (!cls.Funcs.Any(f => f.Name == func1 && f.Args.Length == paramsc && !f.Private && f.Static == stat))
                         Error($"'{cls.GetExpTypeName(false)}' must contain a public {(stat ? "" : "non-")}static function named '{func1}' taking {paramsc} arguments, because it contains tag of attribute '{attr.GetExpTypeName(false)}'.");
                 }
@@ -724,7 +704,7 @@ public partial class Interpreter : IVarSystem
         }
     }
 
-    private Variable GetPointer(string name, IVarSystem from) => GetPointer(name, from, out IVarSystem _);
+    private Variable GetPointer(string name, IVarSystem from) => GetPointer(name, from, out var _);
 
     private void ValidateAccess(INamedValue member, IVarSystem setAt, IVarSystem from)
     {
@@ -734,14 +714,12 @@ public partial class Interpreter : IVarSystem
             return;
 
         var fromFn = FindParentVarSystem<FuncDefSpan>(from);
-        var setAtInst = setAt as Instance;
-        var setAtCls = setAt as ClassDefSpan;
 
         if (fromFn != null)
         {
-            if (setAtInst != null && fromFn.DefinedAt == setAtInst.def)
+            if (setAt is Instance setAtInst && fromFn.DefinedAt == setAtInst.def)
                 return;
-            if (setAtCls != null && fromFn.DefinedAt == setAtCls)
+            if (setAt is ClassDefSpan setAtCls && fromFn.DefinedAt == setAtCls)
                 return;
         }
 
@@ -778,7 +756,7 @@ public partial class Interpreter : IVarSystem
 
     private Variable SetVar(string name, IValue value, IVarSystem at, WordSpan settingVar = null, bool createConst = false)
     {
-        var v = GetPointer(name, at, out IVarSystem foundAt);
+        var v = GetPointer(name, at, out var foundAt);
         if (v != null)
         {
             ValidateAccess(v, foundAt, at);
@@ -819,7 +797,7 @@ public partial class Interpreter : IVarSystem
 
     private T GetVar<T>(string name, bool allowNull = true, IVarSystem specificVS = null)
     {
-        object val = GetVar(name, specificVS);
+        var val = GetVar(name, specificVS);
         if (val == null)
         {
             if (allowNull)
@@ -832,10 +810,7 @@ public partial class Interpreter : IVarSystem
         throw null;
     }
 
-    private bool VarExists(string name, IVarSystem specificVS = null)
-    {
-        return GetPointer(name, specificVS) != null;
-    }
+    private bool VarExists(string name, IVarSystem specificVS = null) => GetPointer(name, specificVS) != null;
 
     private static Instance CreateAttrInfo(AttributeDefSpan attr, IValue[] vals)
     {
@@ -847,29 +822,16 @@ public partial class Interpreter : IVarSystem
         return info;
     }
 
-    private static void Print(object s)
-    {
-        s.Print();
-    }
+    private static void Print(object s) => s.Print();
 
-    private static void Println(object s)
-    {
-        s.Println();
-    }
+    private static void Println(object s) => s.Println();
 }
 
-public class ExpError : Exception
+public class ExpError(string sourceName, int line, int col, string msg) : Exception(msg)
 {
-    public string Doc { get; }
-    public int Line { get; }
-    public int Col { get; }
-
-    public ExpError(string sourceName, int line, int col, string msg) : base(msg)
-    {
-        Doc = sourceName;
-        Line = line;
-        Col = col;
-    }
+    public string Doc { get; } = sourceName;
+    public int Line { get; } = line;
+    public int Col { get; } = col;
 }
 
 public class BuildFailureException(IEnumerable<ExpError> errors) : Exception

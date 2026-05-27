@@ -6,19 +6,19 @@ public static class Spanner
 {
     public static TextSpan[] GetTextSpans(string text, string replaceTabSpaceWith = null, bool splitMultiCommentsLines = false)
     {
-        List<TextSpan> spans = new List<TextSpan>();
+        List<TextSpan> spans = [];
 
         TextSpan span = new TextSpan(0);
-        string spanText = "";
-        int length = text.Length;
-        bool first = false;
-        int ignore = 0; // 0: do not ignore; 1: ignore next; 2: ignore this
+        var spanText = "";
+        var length = text.Length;
+        var first = false;
+        var ignore = 0; // 0: do not ignore; 1: ignore next; 2: ignore this
 
         // run over each char in the text
-        int insideFormattedStringLength = 0;
-        for (int i = 0; i < text.Length; i++)
+        var insideFormattedStringLength = 0;
+        for (var i = 0; i < text.Length; i++)
         {
-            char c = text[i];
+            var c = text[i];
             if (c == '\t' && replaceTabSpaceWith != null)
             {
                 text = text.Remove(i, 1).Insert(i, replaceTabSpaceWith);
@@ -26,12 +26,12 @@ public static class Spanner
                 i--;
                 continue;
             }
-            bool nextSpan = false;
-            bool nextSpanInsideFormattedString = span.insideFormattedString;
+            var nextSpan = false;
+            var nextSpanInsideFormattedString = span.insideFormattedString;
             if (span.insideFormattedString)
                 insideFormattedStringLength++;
 
-            bool isSep = false;
+            var isSep = false;
 
             if (ignore < 2 && spanText.Length == 0)
             {
@@ -108,7 +108,7 @@ public static class Spanner
                         case '/':
                             if (i < length - 1)
                             {
-                                char nextChar = text[i + 1];
+                                var nextChar = text[i + 1];
                                 if (nextChar == '/')
                                 {
                                     span.type = SpanType.Comment;
@@ -130,7 +130,7 @@ public static class Spanner
                             break;
 
                         default:
-                            bool minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
+                            var minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
                             if ((c >= '0' && c <= '9') || minusNumber)
                             {
                                 span.type = SpanType.Number;
@@ -150,11 +150,11 @@ public static class Spanner
 
             if (ignore < 2 && (span.type == SpanType.FormattedString || !first))
             {
-                // check if current char is a seperator
+                // check if current char is a separator
                 switch (span.type)
                 {
                     case SpanType.Space:
-                        isSep = c != ' ' && c != '\n';
+                        isSep = c is not ' ' and not '\n';
                         if (isSep)
                             nextSpan = true;
                         break;
@@ -179,7 +179,7 @@ public static class Spanner
                         break;
 
                     case SpanType.Number:
-                        bool isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
+                        var isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
                         if (isHex)
                             isSep = (c < '0' || c > '9') && !(spanText.Length == 2 && (c == 'x' || c == 'X')) && (c < 'a' || c > 'f') && (c < 'A' || c > 'F');
                         else
@@ -192,10 +192,10 @@ public static class Spanner
                                        || (!spanText.Contains('.') && (c == 'u' || c == 'U' || c == 'L' || c == 'l')));
 
                             // take care of case of UL suffix
-                            char lastChar = spanText[spanText.Length - 2];
-                            bool lastCharIsNum = lastChar >= '0' && lastChar <= '9';
-                            char nextChar = i + 1 < text.Length ? text[i + 1] : (char)0;
-                            bool uSuffix = c == 'U' || c == 'u', lSuffix = c == 'L' || c == 'l';
+                            var lastChar = spanText[spanText.Length - 2];
+                            var lastCharIsNum = lastChar is >= '0' and <= '9';
+                            var nextChar = i + 1 < text.Length ? text[i + 1] : (char)0;
+                            bool uSuffix = c is 'U' or 'u', lSuffix = c is 'L' or 'l';
                             if (!nextSpan && (uSuffix || lSuffix) && lastCharIsNum && nextChar.EqualsIgnoreCase(uSuffix ? 'L' : 'U'))
                             {
                                 isSep = false;
@@ -206,7 +206,7 @@ public static class Spanner
                     case SpanType.Count:
                         if (spanText.Length >= 3) // after ..
                         {
-                            isSep = c < '0' || c > '9';
+                            isSep = c is < '0' or > '9';
                             nextSpan = true;
                         }
                         break;
@@ -225,7 +225,7 @@ public static class Spanner
                         else if (c == '=')
                         {
                             isSep = spanText.Length > 0;
-                            nextSpan = spanText != ">=" && spanText != "<=" && spanText != "+=" && spanText != "-=" && spanText != "!=" && spanText != "==";
+                            nextSpan = spanText is not ">=" and not "<=" and not "+=" and not "-=" and not "!=" and not "==";
                         }
                         else if (c == '?')
                         {
@@ -235,7 +235,7 @@ public static class Spanner
                         else if (c == '>')
                         {
                             isSep = spanText.Length > 0;
-                            nextSpan = spanText != "=>" && spanText != "->";
+                            nextSpan = spanText is not "=>" and not "->";
                         }
                         else
                         {
@@ -263,11 +263,11 @@ public static class Spanner
                             isSep = true;
                             break;
                         }
-                        if (c == ((span.type == SpanType.String || span.type == SpanType.FormattedString) ? '\"' : '\''))
+                        if (c == ((span.type is SpanType.String or SpanType.FormattedString) ? '\"' : '\''))
                         {
                             // check if quot is escaped
-                            bool esc = false;
-                            int left = 1;
+                            var esc = false;
+                            var left = 1;
                             while (i >= left && text[i - left++] == '\\')
                             {
                                 esc = !esc;
@@ -281,8 +281,8 @@ public static class Spanner
                         {
                             if (text.Length > i + 1 && text[i + 1] == '{')
                             {
-                                int lefts = 0;
-                                int left = 0;
+                                var lefts = 0;
+                                var left = 0;
                                 while (i - left >= 0 && text[i - left++] == '{')
                                     lefts++;
                                 if (text.Length > i + 2 && text[i + 2] != '{' && lefts % 2 == 0)
@@ -334,10 +334,10 @@ public static class Spanner
                     // it will be the end of the span if the current char is '}' and there wasn't a '{' relating to this
                     if (c == '}')
                     {
-                        int numberOfOpenersRequired = 1;
-                        for (int left = 1; left <= insideFormattedStringLength; left++)
+                        var numberOfOpenersRequired = 1;
+                        for (var left = 1; left <= insideFormattedStringLength; left++)
                         {
-                            char leftC = text[i - left];
+                            var leftC = text[i - left];
                             if (leftC == '}')
                                 numberOfOpenersRequired++;
                             else if (leftC == '{')
@@ -365,8 +365,8 @@ public static class Spanner
 
                     if (span.type == SpanType.MultiLineComment && splitMultiCommentsLines)
                     {
-                        string line = "";
-                        for (int j = 0; j < span.text.Length; j++)
+                        var line = "";
+                        for (var j = 0; j < span.text.Length; j++)
                         {
                             if (span.text[j] == '\n')
                             {
@@ -383,7 +383,7 @@ public static class Spanner
                     }
 
                     spans.Add(span);
-                    bool nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
+                    var nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
                     span = new TextSpan(i) { insideFormattedString = nextSpanInsideFormattedString };
                     if (nextSpanFormattedStringContinue)
                         span.type = SpanType.FormattedString;
@@ -404,7 +404,7 @@ public static class Spanner
 
         foreach (var sp in spans.ToArray())
         {
-            bool checkLink = false;
+            var checkLink = false;
 
             // set span color
             switch (sp.type)
@@ -454,7 +454,7 @@ public static class Spanner
                     startSearch = 2;
                     endSearch = sp.text.Length - 3;
                 }
-                else if (sp.type == SpanType.String || sp.type == SpanType.EscapedString || sp.type == SpanType.FormattedString)
+                else if (sp.type is SpanType.String or SpanType.EscapedString or SpanType.FormattedString)
                 {
                     startSearch = sp.text.IndexOf('"') + 1;
                     endSearch = sp.text.Length - 2;
@@ -465,7 +465,7 @@ public static class Spanner
                     endSearch = sp.text.Length - 2;
                 }
 
-                bool skipLinkSearch = startSearch >= sp.text.Length || endSearch < startSearch;
+                var skipLinkSearch = startSearch >= sp.text.Length || endSearch < startSearch;
                 if (!skipLinkSearch)
                 {
                     // detect links
@@ -503,14 +503,14 @@ public static class Spanner
                     } // another code for link detection (not working)
 
                     // split span
-                    List<TextSpan> splittedSpan = new List<TextSpan>();
+                    List<TextSpan> splittedSpan = [];
                     if (links.Count > 0)
                     {
                         links.Add(new int[2] { sp.text.Length, -1 }); // make the loop collect the last comment part
 
                         for (int link = 0, charIndex = 0; link < links.Count && charIndex < sp.text.Length; link++)
                         {
-                            bool invalidLink = links[link][1] <= -1;
+                            var invalidLink = links[link][1] <= -1;
 
                             var originalSpan = sp.Duplicate();
                             originalSpan.text = sp.text.Substring(charIndex, links[link][0] - charIndex);

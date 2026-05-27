@@ -15,7 +15,7 @@ internal class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
     {
         get
         {
-            string s = $"{Keyword} ({InitExe}; {Condition}; {StepExe})";
+            var s = $"{Keyword} ({InitExe}; {Condition}; {StepExe})";
             if (Id != null || Counter != null)
                 s += " : ";
             if (Id != null)

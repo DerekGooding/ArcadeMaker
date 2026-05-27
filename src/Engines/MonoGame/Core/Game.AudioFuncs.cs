@@ -22,11 +22,11 @@ public partial class ArcadeMakerMonoGame
     public Exp.Instance? PlaySound(Exp.Instance? _, IValue?[] args)
     {
         // resolve arguments
-        Sound sound = GetSoundFromArgs(args[0]);
-        bool loop = args.Length >= 2 && args[1].ThrowIfNull().Bool;
-        float volume = args.Length >= 3 ? (float)args[2].ThrowIfNull().Number : sound.StartVolume;
-        float pan = args.Length >= 4 ? (float)args[3].ThrowIfNull().Number : sound.StartPan;
-        float pitch = args.Length >= 5 ? (float)args[4].ThrowIfNull().Number : sound.StartPitch;
+        var sound = GetSoundFromArgs(args[0]);
+        var loop = args.Length >= 2 && args[1].ThrowIfNull().Bool;
+        var volume = args.Length >= 3 ? (float)args[2].ThrowIfNull().Number : sound.StartVolume;
+        var pan = args.Length >= 4 ? (float)args[3].ThrowIfNull().Number : sound.StartPan;
+        var pitch = args.Length >= 5 ? (float)args[4].ThrowIfNull().Number : sound.StartPitch;
 
         // play it
         if (sound.Type == Sound.Types.BackgroundMusic)
@@ -34,7 +34,7 @@ public partial class ArcadeMakerMonoGame
             if (MediaPlayer.State == MediaState.Playing)
                 MediaPlayer.Stop();
 
-            if (backgroundMusics.TryGetValue(sound, out Song? song))
+            if (backgroundMusics.TryGetValue(sound, out var song))
             {
                 MediaPlayer.Volume = volume;
                 MediaPlayer.IsRepeating = loop;
@@ -47,7 +47,7 @@ public partial class ArcadeMakerMonoGame
         }
         else if (sound.Type == Sound.Types.SoundEffect)
         {
-            if (soundEffects.TryGetValue(sound, out SoundEffect? effect))
+            if (soundEffects.TryGetValue(sound, out var effect))
             {
                 var sInst = effect.CreateInstance();
                 sInst.Volume = volume;
@@ -89,7 +89,7 @@ public partial class ArcadeMakerMonoGame
         else
         {
             args.ValidateArgsNumber(1);
-            Sound sound = GetSoundFromArgs(args[0]);
+            var sound = GetSoundFromArgs(args[0]);
             if (soundEffectInstances.TryGetValue(sound, out var ls))
                 ls.ForEach(inst => inst.Pause());
         }
@@ -125,7 +125,7 @@ public partial class ArcadeMakerMonoGame
         else
         {
             args.ValidateArgsNumber(1);
-            Sound sound = GetSoundFromArgs(args[0]);
+            var sound = GetSoundFromArgs(args[0]);
             if (soundEffectInstances.TryGetValue(sound, out var ls))
                 ls.ForEach(inst => inst.Resume());
         }

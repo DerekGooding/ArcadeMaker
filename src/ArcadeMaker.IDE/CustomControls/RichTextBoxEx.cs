@@ -32,7 +32,7 @@ namespace ArcadeMaker.IDE.CustomControls
             NumberFont = new System.Drawing.Font("Consolas",
                                                 9.75F,
                                                 System.Drawing.FontStyle.Regular,
-                                                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                                                System.Drawing.GraphicsUnit.Point, (byte)(0));
 
             NumberColor = Color.FromName("DarkGray");
             NumberLineCounting = LineCounting.CRLF;
@@ -53,15 +53,12 @@ namespace ArcadeMaker.IDE.CustomControls
             Marshal.FreeCoTaskMem(lParam1);
         }
 
-        private void SetStringDrawingFormat()
+        private void SetStringDrawingFormat() => _stringDrawingFormat = new System.Drawing.StringFormat
         {
-            _stringDrawingFormat = new System.Drawing.StringFormat
-            {
-                Alignment = StringAlignment.Center,
-                LineAlignment = NumberAlignment,
-                Trimming = StringTrimming.None,
-            };
-        }
+            Alignment = StringAlignment.Center,
+            LineAlignment = NumberAlignment,
+            Trimming = StringTrimming.None,
+        };
 
         protected override void OnTextChanged(EventArgs e)
         {
@@ -69,22 +66,16 @@ namespace ArcadeMaker.IDE.CustomControls
             base.OnTextChanged(e);
         }
 
-        public void BeginUpdate()
-        {
-            User32.SendMessage(Handle, (int)User32.Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
-        }
+        public void BeginUpdate() => User32.SendMessage(Handle, (int)User32.Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
 
-        public void EndUpdate()
-        {
-            User32.SendMessage(Handle, (int)User32.Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
-        }
+        public void EndUpdate() => User32.SendMessage(Handle, (int)User32.Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
 
         public IntPtr BeginUpdateAndSuspendEvents()
         {
             // Stop redrawing:
             User32.SendMessage(Handle, (int)User32.Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
             // Stop sending of events:
-            IntPtr eventMask = User32.SendMessage(Handle, User32.Msgs.EM_GETEVENTMASK, 0, IntPtr.Zero);
+            var eventMask = User32.SendMessage(Handle, User32.Msgs.EM_GETEVENTMASK, 0, IntPtr.Zero);
 
             return eventMask;
         }
@@ -99,15 +90,9 @@ namespace ArcadeMaker.IDE.CustomControls
             Invalidate();
         }
 
-        public void GetSelection(out int start, out int end)
-        {
-            User32.SendMessageRef(Handle, (int)User32.Msgs.EM_GETSEL, out start, out end);
-        }
+        public void GetSelection(out int start, out int end) => User32.SendMessageRef(Handle, (int)User32.Msgs.EM_GETSEL, out start, out end);
 
-        public void SetSelection(int start, int end)
-        {
-            User32.SendMessage(Handle, (int)User32.Msgs.EM_SETSEL, start, end);
-        }
+        public void SetSelection(int start, int end) => User32.SendMessage(Handle, (int)User32.Msgs.EM_SETSEL, start, end);
 
         public void BeginUpdateAndSaveState()
         {
@@ -122,7 +107,7 @@ namespace ArcadeMaker.IDE.CustomControls
         public void EndUpdateAndRestoreState()
         {
             // restore scroll position
-            int Line1 = FirstVisibleDisplayLine;
+            var Line1 = FirstVisibleDisplayLine;
             Scroll(_savedScrollLine - Line1);
 
             // restore the selection/caret
@@ -152,7 +137,7 @@ namespace ArcadeMaker.IDE.CustomControls
                 }
                 else
                 {
-                    int n = GetDisplayLineCount();
+                    var n = GetDisplayLineCount();
                     _ndigits = (n == 0)
                         ? 1
                         : (int)(1 + Math.Log((double)n, 10));
@@ -160,7 +145,7 @@ namespace ArcadeMaker.IDE.CustomControls
                 var s = new String('0', _ndigits);
                 var b = new Bitmap(400, 400); // in pixels
                 var g = Graphics.FromImage(b);
-                SizeF size = g.MeasureString(s, NumberFont);
+                var size = g.MeasureString(s, NumberFont);
                 g.Dispose();
                 _lnw = NumberPadding * 2 + 4 + (int)(size.Width + 0.5 + NumberBorderThickness);
                 _sformat = "{0:D" + _ndigits + "}";
@@ -172,10 +157,7 @@ namespace ArcadeMaker.IDE.CustomControls
         [DefaultValue(true)]
         public bool ShowLineNumbers
         {
-            get
-            {
-                return _lineNumbers;
-            }
+            get => _lineNumbers;
             set
             {
                 if (value == _lineNumbers) return;
@@ -319,15 +301,9 @@ namespace ArcadeMaker.IDE.CustomControls
 
         private bool _paintingDisabled;
 
-        public void SuspendLineNumberPainting()
-        {
-            _paintingDisabled = true;
-        }
+        public void SuspendLineNumberPainting() => _paintingDisabled = true;
 
-        public void ResumeLineNumberPainting()
-        {
-            _paintingDisabled = false;
-        }
+        public void ResumeLineNumberPainting() => _paintingDisabled = false;
 
         private void NewBorderPen()
         {
@@ -340,7 +316,7 @@ namespace ArcadeMaker.IDE.CustomControls
 
         protected override void WndProc(ref Message m)
         {
-            bool handled = false;
+            var handled = false;
             switch (m.Msg)
             {
                 case (int)User32.Msgs.WM_PAINT:
@@ -403,7 +379,7 @@ namespace ArcadeMaker.IDE.CustomControls
 
             if (_paintingDisabled) return;
 
-            int w = LineNumberWidth;
+            var w = LineNumberWidth;
             if (w != _lastWidth)
             {
                 //System.Console.WriteLine("  WIDTH change {0} != {1}", _lastWidth, w);
@@ -421,36 +397,36 @@ namespace ArcadeMaker.IDE.CustomControls
             Brush forebrush = new SolidBrush(NumberColor);
             var rect = new Rectangle(0, 0, w, Bounds.Height);
 
-            bool wantDivider = NumberBackground1.ToArgb() == NumberBackground2.ToArgb();
-            Brush backBrush = (wantDivider)
+            var wantDivider = NumberBackground1.ToArgb() == NumberBackground2.ToArgb();
+            var backBrush = (wantDivider)
                 ? (Brush)new SolidBrush(NumberBackground2)
                 : SystemBrushes.Window;
 
             g.FillRectangle(backBrush, rect);
 
-            int n = (NumberLineCounting == LineCounting.CRLF)
+            var n = (NumberLineCounting == LineCounting.CRLF)
                 ? NumberOfVisibleTextLines
                 : NumberOfVisibleDisplayLines;
 
-            int first = (NumberLineCounting == LineCounting.CRLF)
+            var first = (NumberLineCounting == LineCounting.CRLF)
                 ? FirstVisibleTextLine
                 : FirstVisibleDisplayLine + 1;
 
-            int py = 0;
-            int w2 = w - 2 - (int)NumberBorderThickness;
+            var py = 0;
+            var w2 = w - 2 - (int)NumberBorderThickness;
             LinearGradientBrush brush;
             Pen dividerPen = new Pen(NumberColor);
 
-            for (int i = 0; i <= n; i++)
+            for (var i = 0; i <= n; i++)
             {
-                int ix = first + i;
-                int c = (NumberLineCounting == LineCounting.CRLF)
+                var ix = first + i;
+                var c = (NumberLineCounting == LineCounting.CRLF)
                     ? GetCharIndexForTextLine(ix)
                     : GetCharIndexForDisplayLine(ix) - 1;
 
                 var p = GetPosFromCharIndex(c + 1);
 
-                Rectangle r4 = Rectangle.Empty;
+                var r4 = Rectangle.Empty;
 
                 if (i == n) // last line?
                 {
@@ -491,13 +467,13 @@ namespace ArcadeMaker.IDE.CustomControls
 
             if (NumberBorderThickness != 0.0)
             {
-                int t = (int)(w - (NumberBorderThickness + 0.5) / 2) - 1;
+                var t = (int)(w - (NumberBorderThickness + 0.5) / 2) - 1;
                 g.DrawLine(_borderPen, t, 0, t, Bounds.Height);
                 //g.DrawLine(_borderPen, w-2, 0, w-2, this.Bounds.Height);
             }
 
             // paint that buffer to the screen
-            Graphics g1 = CreateGraphics();
+            var g1 = CreateGraphics();
             g1.DrawImage(buffer, new Point(0, 0));
             g1.Dispose();
             g.Dispose();
@@ -506,19 +482,19 @@ namespace ArcadeMaker.IDE.CustomControls
         private int GetCharIndexFromPos(int x, int y)
         {
             var p = new User32.POINTL { X = x, Y = y };
-            int rawSize = Marshal.SizeOf(typeof(User32.POINTL));
-            IntPtr lParam = Marshal.AllocHGlobal(rawSize);
+            var rawSize = Marshal.SizeOf(typeof(User32.POINTL));
+            var lParam = Marshal.AllocHGlobal(rawSize);
             Marshal.StructureToPtr(p, lParam, false);
-            int r = User32.SendMessage(Handle, (int)User32.Msgs.EM_CHARFROMPOS, 0, lParam);
+            var r = User32.SendMessage(Handle, (int)User32.Msgs.EM_CHARFROMPOS, 0, lParam);
             Marshal.FreeHGlobal(lParam);
             return r;
         }
 
         private Point GetPosFromCharIndex(int ix)
         {
-            int rawSize = Marshal.SizeOf(typeof(User32.POINTL));
-            IntPtr wParam = Marshal.AllocHGlobal(rawSize);
-            int r = User32.SendMessage(Handle, (int)User32.Msgs.EM_POSFROMCHAR, (int)wParam, ix);
+            var rawSize = Marshal.SizeOf(typeof(User32.POINTL));
+            var wParam = Marshal.AllocHGlobal(rawSize);
+            var r = User32.SendMessage(Handle, (int)User32.Msgs.EM_POSFROMCHAR, (int)wParam, ix);
 
             User32.POINTL p1 = (User32.POINTL)Marshal.PtrToStructure(wParam, typeof(User32.POINTL));
 
@@ -529,24 +505,15 @@ namespace ArcadeMaker.IDE.CustomControls
 
         private int GetLengthOfLineContainingChar(int charIndex)
         {
-            int r = User32.SendMessage(Handle, (int)User32.Msgs.EM_LINELENGTH, 0, 0);
+            var r = User32.SendMessage(Handle, (int)User32.Msgs.EM_LINELENGTH, 0, 0);
             return r;
         }
 
-        private int GetLineFromChar(int charIndex)
-        {
-            return User32.SendMessage(Handle, (int)User32.Msgs.EM_LINEFROMCHAR, charIndex, 0);
-        }
+        private int GetLineFromChar(int charIndex) => User32.SendMessage(Handle, (int)User32.Msgs.EM_LINEFROMCHAR, charIndex, 0);
 
-        private int GetCharIndexForDisplayLine(int line)
-        {
-            return User32.SendMessage(Handle, (int)User32.Msgs.EM_LINEINDEX, line, 0);
-        }
+        private int GetCharIndexForDisplayLine(int line) => User32.SendMessage(Handle, (int)User32.Msgs.EM_LINEINDEX, line, 0);
 
-        private int GetDisplayLineCount()
-        {
-            return User32.SendMessage(Handle, (int)User32.Msgs.EM_GETLINECOUNT, 0, 0);
-        }
+        private int GetDisplayLineCount() => User32.SendMessage(Handle, (int)User32.Msgs.EM_GETLINECOUNT, 0, 0);
 
         /// <summary>
         ///   Sets the color of the characters in the given range.
@@ -573,34 +540,25 @@ namespace ArcadeMaker.IDE.CustomControls
             User32.SendMessage(Handle, (int)User32.Msgs.EM_SETCHARFORMAT, User32.SCF_SELECTION, lParam1);
         }
 
-        private void SetLeftMargin(int widthInPixels)
-        {
-            User32.SendMessage(Handle, (int)User32.Msgs.EM_SETMARGINS, User32.EC_LEFTMARGIN,
+        private void SetLeftMargin(int widthInPixels) => User32.SendMessage(Handle, (int)User32.Msgs.EM_SETMARGINS, User32.EC_LEFTMARGIN,
                                widthInPixels);
-        }
 
         public Tuple<int, int> GetMargins()
         {
-            int r = User32.SendMessage(Handle, (int)User32.Msgs.EM_GETMARGINS, 0, 0);
+            var r = User32.SendMessage(Handle, (int)User32.Msgs.EM_GETMARGINS, 0, 0);
             return Tuple.New(r & 0x0000FFFF, (int)((r >> 16) & 0x0000FFFF));
         }
 
-        public void Scroll(int delta)
-        {
-            User32.SendMessage(Handle, (int)User32.Msgs.EM_LINESCROLL, 0, delta);
-        }
+        public void Scroll(int delta) => User32.SendMessage(Handle, (int)User32.Msgs.EM_LINESCROLL, 0, delta);
 
         private int FirstVisibleDisplayLine
         {
-            get
-            {
-                return User32.SendMessage(Handle, (int)User32.Msgs.EM_GETFIRSTVISIBLELINE, 0, 0);
-            }
+            get => User32.SendMessage(Handle, (int)User32.Msgs.EM_GETFIRSTVISIBLELINE, 0, 0);
             set
             {
                 // scroll
-                int current = FirstVisibleDisplayLine;
-                int delta = value - current;
+                var current = FirstVisibleDisplayLine;
+                var delta = value - current;
                 User32.SendMessage(Handle, (int)User32.Msgs.EM_LINESCROLL, 0, delta);
             }
         }
@@ -609,11 +567,11 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             get
             {
-                int topIndex = GetCharIndexFromPosition(new System.Drawing.Point(1, 1));
-                int bottomIndex = GetCharIndexFromPosition(new System.Drawing.Point(1, Height - 1));
-                int topLine = GetLineFromCharIndex(topIndex);
-                int bottomLine = GetLineFromCharIndex(bottomIndex);
-                int n = bottomLine - topLine + 1;
+                var topIndex = GetCharIndexFromPosition(new System.Drawing.Point(1, 1));
+                var bottomIndex = GetCharIndexFromPosition(new System.Drawing.Point(1, Height - 1));
+                var topLine = GetLineFromCharIndex(topIndex);
+                var bottomLine = GetLineFromCharIndex(bottomIndex);
+                var n = bottomLine - topLine + 1;
                 return n;
             }
         }
@@ -622,8 +580,8 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             get
             {
-                int c = GetCharIndexFromPos(1, 1);
-                for (int i = 0; i < CharIndexForTextLine.Length; i++)
+                var c = GetCharIndexFromPos(1, 1);
+                for (var i = 0; i < CharIndexForTextLine.Length; i++)
                 {
                     if (c < CharIndexForTextLine[i]) return i;
                 }
@@ -635,8 +593,8 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             get
             {
-                int c = GetCharIndexFromPos(1, Bounds.Y + Bounds.Height);
-                for (int i = 0; i < CharIndexForTextLine.Length; i++)
+                var c = GetCharIndexFromPos(1, Bounds.Y + Bounds.Height);
+                for (var i = 0; i < CharIndexForTextLine.Length; i++)
                 {
                     if (c < CharIndexForTextLine[i]) return i;
                 }
@@ -644,13 +602,7 @@ namespace ArcadeMaker.IDE.CustomControls
             }
         }
 
-        private int NumberOfVisibleTextLines
-        {
-            get
-            {
-                return LastVisibleTextLine - FirstVisibleTextLine;
-            }
-        }
+        private int NumberOfVisibleTextLines => LastVisibleTextLine - FirstVisibleTextLine;
 
         public int FirstVisibleLine
         {
@@ -691,7 +643,7 @@ namespace ArcadeMaker.IDE.CustomControls
                 if (field == null)
                 {
                     var list = new List<int>();
-                    int ix = 0;
+                    var ix = 0;
                     foreach (var c in Text2)
                     {
                         if (c == '\n') list.Add(ix);
@@ -720,7 +672,7 @@ namespace ArcadeMaker.IDE.CustomControls
         private bool CompareHashes(byte[] a, byte[] b)
         {
             if (a.Length != b.Length) return false;
-            for (int i = 0; i < a.Length; i++)
+            for (var i = 0; i < a.Length; i++)
             {
                 if (a[i] != b[i]) return false;
             }
@@ -737,22 +689,13 @@ namespace ArcadeMaker.IDE.CustomControls
     public static class Tuple
     {
         // Allows Tuple.New(1, "2") instead of new Tuple<int, string>(1, "2")
-        public static Tuple<T1, T2> New<T1, T2>(T1 v1, T2 v2)
-        {
-            return new Tuple<T1, T2>(v1, v2);
-        }
+        public static Tuple<T1, T2> New<T1, T2>(T1 v1, T2 v2) => new Tuple<T1, T2>(v1, v2);
     }
 
-    public class Tuple<T1, T2>
+    public class Tuple<T1, T2>(T1 v1, T2 v2)
     {
-        public Tuple(T1 v1, T2 v2)
-        {
-            V1 = v1;
-            V2 = v2;
-        }
-
-        public T1 V1 { get; set; }
-        public T2 V2 { get; set; }
+        public T1 V1 { get; set; } = v1;
+        public T2 V2 { get; set; } = v2;
     }
 }
 
@@ -1092,15 +1035,9 @@ namespace Ionic
             public Int32 Y;
         }
 
-        public static void BeginUpdate(IntPtr hWnd)
-        {
-            SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
-        }
+        public static void BeginUpdate(IntPtr hWnd) => SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
 
-        public static void EndUpdate(IntPtr hWnd)
-        {
-            SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
-        }
+        public static void EndUpdate(IntPtr hWnd) => SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
 
         [DllImport("User32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);

@@ -24,7 +24,7 @@ internal class ExternClassDefSpan : WordSpan, IDefinition, IKeyword, IExpItem
 
         if (IsEnum)
         {
-            Array vals = type.GetEnumValues();
+            var vals = type.GetEnumValues();
             type.GetEnumNames().ForEach((name, index) => EnumValues.Add(name.StartWithLowerCase(), Interpreter.CsValToExpVal(vals.GetValue(index))));
         }
 

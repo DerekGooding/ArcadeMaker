@@ -9,7 +9,7 @@ public partial class Interpreter
 {
     private IReadingOperation ReadReadingOperation(out Span[] src, Span firstSpan = null)
     {
-        bool deleteRecord = readValue_codeRecord == null;
+        var deleteRecord = readValue_codeRecord == null;
         readValue_codeRecord ??= [];
 
         IReadingOperation ReadSingle(out bool wasval, out bool bracketWasRead)
@@ -17,7 +17,7 @@ public partial class Interpreter
             wasval = false;
             bracketWasRead = false;
             IReadingOperation value = null;
-            Span span = firstSpan ?? ReadSpan();
+            var span = firstSpan ?? ReadSpan();
             firstSpan = null;
             if (span is null)
                 return null;
@@ -55,7 +55,7 @@ public partial class Interpreter
             }
             else if (span is ArrayOpenerSpan)
             {
-                IReadingOperation[] readings = ReadParamListOps(true, true, false);
+                var readings = ReadParamListOps(true, true, false);
 
                 // if all of the items are constants, return a constant array
                 if (readings.All(r => r is ConstValueReadingOperation))
@@ -127,7 +127,7 @@ public partial class Interpreter
             {
                 ReadSpan();
 
-                bool not = false;
+                var not = false;
 
                 if (Spoiler().FullText.Equals("not"))
                 {
@@ -136,8 +136,8 @@ public partial class Interpreter
                 }
 
                 // type to check
-                WordSpan type = ReadWord();
-                string typeName = type.Text;
+                var type = ReadWord();
+                var typeName = type.Text;
                 DefNameSpan defName = null;
 
                 // throw if type not exist
@@ -155,14 +155,14 @@ public partial class Interpreter
                 value = new CustomReadingOperation<BoolValue>(() =>
                 {
                     bool iz;
-                    IValue val = single.Read();
+                    var val = single.Read();
                     if (defName != null)
                     {
                         if (defName.Class != null && val is Instance ins)
                             iz = ins.def == defName.Class;
                         else if (defName.Extern != null && val is ExternTypeInstance ext)
                         {
-                            Type valType = ext.ExternInstance.GetType();
+                            var valType = ext.ExternInstance.GetType();
                             iz = valType == defName.Extern.Type || valType.IsSubclassOf(defName.Extern.Type) || ext.ExternInstance.GetType().GetInterfaces().Contains(defName.Extern.Type);
                         }
                         else
@@ -200,7 +200,7 @@ public partial class Interpreter
         // fill arrays
         do
         {
-            val = ReadSingle(out valread, out bool nextIsBracket);
+            val = ReadSingle(out valread, out var nextIsBracket);
 
             if (nextIsBracket)
             {
@@ -208,7 +208,7 @@ public partial class Interpreter
                 int openers = 1, closers = 0;
                 while (true)
                 {
-                    Span span = ReadSpan();
+                    var span = ReadSpan();
 
                     if (span == null)
                         Error("Missing ')'.");
@@ -232,7 +232,7 @@ public partial class Interpreter
 
             nums.Add(val);
 
-            Span spoiler = Spoiler();
+            var spoiler = Spoiler();
             if (spoiler is OperatorSpan)
             {
                 allowThrow = spoiler is NullCoalescingOperatorSpan;
@@ -249,7 +249,7 @@ public partial class Interpreter
             Error($"A value was expected.");
 
         // calculate math-first operations
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
             if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuleOperatorSpan)
             {
@@ -261,7 +261,7 @@ public partial class Interpreter
         }
 
         // calculate math-late operations
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
             if (ops[i] is PlusOperatorSpan or MinusOperatorSpan)
             {
@@ -273,9 +273,9 @@ public partial class Interpreter
         }
 
         // calculate all the rest, except for & and |
-        for (int i = 0; i < ops.Count; i++)
+        for (var i = 0; i < ops.Count; i++)
         {
-            if (ops[i] is not AndOperatorSpan && ops[i] is not OrOperatorSpan)
+            if (ops[i] is not AndOperatorSpan and not OrOperatorSpan)
             {
                 nums[i] = CreateOperation(nums[i], ops[i], nums[i + 1]);
                 nums.RemoveAt(i + 1);
@@ -286,15 +286,12 @@ public partial class Interpreter
 
         // calculate the final result
         val = nums[0];
-        for (int i = 1; i < nums.Count; i++)
+        for (var i = 1; i < nums.Count; i++)
         {
             val = CreateOperation(val, ops[i - 1], nums[i]);
         }
 
-        IReadingOperation CreateOperation(IReadingOperation left, OperatorSpan @operator, IReadingOperation right)
-        {
-            return new OperatorResultOperation(@operator, left, right);
-        }
+        IReadingOperation CreateOperation(IReadingOperation left, OperatorSpan @operator, IReadingOperation right) => new OperatorResultOperation(@operator, left, right);
 
         // ? check
         if (Spoiler() is QuestionMarkSpan)
@@ -439,7 +436,7 @@ public partial class Interpreter
         return null;
     }
 
-    internal PointingOrFuncCall ReadPointingOrFuncCall(bool isOp, WordSpan firstWord = null, bool readValue = false) => ReadPointingOrFuncCall(out bool _, isOp, firstWord, readValue);
+    internal PointingOrFuncCall ReadPointingOrFuncCall(bool isOp, WordSpan firstWord = null, bool readValue = false) => ReadPointingOrFuncCall(out var _, isOp, firstWord, readValue);
 
     internal PointingOrFuncCall ReadPointingOrFuncCall(out bool isCall, bool isOp, WordSpan firstWord = null, bool readValue = false)
     {
@@ -458,7 +455,7 @@ public partial class Interpreter
             List<IReadingOperation[]> argLists = [];
             int? paramsCounter = null;
             PointingOrFuncCall newp = null;
-            bool setter = false; // on array index / extern property set, this becomes true meaning the while loop won't continue bc we're converting these to func calls (array.set(...) / extern.pgetset(...)) so without it something like this: "arr[0] = true.next" would pe possible
+            var setter = false; // on array index / extern property set, this becomes true meaning the while loop won't continue bc we're converting these to func calls (array.set(...) / extern.pgetset(...)) so without it something like this: "arr[0] = true.next" would pe possible
 
             // if the name is in format "ns::name", read the namespace specifier and the real name
             if (first == null && Spoiler() is NamespaceSpecificationSpan)
@@ -537,7 +534,7 @@ public partial class Interpreter
                     {
                         // if there are arg lists, point to the FuncDefSpan.ExternInvoker function, with the invocation data as arguments (type, static, methodName, instance, args)
                         if (argLists.Any())
-                            newp = new PointingOrFuncCall(isOp, name, [[ConstValueReadingOperation.For(SpecialValue.From(defname.Extern.Type)), ConstValueReadingOperation.For(true.ToExp()), ConstValueReadingOperation.For(SpecialValue.From(name)), ConstValueReadingOperation.For(null), ConstValueReadingOperation.For(SpecialValue.From(argLists.First()))]], null, null, word, true, true) { KnownFunc = FuncDefSpan.ExternInvoker };
+                            newp = new PointingOrFuncCall(isOp, name, [[ConstValueReadingOperation.For(SpecialValue.From(defname.Extern.Type)), ConstValueReadingOperation.For(true.ToExp()), ConstValueReadingOperation.For(SpecialValue.From(name)), ConstValueReadingOperation.For(null), ConstValueReadingOperation.For(SpecialValue.From(argLists[0]))]], null, null, word, true, true) { KnownFunc = FuncDefSpan.ExternInvoker };
                         else
                         {
                             // get property info
@@ -591,7 +588,7 @@ public partial class Interpreter
             }
 
             // if there are multiple possibilities, try to find the right one by the num of arguments (if there are arg lists)
-            INamedValue known = possibilities?.FirstOrDefault(p => p is not FuncDefSpan func || func.Args.Length == argLists.FirstOrDefault()?.Length);
+            var known = possibilities?.FirstOrDefault(p => p is not FuncDefSpan func || func.Args.Length == argLists.FirstOrDefault()?.Length);
 
             // create the pointing
             newp ??= new PointingOrFuncCall(isOp, name, argLists, paramsCounter, first == null ? vs : null, word, readValue, first == null) { Known = known };
@@ -600,7 +597,7 @@ public partial class Interpreter
             first ??= newp;
 
             // read array brackets
-            bool arrBrackets = false;
+            var arrBrackets = false;
             while (Spoiler() is ArrayOpenerSpan)
             {
                 arrBrackets = true;
@@ -611,7 +608,7 @@ public partial class Interpreter
                     ReadSpan();
 
                     // convert operatr to ActionOperator enum
-                    ActionOperator opEnum = ActionOperator.Reset;
+                    var opEnum = ActionOperator.Reset;
                     if (operatr is SetPlusOperatorSpan)
                         opEnum = ActionOperator.Add;
                     else if (operatr is SetMinusOperatorSpan)
@@ -631,7 +628,7 @@ public partial class Interpreter
             }
 
             // if . read next
-            bool nextOrNull = false;
+            var nextOrNull = false;
             var spoiler = Spoiler();
             if (spoiler is QuestionMarkSpan)
             {

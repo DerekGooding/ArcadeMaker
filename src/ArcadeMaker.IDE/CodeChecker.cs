@@ -7,21 +7,21 @@ namespace IntelliSense
     {
         public static CodeSpan[] GetSpans(string code)
         {
-            List<CodeSpan> spans = new List<CodeSpan>();
+            List<CodeSpan> spans = [];
 
             CodeSpan span = new CodeSpan();
-            string spanText = "";
-            int length = code.Length;
-            bool first = false;
-            int ignore = 0; // 0: do not ignore, 1: ignore next, 2: ignore this
+            var spanText = "";
+            var length = code.Length;
+            var first = false;
+            var ignore = 0; // 0: do not ignore, 1: ignore next, 2: ignore this
 
             // run over each char in the text
-            int insideFormattedStringLength = 0;
-            for (int i = 0; i < code.Length; i++)
+            var insideFormattedStringLength = 0;
+            for (var i = 0; i < code.Length; i++)
             {
-                char c = code[i];
-                bool nextSpan = false;
-                bool nextSpanInsideFormattedString = span.insideFormattedString;
+                var c = code[i];
+                var nextSpan = false;
+                var nextSpanInsideFormattedString = span.insideFormattedString;
                 if (span.insideFormattedString)
                     insideFormattedStringLength++;
 
@@ -69,7 +69,7 @@ namespace IntelliSense
                             case '/':
                                 if (i < length - 1)
                                 {
-                                    char nextChar = code[i + 1];
+                                    var nextChar = code[i + 1];
                                     if (nextChar == '/')
                                     {
                                         span.type = SpanType.Comment;
@@ -84,7 +84,7 @@ namespace IntelliSense
                                 break;
 
                             default:
-                                if (c >= '0' && c <= '9')
+                                if (c is >= '0' and <= '9')
                                 {
                                     span.type = SpanType.Number;
                                 }
@@ -103,12 +103,12 @@ namespace IntelliSense
 
                 if (ignore < 2 && (span.type == SpanType.FormattedString || !first))
                 {
-                    // check if current char is a seperator
-                    bool isSep = false;
+                    // check if current char is a separator
+                    var isSep = false;
                     switch (span.type)
                     {
                         case SpanType.Space:
-                            isSep = c != ' ' && c != '\n';
+                            isSep = c is not ' ' and not '\n';
                             if (isSep)
                                 nextSpan = true;
                             break;
@@ -144,11 +144,11 @@ namespace IntelliSense
                                 isSep = true;
                                 break;
                             }
-                            if (c == ((span.type == SpanType.String || span.type == SpanType.FormattedString) ? '\"' : '\''))
+                            if (c == ((span.type is SpanType.String or SpanType.FormattedString) ? '\"' : '\''))
                             {
                                 // check if quot is escaped
-                                bool esc = false;
-                                int left = 1;
+                                var esc = false;
+                                var left = 1;
                                 while (i >= left && code[i - left++] == '\\')
                                 {
                                     esc = !esc;
@@ -162,8 +162,8 @@ namespace IntelliSense
                             {
                                 if (code.Length > i + 1 && code[i + 1] == '{')
                                 {
-                                    int lefts = 0;
-                                    int left = 0;
+                                    var lefts = 0;
+                                    var left = 0;
                                     while (code[i - left++] == '{')
                                         lefts++;
                                     if (code.Length > i + 2 && code[i + 2] != '{' && lefts % 2 == 0)
@@ -209,10 +209,10 @@ namespace IntelliSense
                         // it will be the end of the span if the current char is '}' and there wasn't a '{' relating to this
                         if (c == '}')
                         {
-                            int numberOfOpenersRequired = 1;
-                            for (int left = 1; left <= insideFormattedStringLength; left++)
+                            var numberOfOpenersRequired = 1;
+                            for (var left = 1; left <= insideFormattedStringLength; left++)
                             {
-                                char leftC = code[i - left];
+                                var leftC = code[i - left];
                                 if (leftC == '}')
                                     numberOfOpenersRequired++;
                                 else if (leftC == '{')
@@ -238,7 +238,7 @@ namespace IntelliSense
                         span.text = spanText;
                         spanText = "";
                         spans.Add(span);
-                        bool nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
+                        var nextSpanFormattedStringContinue = span.insideFormattedString && !nextSpanInsideFormattedString;
                         span = new CodeSpan { insideFormattedString = nextSpanInsideFormattedString };
                         if (nextSpanFormattedStringContinue)
                             span.type = SpanType.FormattedString;
@@ -262,13 +262,13 @@ namespace IntelliSense
 
         public static CodeSpan[] ReadBlock(CodeSpan[] spans, int start, out List<CodeSpan> outOfBlock, bool mustHaveBlock = true)
         {
-            List<CodeSpan> block = new List<CodeSpan>();
-            outOfBlock = new List<CodeSpan>();
-            bool firstOpenerFound = false;
+            List<CodeSpan> block = [];
+            outOfBlock = [];
+            var firstOpenerFound = false;
             int openers = 0, closers = 0;
-            for (int i = start; i < spans.Length; i++)
+            for (var i = start; i < spans.Length; i++)
             {
-                CodeSpan span = spans[i];
+                var span = spans[i];
                 if (!firstOpenerFound)
                 {
                     if (!(span.type == SpanType.Brace && span.text == "{"))
@@ -305,9 +305,9 @@ namespace IntelliSense
 
         public static CSItem Build(CSItem context, CodeSpan[] spans)
         {
-            for (int spanIndex = 0; spanIndex < spans.Length; spanIndex++)
+            for (var spanIndex = 0; spanIndex < spans.Length; spanIndex++)
             {
-                CodeSpan span = spans[spanIndex];
+                var span = spans[spanIndex];
 
                 if (context is Namespace ns)
                 {
@@ -318,16 +318,16 @@ namespace IntelliSense
                         throw new IdentifierExpectedException();
 
                     // set namespace items
-                    CodeSpan[] nsSpans = ReadBlock(spans, ++spanIndex, out List<CodeSpan> beforeSpans);
+                    var nsSpans = ReadBlock(spans, ++spanIndex, out var beforeSpans);
                     if (beforeSpans.Any())
-                        throw new NameDoesNotExistsInCurrentContextException(beforeSpans.First().text);
+                        throw new NameDoesNotExistsInCurrentContextException(beforeSpans[0].text);
                     spanIndex += nsSpans.Length + 2; // +2 for 2 braces
-                    List<NamespaceMember> items = new List<NamespaceMember>();
+                    List<NamespaceMember> items = [];
                     NamespaceMember item = new NamespaceMember();
 
                     bool @partial = false, @static = false;
 
-                    for (int i = 0; i < nsSpans.Length; i++)
+                    for (var i = 0; i < nsSpans.Length; i++)
                     {
                         if (span.type != SpanType.Normal)
                             throw new NotImplementedException();
@@ -346,7 +346,7 @@ namespace IntelliSense
                             @class.Static = @static;
                             @class.Partial = partial;
 
-                            List<CodeSpan> classSpans = ReadBlock(nsSpans, i + 1, out beforeSpans).ToList();
+                            var classSpans = ReadBlock(nsSpans, i + 1, out beforeSpans).ToList();
                             classSpans.InsertRange(0, beforeSpans);
                             i += classSpans.Count + 2; // +2 for 2 braces
                             Build(@class, classSpans.ToArray());
@@ -364,7 +364,7 @@ namespace IntelliSense
                     // read generic types
                     if (c.Name != null && span.type == SpanType.Brace && span.text == "<")
                     {
-                        bool splitExpected = false;
+                        var splitExpected = false;
                         do
                         {
                             if (!splitExpected)
@@ -398,18 +398,18 @@ namespace IntelliSense
                         throw new IdentifierExpectedException();
 
                     // set class members (!!! WRONG (ReadBlock(...) already done) !!!)
-                    CodeSpan[] cSpans = ReadBlock(spans, spanIndex, out List<CodeSpan> beforeSpans);
+                    var cSpans = ReadBlock(spans, spanIndex, out var beforeSpans);
 
                     // read extends
 
                     spanIndex += cSpans.Length + 2; // +2 for 2 braces
-                    List<ClassMember> members = new List<ClassMember>();
+                    List<ClassMember> members = [];
                     ClassMember item = new ClassMember();
 
                     bool @readonly = false, @const = false;
                     string type = null, name = null;
 
-                    for (int i = 0; i < cSpans.Length; i++)
+                    for (var i = 0; i < cSpans.Length; i++)
                     {
                         if (span.type != SpanType.Normal)
                             throw new NotImplementedException();
@@ -433,7 +433,7 @@ namespace IntelliSense
                             // read generic types
                             if (span.type == SpanType.Brace && span.text == "<")
                             {
-                                bool splitExpected = false;
+                                var splitExpected = false;
                                 do
                                 {
                                     if (!splitExpected)
@@ -461,7 +461,7 @@ namespace IntelliSense
 
                             // read params
 
-                            List<CodeSpan> methodSpans = ReadBlock(cSpans, i + 1, out beforeSpans).ToList();
+                            var methodSpans = ReadBlock(cSpans, i + 1, out beforeSpans).ToList();
                             methodSpans.InsertRange(0, beforeSpans);
                             i += methodSpans.Count + 2; // +2 for 2 braces
                             Build(method, methodSpans.ToArray());
@@ -533,26 +533,17 @@ namespace IntelliSense
 
         public class BoolValue : Value
         {
-            public BoolValue()
-            {
-                base.Type = "bool";
-            }
+            public BoolValue() => base.Type = "bool";
         }
 
         public class StringValue : Value
         {
-            public StringValue()
-            {
-                base.Type = "string";
-            }
+            public StringValue() => base.Type = "string";
         }
 
         public class DecimalValue : Value
         {
-            public DecimalValue()
-            {
-                base.Type = "decimal";
-            }
+            public DecimalValue() => base.Type = "decimal";
         }
 
         public class LocalVariable : CSItem
@@ -587,7 +578,7 @@ namespace IntelliSense
         public class ActivateActionOperation : Operation
         {
             public Method Method;
-            public readonly List<Value> Values = new List<Value>();
+            public readonly List<Value> Values = [];
         }
 
         public class ReturnOperation : Operation
@@ -601,7 +592,7 @@ namespace IntelliSense
 
         public class ControlStructure : Operation
         {
-            public readonly List<Operation> Operations = new List<Operation>();
+            public readonly List<Operation> Operations = [];
         }
 
         public class If : ControlStructure
@@ -663,15 +654,15 @@ namespace IntelliSense
         public class Method : ClassMember
         {
             public bool Abstract, Virtual;
-            public readonly List<GenericType> GenericTypes = new List<GenericType>();
-            public readonly List<MethodParameter> Parameters = new List<MethodParameter>();
-            public readonly List<Operation> Operations = new List<Operation>();
+            public readonly List<GenericType> GenericTypes = [];
+            public readonly List<MethodParameter> Parameters = [];
+            public readonly List<Operation> Operations = [];
         }
 
         public class Namespace : CSItem
         {
             public string Name;
-            public readonly List<NamespaceMember> Items = new List<NamespaceMember>();
+            public readonly List<NamespaceMember> Items = [];
         }
 
         public class GenericType : CSItem
@@ -682,8 +673,8 @@ namespace IntelliSense
         public class Class : NamespaceMember
         {
             public bool Static, Partial;
-            public readonly List<GenericType> GenericTypes = new List<GenericType>();
-            public readonly List<ClassMember> Members = new List<ClassMember>();
+            public readonly List<GenericType> GenericTypes = [];
+            public readonly List<ClassMember> Members = [];
         }
     }
 
@@ -709,14 +700,9 @@ namespace IntelliSense
         MultiLineComment,
     }
 
-    public class BuildException : Exception
+    public class BuildException(string code, string message = null) : Exception(message)
     {
-        public readonly string code = null;
-
-        public BuildException(string code, string message = null) : base(message)
-        {
-            this.code = code;
-        }
+        public readonly string code = code;
     }
 
     public class IdentifierExpectedException : BuildException
@@ -740,18 +726,12 @@ namespace IntelliSense
         }
     }
 
-    public class NameDoesNotExistsInCurrentContextException : BuildException
+    public class NameDoesNotExistsInCurrentContextException(string name) : BuildException("CS1007", "The name '" + name + "' does not exist in the current context.")
     {
-        public NameDoesNotExistsInCurrentContextException(string name) : base("CS1007", "The name '" + name + "' does not exist in the current context.")
-        {
-        }
     }
 
-    public class UnvalidModifierException : BuildException
+    public class UnvalidModifierException(string modifier) : BuildException("CS0106", "The modifier '" + modifier + "' is not valid for this item")
     {
-        public UnvalidModifierException(string modifier) : base("CS0106", "The modifier '" + modifier + "' is not valid for this item")
-        {
-        }
     }
 
     public static class CSharpFilter

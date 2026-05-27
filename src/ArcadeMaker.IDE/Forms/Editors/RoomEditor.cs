@@ -26,8 +26,8 @@ public partial class RoomEditor : Form
 
     private Size GetBoardPanelMaxSize()
     {
-        int width = Size.Width - boardPanel.Location.X - 2 * (boardPanel.Location.X - (tabControl1.Location.X + tabControl1.Size.Width));
-        int height = Size.Height - boardPanel.Location.Y - 2 * (boardPanel.Location.Y - (snapxBox.Location.Y + snapxBox.Size.Height));
+        var width = Size.Width - boardPanel.Location.X - 2 * (boardPanel.Location.X - (tabControl1.Location.X + tabControl1.Size.Width));
+        var height = Size.Height - boardPanel.Location.Y - 2 * (boardPanel.Location.Y - (snapxBox.Location.Y + snapxBox.Size.Height));
         return new Size(width, height);
     }
 
@@ -111,7 +111,7 @@ public partial class RoomEditor : Form
 
     private void boardPanel_MouseClick(object sender, MouseEventArgs e)
     {
-        Point position = GetSnappedPosition(e.Location);
+        var position = GetSnappedPosition(e.Location);
 
         if (e.Button == MouseButtons.Left)
         {
@@ -129,7 +129,7 @@ public partial class RoomEditor : Form
                 if (deleteUnderlyingBox.Checked)
                 {
                     var underlyings = GetRoomObjectsByPosition(position); // at underlying removing, remove by a snapped position (unless <Alt> is pressed)
-                    foreach (RoomObject obj in underlyings)
+                    foreach (var obj in underlyings)
                     {
                         room.objects.Remove(obj);
                     }
@@ -141,7 +141,7 @@ public partial class RoomEditor : Form
         }
         else if (e.Button == MouseButtons.Right)
         {
-            RoomObject obj = GetRoomObjectByPosition(e.Location); // at normal removing, remove by the exact location
+            var obj = GetRoomObjectByPosition(e.Location); // at normal removing, remove by the exact location
             if (obj != null)
             {
                 if (ModifierKeys == Keys.Control)
@@ -171,25 +171,19 @@ public partial class RoomEditor : Form
         }
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 
     private RoomObject previewObj = null;
 
-    public void boardPanel_Paint(object sender, PaintEventArgs e)
-    {
-        boardPanel_Paint(sender, e, null);
-    }
+    public void boardPanel_Paint(object sender, PaintEventArgs e) => boardPanel_Paint(sender, e, null);
 
     public void boardPanel_Paint(object sender, PaintEventArgs e, Size? panelSize)
     {
         if (panelSize == null || !panelSize.HasValue)
             panelSize = room.size.ToFormSize();
 
-        int snapX = (int)snapxBox.Value;
-        int snapY = (int)snapyBox.Value;
+        var snapX = (int)snapxBox.Value;
+        var snapY = (int)snapyBox.Value;
 
         // draw non-foreground backgrounds
         DrawBackground(e, foregrounds: false, panelSize.Value);
@@ -199,10 +193,10 @@ public partial class RoomEditor : Form
         room.objects.CopyTo(objsToDraw, 0);
         if (previewObj != null)
             objsToDraw[objsToDraw.Length - 1] = previewObj;
-        foreach (RoomObject ro in objsToDraw)
+        foreach (var ro in objsToDraw)
         {
-            bool hasSprite = ro.obj.sprite != null;
-            Bitmap image = hasSprite ? ro.obj.sprite.image : noSpriteIcon;
+            var hasSprite = ro.obj.sprite != null;
+            var image = hasSprite ? ro.obj.sprite.image : noSpriteIcon;
             if (image.HorizontalResolution != e.Graphics.DpiX || image.VerticalResolution != e.Graphics.DpiY)
             {
                 image.SetResolution(e.Graphics.DpiX, e.Graphics.DpiY);
@@ -213,16 +207,16 @@ public partial class RoomEditor : Form
         // draw foreground backgrounds
         DrawBackground(e, foregrounds: true, panelSize.Value);
 
-        if ((sender == null || !(sender is bool)) || (sender is bool drawSnap && drawSnap))
+        if (sender == null || sender is not bool || (sender is bool drawSnap && drawSnap))
         {
             // draw snap
             using (Pen pen = new Pen(Color.Black))
             {
-                for (int w = 0; snapX > 6 && w < boardPanel.Size.Width; w += snapX)
+                for (var w = 0; snapX > 6 && w < boardPanel.Size.Width; w += snapX)
                 {
                     e.Graphics.DrawLine(pen, w, 0, w, boardPanel.Size.Height);
                 }
-                for (int h = 0; snapY > 6 && h < boardPanel.Size.Height; h += snapY)
+                for (var h = 0; snapY > 6 && h < boardPanel.Size.Height; h += snapY)
                 {
                     e.Graphics.DrawLine(pen, 0, h, boardPanel.Size.Width, h);
                 }
@@ -232,12 +226,12 @@ public partial class RoomEditor : Form
 
     private void DrawBackground(PaintEventArgs e, bool foregrounds, Size panelSize)
     {
-        foreach (RoomBackground background in room.backgrounds)
+        foreach (var background in room.backgrounds)
         {
             if (background.visible && background.foreground == foregrounds && background.image != null && background.image.image != null)
             {
-                Bitmap bitmap = background.image.image;
-                bool dispose = false;
+                var bitmap = background.image.image;
+                var dispose = false;
                 if (background.stretch && (background.image.image.Size.Width != room.size.width || background.image.image.Size.Height != room.size.height))
                 {
                     bitmap = bitmap.ResizeImage(room.size.width, room.size.height);
@@ -315,10 +309,7 @@ public partial class RoomEditor : Form
     private void creationCodeBtn_Click(object sender, EventArgs e)
     {
         ScriptEditor editor = new ScriptEditor(room, room.Script);
-        editor.OKClicked += (s, script) =>
-        {
-            room.Script = script;
-        };
+        editor.OKClicked += (s, script) => room.Script = script;
         editor.ShowDialog();
     }
 
@@ -353,15 +344,9 @@ public partial class RoomEditor : Form
         }
     }
 
-    private void useViewsBox_CheckedChanged(object sender, EventArgs e)
-    {
-        room.viewsEnabled = useViewsBox.Checked;
-    }
+    private void useViewsBox_CheckedChanged(object sender, EventArgs e) => room.viewsEnabled = useViewsBox.Checked;
 
-    private void viewsList_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        LoadSelectedView();
-    }
+    private void viewsList_SelectedIndexChanged(object sender, EventArgs e) => LoadSelectedView();
 
     private void LoadSelectedView()
     {
@@ -393,7 +378,7 @@ public partial class RoomEditor : Form
 
     private void LoadSelectedBackground()
     {
-        if (bgListBox.SelectedItem != null && bgListBox.SelectedItem is RoomBackground bg)
+        if (bgListBox.SelectedItem is not null and RoomBackground bg)
             LoadBackground(bg);
     }
 
@@ -510,18 +495,9 @@ public partial class RoomEditor : Form
         }
     }
 
-    private void bgListBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        LoadSelectedBackground();
-    }
+    private void bgListBox_SelectedIndexChanged(object sender, EventArgs e) => LoadSelectedBackground();
 
-    private RoomBackground SelectedBackground
-    {
-        get
-        {
-            return bgListBox.SelectedItem as RoomBackground;
-        }
-    }
+    private RoomBackground SelectedBackground => bgListBox.SelectedItem as RoomBackground;
 
     private void bgVisibleBox_CheckedChanged(object sender, EventArgs e)
     {
@@ -606,7 +582,7 @@ public partial class RoomEditor : Form
 
     private void bgListBox_DrawItem(object sender, DrawItemEventArgs e)
     {
-        Font f = e.Font;
+        var f = e.Font;
         if (room.backgrounds[e.Index].visible)
             f = new Font(e.Font, FontStyle.Bold);
         Brush brush = new SolidBrush(room.backgrounds[e.Index].foreground ? Color.Red : e.ForeColor);
@@ -632,11 +608,11 @@ public partial class RoomEditor : Form
 
     private void boardPanel_MouseMove(object sender, MouseEventArgs e)
     {
-        Point position = GetSnappedPosition(e.Location);
-        RoomObject obj = GetRoomObjectByPosition(position);
+        var position = GetSnappedPosition(e.Location);
+        var obj = GetRoomObjectByPosition(position);
 
         // details label
-        string title = "Object:";
+        var title = "Object:";
         objDetailsLbl.Text = obj == null ? title : title + " " + obj.obj.name;
 
         // delete & add
@@ -685,15 +661,12 @@ public partial class RoomEditor : Form
 
     private Point GetSnappedPosition(Point position)
     {
-        int locx = ModifierKeys == Keys.Alt ? position.X : ((int)(position.X / snapxBox.Value) * (int)snapxBox.Value);
-        int locy = ModifierKeys == Keys.Alt ? position.Y : ((int)(position.Y / snapyBox.Value) * (int)snapyBox.Value);
+        var locx = ModifierKeys == Keys.Alt ? position.X : ((int)(position.X / snapxBox.Value) * (int)snapxBox.Value);
+        var locy = ModifierKeys == Keys.Alt ? position.Y : ((int)(position.Y / snapyBox.Value) * (int)snapyBox.Value);
         return new Point(locx, locy);
     }
 
-    private RoomObject GetRoomObjectByPosition(Point position)
-    {
-        return GetRoomObjectsByPosition(position, lastOnly: true).FirstOrDefault();
-    }
+    private RoomObject GetRoomObjectByPosition(Point position) => GetRoomObjectsByPosition(position, lastOnly: true).FirstOrDefault();
 
     private void RoomEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
     {
@@ -726,9 +699,9 @@ public partial class RoomEditor : Form
 
     private RoomObject[] GetRoomObjectsByPosition(Point position, bool lastOnly = false)
     {
-        Point snappedPos = GetSnappedPosition(position);
-        int locx = snappedPos.X;
-        int locy = snappedPos.Y;
+        var snappedPos = GetSnappedPosition(position);
+        var locx = snappedPos.X;
+        var locy = snappedPos.Y;
 
         if (locx != lastX || locy != lastY)
         {
@@ -738,15 +711,15 @@ public partial class RoomEditor : Form
             mouseLocLbl.Text = "X: " + locx + "   Y: " + locy;
         }
 
-        List<RoomObject> objs = new List<RoomObject>();
+        List<RoomObject> objs = [];
 
         // show details about the LAST RoomObject match in the list
-        for (int i = room.objects.Count - 1; i >= 0; i--)
+        for (var i = room.objects.Count - 1; i >= 0; i--)
         {
             int objX = room.objects[i].x, objY = room.objects[i].y;
 
-            int objImgW = room.objects[i].obj.sprite == null ? noSpriteIcon.Size.Width : (room.objects[i].obj.sprite.image == null ? 0 : room.objects[i].obj.sprite.image.Size.Width);
-            int objImgH = room.objects[i].obj.sprite == null ? noSpriteIcon.Size.Height : (room.objects[i].obj.sprite.image == null ? 0 : room.objects[i].obj.sprite.image.Size.Height);
+            var objImgW = room.objects[i].obj.sprite == null ? noSpriteIcon.Size.Width : ((room.objects[i].obj.sprite.image?.Size.Width) ?? 0);
+            var objImgH = room.objects[i].obj.sprite == null ? noSpriteIcon.Size.Height : ((room.objects[i].obj.sprite.image?.Size.Height) ?? 0);
             if (position.X >= objX && position.X < objX + objImgW && position.Y >= objY && position.Y < objY + objImgH)
             {
                 objs.Add(room.objects[i]);

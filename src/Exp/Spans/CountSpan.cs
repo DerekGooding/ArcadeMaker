@@ -4,8 +4,5 @@ internal class CountSpan : Span
 {
     internal int Count { get; }
 
-    internal CountSpan(int count) : base(".." + count)
-    {
-        Count = count;
-    }
+    internal CountSpan(int count) : base(".." + count) => Count = count;
 }

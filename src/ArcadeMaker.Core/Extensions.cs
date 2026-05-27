@@ -17,7 +17,7 @@ public static class Extensions
     {
         if (!options.Contains(args.Length))
         {
-            string opStr = "";
+            var opStr = "";
             options.ForEach((x, i) => opStr += opStr + (i == options.Length - 2 ? " or " : (i == options.Length - 1 ? "" : ", ")));
             throw new ArgumentException($"This function may take {opStr} parameters, but {args.Length} were passed.");
         }
@@ -25,7 +25,7 @@ public static class Extensions
 
     public static IValue[] ThrowIfNull([NotNull] params IValue?[] values)
     {
-        int i = 0;
+        var i = 0;
         foreach (var v in values)
         {
             i++;

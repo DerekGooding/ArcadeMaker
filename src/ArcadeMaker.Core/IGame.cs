@@ -43,9 +43,9 @@ public partial interface IGame
     {
         try
         {
-            string projectFileLocation = filePath.Substring(0, filePath.LastIndexOf('\\'));
+            var projectFileLocation = filePath.Substring(0, filePath.LastIndexOf('\\'));
             List<Sprite> sprites = [];
-            foreach (SerializeableGameItem item in sproject.items)
+            foreach (var item in sproject.items)
             {
                 if (item is SerializeableGameSprite ssprite)
                 {
@@ -80,7 +80,7 @@ public partial interface IGame
 
                     PathPoint? prevPnt = null;
                     List<Resources.Path.Step> steps = [];
-                    int i = 0;
+                    var i = 0;
                     foreach (var p in spath.points)
                     {
                         var point = p;
@@ -123,7 +123,7 @@ public partial interface IGame
                         //string createEvScript = File.ReadAllText($"{projectFileLocation}\\{sobj.name}.Create.cs");
                         //string stepEvScript = File.ReadAllText($"{projectFileLocation}\\{sobj.name}.Step.cs");
                         //string drawEvScript = File.ReadAllText($"{projectFileLocation}\\{sobj.name}.Draw.cs");
-                        List<InstanceScriptDocument> list = evscripts.Event switch
+                        var list = evscripts.Event switch
                         {
                             ObjectEvent.Create => createEv,
                             ObjectEvent.Step => stepEv,

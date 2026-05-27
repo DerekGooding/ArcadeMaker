@@ -14,8 +14,8 @@ public class GameBackground : GameItem
 
             if (treeImageIndex >= 0)
             {
-                int w = Global.form1.treeImages.ImageSize.Width;
-                int h = Global.form1.treeImages.ImageSize.Height;
+                var w = Global.form1.treeImages.ImageSize.Width;
+                var h = Global.form1.treeImages.ImageSize.Height;
                 Global.form1.treeImages.Images[treeImageIndex] = field == null ? new Bitmap(1, 1) : field.ResizeImage(w, h);
                 Global.form1.RefreshTreeView();
             }
@@ -32,10 +32,8 @@ public class GameBackground : GameItem
             }
             return base.Editor as BackgroundEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public GameBackground(string name) : base(name)
@@ -49,20 +47,20 @@ public class GameBackground : GameItem
         editor = new BackgroundEditor(this);
     }
 
-    private static readonly List<GameBackground> instances = new List<GameBackground>();
+    private static readonly List<GameBackground> instances = [];
 
-    private static readonly List<GameBackgroundInvitation> invitations = new List<GameBackgroundInvitation>();
+    private static readonly List<GameBackgroundInvitation> invitations = [];
 
     public static void Invite(RoomBackground sender, string name)
     {
         invitations.Add(new GameBackgroundInvitation(name, sender));
-        for (int i = instances.Count - 1; i >= 0; i--)
+        for (var i = instances.Count - 1; i >= 0; i--)
             instances[i].CheckInvitation();
     }
 
     private void CheckInvitation()
     {
-        foreach (GameBackgroundInvitation invitation in invitations)
+        foreach (var invitation in invitations)
         {
             if (invitation.name == name)
                 invitation.sender.image = this;
@@ -70,14 +68,8 @@ public class GameBackground : GameItem
     }
 }
 
-public struct GameBackgroundInvitation
+public struct GameBackgroundInvitation(string name, RoomBackground sender)
 {
-    public string name;
-    public RoomBackground sender;
-
-    public GameBackgroundInvitation(string name, RoomBackground sender)
-    {
-        this.name = name;
-        this.sender = sender;
-    }
+    public string name = name;
+    public RoomBackground sender = sender;
 }

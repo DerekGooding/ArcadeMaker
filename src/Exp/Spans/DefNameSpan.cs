@@ -5,7 +5,7 @@ internal class DefNameSpan : WordSpan
     internal string SpecificNs { get; }
     internal string Name { get; }
     internal ClassDefSpan Class { get; private set; }
-    internal FuncDefSpan Func { get; private set; }
+    internal FuncDefSpan Func { get; }
     internal ExternClassDefSpan Extern { get; private set; }
     internal AttributeDefSpan Attr { get; private set; }
     internal bool IsUnknownItem { get; private set; }
@@ -29,8 +29,8 @@ internal class DefNameSpan : WordSpan
             var matches = defs.Where(d => d.Name == name);
 
             // check ambiguous reference
-            IDefinition def = matches.FirstOrDefault(d => d.Namespace == null);
-            int matchesCount = matches.Count();
+            var def = matches.FirstOrDefault(d => d.Namespace == null);
+            var matchesCount = matches.Count();
             if (specNs == null && matchesCount >= 2 && def == null)
             {
                 const string advice = "Specify namespace to select the wanted one";

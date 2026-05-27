@@ -32,16 +32,13 @@ public class GameScript : GameItem, IContainsScript
     {
         if (code != null)
             Script = code;
-        base.getEditor += (s, e) =>
-        {
-            e = editor;
-        };
+        base.getEditor += (s, e) => e = editor;
         editor = new ScriptEditor(this, Script);
     }
 
     public void InitDefaultCode()
     {
-        string code = $"func {name}()\n{{\n\t\n}}";
+        var code = $"func {name}()\n{{\n\t\n}}";
         Script = code;
     }
 }

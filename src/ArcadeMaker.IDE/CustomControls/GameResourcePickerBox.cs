@@ -28,10 +28,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string DefaultItemTitle
     {
-        get
-        {
-            return defaultItemTitle;
-        }
+        get => defaultItemTitle;
         set
         {
             defaultItemTitle = value;
@@ -59,10 +56,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
             Menu.Items.Clear();
 
             noResItem = new ToolStripMenuItem(defaultItemTitle);
-            noResItem.Click += (s, e) =>
-            {
-                SelectResource(null);
-            };
+            noResItem.Click += (s, e) => SelectResource(null);
             Menu.Items.Add(noResItem);
 
             LoadFolderMenu(Global.form1.GetProjectStruct<T>(), null);
@@ -74,7 +68,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
 
     private void LoadFolderMenu(ProjectFolderTreeStruct<T> folder, ToolStripMenuItem menuItem)
     {
-        foreach (ProjectTreeStruct<T> str in folder.Structs)
+        foreach (var str in folder.Structs)
         {
             if (str is ProjectItemTreeStruct<T> resStr)
             {
@@ -90,10 +84,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
                 if (typeof(T) == typeof(GameBackground) && (res as GameBackground).image != null)
                     item.Image = (res as GameBackground).image;
 
-                item.Click += (s, e) =>
-                {
-                    SelectResource(res);
-                };
+                item.Click += (s, e) => SelectResource(res);
 
                 if (menuItem != null)
                     menuItem.DropDownItems.Add(item);
@@ -114,15 +105,9 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
         }
     }
 
-    private void ShowMenu(Control ctrl, Point position)
-    {
-        Menu.Show(this, position);
-    }
+    private void ShowMenu(Control ctrl, Point position) => Menu.Show(this, position);
 
-    private void nameBox_MouseClick(object sender, MouseEventArgs e)
-    {
-        ShowMenu(nameBox, e.Location);
-    }
+    private void nameBox_MouseClick(object sender, MouseEventArgs e) => ShowMenu(nameBox, e.Location);
 
     private void SelectResource(T res)
     {
@@ -134,10 +119,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
             nameBox.Text = defaultItemTitle;
     }
 
-    private void menuBtn_Click(object sender, EventArgs e)
-    {
-        ShowMenu(toolStrip1, toolStrip1.Location);
-    }
+    private void menuBtn_Click(object sender, EventArgs e) => ShowMenu(toolStrip1, toolStrip1.Location);
 
     private void GameResourcePickerBox_Load(object sender, EventArgs e)
     {

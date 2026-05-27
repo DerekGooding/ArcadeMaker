@@ -7,9 +7,9 @@ public partial class SpansTextBox2SearchForm : Form
     public SpansTextBox2SearchForm(SpansTextBox2 scriptBox)
     {
         InitializeComponent();
-        this.scriptBox = scriptBox ?? throw new ArgumentNullException("scriptBox");
+        this.scriptBox = scriptBox ?? throw new ArgumentNullException(nameof(scriptBox));
 
-        Form owner = scriptBox.FindForm();
+        var owner = scriptBox.FindForm();
         if (owner != null)
             Owner = owner;
     }
@@ -18,13 +18,13 @@ public partial class SpansTextBox2SearchForm : Form
     {
         if (!string.IsNullOrWhiteSpace(searchBox.Text))
         {
-            int startIndex = scriptBox.SelectionStart;
+            var startIndex = scriptBox.SelectionStart;
             if (scriptBox.SelectionLength > 0 && scriptBox.Text.Length > startIndex)
                 startIndex++;
 
-            StringComparison comparison = matchCaseBox.Checked ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
+            var comparison = matchCaseBox.Checked ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
-            int index = scriptBox.Text.IndexOf(searchBox.Text, startIndex, comparison);
+            var index = scriptBox.Text.IndexOf(searchBox.Text, startIndex, comparison);
             if (index < 0)
             {
                 // if not found
@@ -55,10 +55,10 @@ public partial class SpansTextBox2SearchForm : Form
 
     private bool ReplaceNext(bool notFoundMsg = true)
     {
-        int startIndex = FindNextIndex(notFoundMsg);
+        var startIndex = FindNextIndex(notFoundMsg);
         if (startIndex > 0)
         {
-            string newText = scriptBox.Text.Remove(startIndex, searchBox.Text.Length);
+            var newText = scriptBox.Text.Remove(startIndex, searchBox.Text.Length);
             newText = newText.Insert(startIndex, replaceBox.Text);
             scriptBox.Spans.Clear();
             scriptBox.Spans.AddRange(scriptBox.GetScriptBoxSpans(newText));
@@ -71,7 +71,7 @@ public partial class SpansTextBox2SearchForm : Form
 
     private void findNextBtn_Click(object sender, EventArgs e)
     {
-        int startIndex = FindNextIndex();
+        var startIndex = FindNextIndex();
         if (startIndex > 0)
         {
             scriptBox.SelectionStart = startIndex;
@@ -79,10 +79,7 @@ public partial class SpansTextBox2SearchForm : Form
         }
     }
 
-    private void replaceNextBtn_Click(object sender, EventArgs e)
-    {
-        ReplaceNext();
-    }
+    private void replaceNextBtn_Click(object sender, EventArgs e) => ReplaceNext();
 
     private void replaceAllBtn_Click(object sender, EventArgs e)
     {

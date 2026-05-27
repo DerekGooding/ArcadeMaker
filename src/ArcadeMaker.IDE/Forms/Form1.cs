@@ -89,7 +89,7 @@ public partial class Form1 : Form
         }
 
         Type[] types = new Type[] { typeof(GameSprite), typeof(GameSound), typeof(GameBackground), typeof(GamePath), typeof(GameScript), typeof(GameFont), typeof(GameObject), typeof(GameRoom) };
-        for (int nodeIndex = 0; nodeIndex < this.projectTree.Nodes.Count; nodeIndex++)
+        for (var nodeIndex = 0; nodeIndex < this.projectTree.Nodes.Count; nodeIndex++)
         {
             var node = this.projectTree.Nodes[nodeIndex];
             if (nodeIndex >= types.Length)
@@ -103,7 +103,7 @@ public partial class Form1 : Form
             Bitmap icon = types[node.Index].GetProperty("icon", BindingFlags.Static | BindingFlags.Public)?.GetValue(null) as Bitmap;
             SetNodeAsFolder(node, types[node.Index], icon);
 
-            foreach (object str in projectTree)
+            foreach (var str in projectTree)
             {
                 if (str != null && str.GetType().GetGenericTypeDefinition() == typeof(ProjectFolderTreeStruct<>) && str.GetType().GetGenericArguments()[0] == types[node.Index])
                 {
@@ -198,14 +198,11 @@ public partial class Form1 : Form
         if (typeIcon != null)
             createItemBtn.Image = typeIcon;
 
-        createItemBtn.Click += (s, e) =>
-        {
-            createAction(this, new CreateGameItemEventArgs(folder: node));
-        };
+        createItemBtn.Click += (s, e) => createAction(this, new CreateGameItemEventArgs(folder: node));
 
         createFolderBtn.Click += (s, e) =>
         {
-            string text = Microsoft.VisualBasic.Interaction.InputBox("Folder Name:");
+            var text = Microsoft.VisualBasic.Interaction.InputBox("Folder Name:");
             if (string.IsNullOrWhiteSpace(text))
             {
                 text = null;
@@ -230,12 +227,11 @@ public partial class Form1 : Form
         ToolStripMenuItem deleteFolderBtn = new ToolStripMenuItem("Delete") { Enabled = node.Name == folderKey };
         deleteFolderBtn.Click += (s, e) =>
         {
-            string confirmText = $"You are about to delete folder \"{node.Text}\" with all items it contains. This will be permanent. Continue?";
+            var confirmText = $"You are about to delete folder \"{node.Text}\" with all items it contains. This will be permanent. Continue?";
             var result = MessageBox.Show(confirmText, "Confirm", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
-                Action<TreeNode> RemoveFolderItems = null;
-                RemoveFolderItems = (folderNode) =>
+                static void RemoveFolderItems(TreeNode folderNode)
                 {
                     foreach (TreeNode child in folderNode.Nodes)
                     {
@@ -251,7 +247,8 @@ public partial class Form1 : Form
                         }
                         child.Remove();
                     }
-                };
+                }
+
                 RemoveFolderItems(node);
                 node.Remove();
             }
@@ -290,10 +287,7 @@ public partial class Form1 : Form
         CreateItem(path, "Path");
     }
 
-    public void RefreshTreeView()
-    {
-        projectTree.Invalidate();
-    }
+    public void RefreshTreeView() => projectTree.Invalidate();
 
     private void createMusicBtn_Click(object sender, EventArgs e)
     {
@@ -336,10 +330,10 @@ public partial class Form1 : Form
 
     private string GenerateItemName(string baseName)
     {
-        int index = 0;
+        var index = 0;
 
     restart:
-        foreach (GameItem pitem in Environment.project.items)
+        foreach (var pitem in Environment.project.items)
         {
             if (pitem.name == baseName + index)
             {
@@ -368,7 +362,7 @@ public partial class Form1 : Form
     private TreeNode InsertItemToTree(GameItem item, EventArgs e = null)
     {
         Bitmap icon = null;
-        int tree = 0;
+        var tree = 0;
         if (item is GameSprite)
         {
             tree = 0;
@@ -416,7 +410,7 @@ public partial class Form1 : Form
             icon = new Bitmap(1, 1);
 
         TreeNode node = null;
-        if (e != null && e is CreateGameItemEventArgs)
+        if (e is not null and CreateGameItemEventArgs)
         {
             node = (e as CreateGameItemEventArgs).Folder;
         }
@@ -444,14 +438,11 @@ public partial class Form1 : Form
         itemNode.ContextMenuStrip.Items.Add(renameBtn);
         item.treeImageIndex = itemNode.ImageIndex;
         item.treeNode = itemNode;
-        item.NameChanged += (s, ea) =>
-        {
-            itemNode.Text = ea.newName;
-        };
+        item.NameChanged += (s, ea) => itemNode.Text = ea.newName;
         ToolStripMenuItem deleteBtn = new ToolStripMenuItem("Delete");
         deleteBtn.Click += (s, ea) =>
         {
-            string validateMsg = $"You are about to delete {item.name}. This will be permanent. Continue?";
+            var validateMsg = $"You are about to delete {item.name}. This will be permanent. Continue?";
             if (MessageBox.Show(validateMsg, "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Environment.project.items.Remove(item);
@@ -475,8 +466,7 @@ public partial class Form1 : Form
     {
         if (e.Node.Tag is GameItem)
         {
-            GameItem item = e.Node.Tag as GameItem;
-            if (item != null)
+            if (e.Node.Tag is GameItem item)
             {
                 item.editor.MdiParent = this;
                 item.editor.Show();
@@ -504,8 +494,8 @@ public partial class Form1 : Form
     public void Form1_Load(object sender, EventArgs e)
     {
 #if DEBUG
-        bool show = false;
-        string debugText =
+        var show = false;
+        var debugText =
             "public class Program {\n" +
             "   /* A C# program to print a string in the console\n" +
             "      and close the console */\n" +
@@ -534,12 +524,12 @@ public partial class Form1 : Form
         recentProjectsMenu.DropDownItems.Clear();
         if (Settings.Default.RecentProjects != null)
         {
-            foreach (string project in Properties.Settings.Default.RecentProjects)
+            foreach (var project in Properties.Settings.Default.RecentProjects)
             {
                 ToolStripMenuItem openBtn = new ToolStripMenuItem(project.FileName());
                 openBtn.Click += (s, ea) =>
                 {
-                    string fileNotFoundError = "Could not find the project at " + project;
+                    var fileNotFoundError = "Could not find the project at " + project;
                     try
                     {
                         Environment.project = new GameProject("escape_equal_names");
@@ -616,15 +606,12 @@ public partial class Form1 : Form
         }
     }
 
-    private void saveProjectBtn_Click(object sender, EventArgs e)
-    {
-        SaveProject();
-    }
+    private void saveProjectBtn_Click(object sender, EventArgs e) => SaveProject();
 
     private static void SaveProject(bool saveAs = false)
     {
         string rootFolder; // the folder to which we want to save the full project folder, e.g. Desktop
-        string projectName = Environment.project.name;
+        var projectName = Environment.project.name;
 
         saveAs = saveAs || Environment.project.projectFilePath == null;
         if (saveAs)
@@ -635,12 +622,12 @@ public partial class Form1 : Form
                 dialog.FileName = Environment.project.name;
             else
             {
-                string name = DateTime.Now.ToString("dd-MM-yy");
+                var name = DateTime.Now.ToString("dd-MM-yy");
                 dialog.FileName = name;
             }
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                string loc = dialog.FileName;
+                var loc = dialog.FileName;
                 if (!string.IsNullOrWhiteSpace(loc))
                 {
                     projectName = loc.FileNameWithoutExtension();
@@ -674,7 +661,7 @@ public partial class Form1 : Form
     // make the toolstrip enabled with 1 click when form is not focused
     protected override void WndProc(ref Message m)
     {
-        int WM_PARENTNOTIFY = 0x0210;
+        var WM_PARENTNOTIFY = 0x0210;
         if (!Focused && m.Msg == WM_PARENTNOTIFY)
         {
             // Make this form auto-grab the focus when menu/controls are clicked
@@ -691,7 +678,7 @@ public partial class Form1 : Form
         fileDialog.Filter = "GameStudio Projects|*.gsp";
         if (fileDialog.ShowDialog() == DialogResult.OK)
         {
-            OpenProject(GameProject.Open(fileDialog.FileName, out object[] pTree), pTree);
+            OpenProject(GameProject.Open(fileDialog.FileName, out var pTree), pTree);
             Global.PushRecentProject(fileDialog.FileName);
         }
     }
@@ -706,10 +693,7 @@ public partial class Form1 : Form
             newForm = new Form1(pTree);
         else
             newForm = new Form1();
-        newForm.FormClosed += (s, ea) =>
-        {
-            Application.Exit(); // this.Close() will not work if no editor has been opened
-        };
+        newForm.FormClosed += (s, ea) => Application.Exit();
         newForm.Show();
 
         foreach (Control control in Controls)
@@ -723,10 +707,10 @@ public partial class Form1 : Form
 
     private void findResBtn_Click(object sender, EventArgs e)
     {
-        string name = Microsoft.VisualBasic.Interaction.InputBox("Resource Name");
+        var name = Microsoft.VisualBasic.Interaction.InputBox("Resource Name");
         if (!string.IsNullOrWhiteSpace(name))
         {
-            foreach (GameItem item in Environment.project.items)
+            foreach (var item in Environment.project.items)
             {
                 if (item.name == name)
                 {
@@ -796,7 +780,7 @@ public partial class Form1 : Form
         if (argType == null)
             argType = typeof(T);
         ProjectFolderTreeStruct<T> mainStr = null;
-        int tree = -1;
+        var tree = -1;
         {
             if (argType == typeof(GameSprite))
             {
@@ -835,7 +819,7 @@ public partial class Form1 : Form
                 throw new NotImplementedException();
             }
         }
-        TreeNode node = projectTree.Nodes[tree];
+        var node = projectTree.Nodes[tree];
         mainStr = new ProjectFolderTreeStruct<T>(node.Text, true);
         TranslateFolder<T>(mainStr, node);
         return mainStr;
@@ -861,10 +845,10 @@ public partial class Form1 : Form
     private void projectTree_DragDrop(object sender, DragEventArgs e)
     {
         // retrieve the client coordinates of the drop location
-        Point targetPoint = projectTree.PointToClient(new Point(e.X, e.Y));
+        var targetPoint = projectTree.PointToClient(new Point(e.X, e.Y));
 
         // retrieve the node at the drop location
-        TreeNode targetNode = projectTree.GetNodeAt(targetPoint);
+        var targetNode = projectTree.GetNodeAt(targetPoint);
 
         // retrieve the node that was dragged
         TreeNode draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
@@ -877,7 +861,7 @@ public partial class Form1 : Form
         // and that the target node is a folder
         if (!draggedNode.Equals(targetNode))
         {
-            int targetIndex = 0;
+            var targetIndex = 0;
 
             if (targetNode.Tag is GameItem)
             {
@@ -893,15 +877,9 @@ public partial class Form1 : Form
         }
     }
 
-    private void projectTree_ItemDrag(object sender, ItemDragEventArgs e)
-    {
-        DoDragDrop(e.Item, DragDropEffects.Move);
-    }
+    private void projectTree_ItemDrag(object sender, ItemDragEventArgs e) => DoDragDrop(e.Item, DragDropEffects.Move);
 
-    private void projectTree_DragEnter(object sender, DragEventArgs e)
-    {
-        projectTree_DragOver(sender, e);
-    }
+    private void projectTree_DragEnter(object sender, DragEventArgs e) => projectTree_DragOver(sender, e);
 
     private bool CanDragTo(TreeNode draggedNode, TreeNode targetNode)
     {
@@ -909,12 +887,12 @@ public partial class Form1 : Form
             return false;
 
         // find base folders of both dragged node & target node
-        TreeNode targetBaseFolder = targetNode;
+        var targetBaseFolder = targetNode;
         while (targetBaseFolder.Parent != null)
         {
             targetBaseFolder = targetBaseFolder.Parent;
         }
-        TreeNode draggedBaseFolder = draggedNode;
+        var draggedBaseFolder = draggedNode;
         while (draggedBaseFolder.Parent != null)
         {
             draggedBaseFolder = draggedBaseFolder.Parent;
@@ -926,38 +904,23 @@ public partial class Form1 : Form
     private void projectTree_DragOver(object sender, DragEventArgs e)
     {
         // retrieve the client coordinates of the drop location
-        Point targetPoint = projectTree.PointToClient(new Point(e.X, e.Y));
+        var targetPoint = projectTree.PointToClient(new Point(e.X, e.Y));
 
         // retrieve the node at the drop location
-        TreeNode targetNode = projectTree.GetNodeAt(targetPoint);
+        var targetNode = projectTree.GetNodeAt(targetPoint);
 
         e.Effect = CanDragTo((TreeNode)e.Data.GetData(typeof(TreeNode)), targetNode) ? DragDropEffects.Move : DragDropEffects.None;
     }
 
-    private void saveProjectAsBtn_Click(object sender, EventArgs e)
-    {
-        SaveProject(saveAs: true);
-    }
+    private void saveProjectAsBtn_Click(object sender, EventArgs e) => SaveProject(saveAs: true);
 
-    private void assemblyManagerBtn_Click(object sender, EventArgs e)
-    {
-        OpenAssemblyManager();
-    }
+    private void assemblyManagerBtn_Click(object sender, EventArgs e) => OpenAssemblyManager();
 
-    private void OpenAssemblyManager()
-    {
-        (new AssemblyManagerForm()).ShowDialog();
-    }
+    private void OpenAssemblyManager() => (new AssemblyManagerForm()).ShowDialog();
 }
 
-public class CreateGameItemEventArgs : EventArgs
+public class CreateGameItemEventArgs(GameItem item = null, TreeNode folder = null) : EventArgs
 {
-    public GameItem GameItem = null;
-    public TreeNode Folder = null;
-
-    public CreateGameItemEventArgs(GameItem item = null, TreeNode folder = null)
-    {
-        GameItem = item;
-        Folder = folder;
-    }
+    public GameItem GameItem = item;
+    public TreeNode Folder = folder;
 }

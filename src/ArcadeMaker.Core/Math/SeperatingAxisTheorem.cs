@@ -44,9 +44,9 @@ public static class SeperatingAxisTheorem
 
     private static (double X, double Y)[] GetRotatedCorners(Rect rect)
     {
-        double radians = rect.Angle * System.Math.PI / 180.0;
-        double cos = System.Math.Cos(radians);
-        double sin = System.Math.Sin(radians);
+        var radians = rect.Angle * System.Math.PI / 180.0;
+        var cos = System.Math.Cos(radians);
+        var sin = System.Math.Sin(radians);
 
         // Local corners relative to the pivot (origin point)
         // OriginX/Y is how far the pivot is from the mask's top-left
@@ -69,7 +69,7 @@ public static class SeperatingAxisTheorem
     private static IEnumerable<(double X, double Y)> GetAxes((double X, double Y)[] corners)
     {
         // Get edge normals (perpendicular to each edge)
-        for (int i = 0; i < corners.Length; i++)
+        for (var i = 0; i < corners.Length; i++)
         {
             var edge = (
                 X: corners[(i + 1) % corners.Length].X - corners[i].X,
@@ -84,12 +84,12 @@ public static class SeperatingAxisTheorem
         (double X, double Y)[] corners,
         (double X, double Y) axis)
     {
-        double min = double.MaxValue;
-        double max = double.MinValue;
+        var min = double.MaxValue;
+        var max = double.MinValue;
 
         foreach (var corner in corners)
         {
-            double projection = corner.X * axis.X + corner.Y * axis.Y;
+            var projection = corner.X * axis.X + corner.Y * axis.Y;
             min = System.Math.Min(min, projection);
             max = System.Math.Max(max, projection);
         }

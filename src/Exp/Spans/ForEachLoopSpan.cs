@@ -30,7 +30,7 @@ internal class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     {
         get
         {
-            string s = $"{Keyword} {VarName} in {ArrReadText}";
+            var s = $"{Keyword} {VarName} in {ArrReadText}";
             if (Id != null || Counter != null)
                 s += " : ";
             if (Id != null)

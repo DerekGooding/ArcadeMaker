@@ -13,7 +13,7 @@ public partial class AssemblyManagerForm : Form
 
     private void LoadAssembliesBox()
     {
-        foreach (AssemblyReference assembly in Environment.project.assemblyReferences)
+        foreach (var assembly in Environment.project.assemblyReferences)
         {
             assembliesBox.Items.Add(assembly);
         }
@@ -36,7 +36,7 @@ public partial class AssemblyManagerForm : Form
     private void Save()
     {
         Environment.project.assemblyReferences.Clear();
-        foreach (AssemblyReference assembly in assembliesBox.Items.OfType<AssemblyReference>())
+        foreach (var assembly in assembliesBox.Items.OfType<AssemblyReference>())
         {
             Environment.project.assemblyReferences.Add(assembly);
         }
@@ -108,10 +108,7 @@ public partial class AssemblyManagerForm : Form
         }
     }
 
-    private void assemblyNameRBtn_CheckedChanged(object sender, EventArgs e)
-    {
-        dllPathRBtn_CheckedChanged(null, null);
-    }
+    private void assemblyNameRBtn_CheckedChanged(object sender, EventArgs e) => dllPathRBtn_CheckedChanged(null, null);
 
     private void dllPathBox_TextChanged(object sender, EventArgs e)
     {
@@ -128,8 +125,8 @@ public partial class AssemblyManagerForm : Form
     {
         if (assembliesBox.Items.Count >= 1 && assembliesBox.SelectedIndex >= 0)
         {
-            Control focused = this.FindFocusedControl();
-            int tbSelectionStart = -1;
+            var focused = this.FindFocusedControl();
+            var tbSelectionStart = -1;
             if (focused is TextBox tb)
             {
                 tbSelectionStart = tb.SelectionStart;
@@ -165,15 +162,9 @@ public partial class AssemblyManagerForm : Form
         }
     }
 
-    private void addBtn_Click(object sender, EventArgs e)
-    {
-        Add();
-    }
+    private void addBtn_Click(object sender, EventArgs e) => Add();
 
-    private void removeBtn_Click(object sender, EventArgs e)
-    {
-        Remove();
-    }
+    private void removeBtn_Click(object sender, EventArgs e) => Remove();
 
     private void browseDllBtn_Click(object sender, EventArgs e)
     {
@@ -216,7 +207,7 @@ public partial class AssemblyManagerForm : Form
     {
         if (btnClose)
             return;
-        DialogResult result = MessageBox.Show("Do you want to save changes?", "Confirm", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+        var result = MessageBox.Show("Do you want to save changes?", "Confirm", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
         if (result == DialogResult.Yes)
         {
             Save();
@@ -262,8 +253,5 @@ public class AssemblyReference
     [XmlIgnore]
     public Assembly UsedByIDE { get; } = null;
 
-    public override string ToString()
-    {
-        return Title ?? "Unknown Assembly";
-    }
+    public override string ToString() => Title ?? "Unknown Assembly";
 }

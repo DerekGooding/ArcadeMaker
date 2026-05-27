@@ -12,19 +12,14 @@ using RoomBackground = ArcadeMaker.IDE.Items.RoomBackground;
 
 namespace ArcadeMaker.IDE;
 
-public class GameProject
+public class GameProject(string name)
 {
-    public string name = "Project";
+    public string name = name;
     public string projectFilePath = null;
-    public ObservableCollection<GameItem> items = new ObservableCollection<GameItem>();
-    public List<AssemblyReference> assemblyReferences = new List<AssemblyReference>();
+    public ObservableCollection<GameItem> items = [];
+    public List<AssemblyReference> assemblyReferences = [];
 
     public bool saved { get; private set; } = false;
-
-    public GameProject(string name)
-    {
-        this.name = name;
-    }
 
     public void Save(string path, bool successMsg = true, string fileName = null)
     {
@@ -33,30 +28,30 @@ public class GameProject
         Directory.CreateDirectory(path);
 
         SerializeableGameProject sproject = new SerializeableGameProject { name = name };
-        List<SerializeableGameItem> sitems = new List<SerializeableGameItem>();
-        IEnumerable<GameSprite> sprites = items.OfType<GameSprite>();
-        IEnumerable<GameBackground> backgrounds = items.OfType<GameBackground>();
-        IEnumerable<GameSound> sounds = items.OfType<GameSound>();
-        IEnumerable<GameScript> scripts = items.OfType<GameScript>();
-        IEnumerable<GameFont> fonts = items.OfType<GameFont>();
-        IEnumerable<GameObject> objects = items.OfType<GameObject>();
-        IEnumerable<GameRoom> rooms = items.OfType<GameRoom>();
-        IEnumerable<GamePath> gpathes = items.OfType<GamePath>();
+        List<SerializeableGameItem> sitems = [];
+        var sprites = items.OfType<GameSprite>();
+        var backgrounds = items.OfType<GameBackground>();
+        var sounds = items.OfType<GameSound>();
+        var scripts = items.OfType<GameScript>();
+        var fonts = items.OfType<GameFont>();
+        var objects = items.OfType<GameObject>();
+        var rooms = items.OfType<GameRoom>();
+        var gpathes = items.OfType<GamePath>();
 
         // save all resources
-        string res = path + @"\res";
+        var res = path + @"\res";
         Directory.CreateDirectory(res);
 
         // save texture atlases
         using var atlas = Textures.TextureAtlas.FromProjectSprites(this, out var atlasMap);
-        string atlasesDir = res + @"\atlases";
+        var atlasesDir = res + @"\atlases";
         Directory.CreateDirectory(atlasesDir);
-        string mainAtlasPath = atlasesDir + @"\main.png";
+        var mainAtlasPath = atlasesDir + @"\main.png";
         atlas.Save(mainAtlasPath);
         sproject.textureAtlasMap = new() { AtlasFilePath = mainAtlasPath, Items = atlasMap.Map(rect => new TextureAtlasMap.Item { SpriteName = rect.Sprite.name, ImageIndex = rect.Index, X = (int)rect.Rect.X, Y = (int)rect.Rect.Y, W = (int)rect.Rect.Width, H = (int)rect.Rect.Height }).ToArray() };
 
         // save game items
-        foreach (GameSprite sprite in sprites)
+        foreach (var sprite in sprites)
         {
             List<string> pathes = [];
             /*
@@ -85,8 +80,8 @@ public class GameProject
                     {
                         using (Graphics g = Graphics.FromImage(strip))
                         {
-                            int index = 0;
-                            foreach (Bitmap image in sprite.images)
+                            var index = 0;
+                            foreach (var image in sprite.images)
                             {
                                 image.SetResolution(g.DpiX, g.DpiY);
                                 g.DrawImage(image, index * width, 0);
@@ -104,7 +99,7 @@ public class GameProject
                 {
                     p = res + @"\" + sprite.name + ".png";
                     gspPath = @"\res\" + sprite.name + ".png";
-                    if (Global.ImageFileIsSpriteStrip(p, out int w))
+                    if (Global.ImageFileIsSpriteStrip(p, out var w))
                         p = p.Insert(p.Length - 4, "_");
                     if (File.Exists(p))
                         File.Delete(p);
@@ -113,14 +108,14 @@ public class GameProject
             }
             catch (Exception ex)
             {
-                string err = "Error: Cannot save sprite image (" + sprite.name /*+ ", image index " + sprite.images.IndexOf(image)*/ + ")";
+                var err = "Error: Cannot save sprite image (" + sprite.name /*+ ", image index " + sprite.images.IndexOf(image)*/ + ")";
                 MessageBox.Show(ex.ToString(), err);
             }
             if (!string.IsNullOrWhiteSpace(gspPath))
                 pathes.Add(gspPath);
             sitems.Add(new SerializeableGameSprite { name = sprite.name, numOfImages = sprite.images.Count, pathes = pathes.ToArray(), originX = sprite.originX, originY = sprite.originY, preciseMask = sprite.preciseMask, separateMask = sprite.separateMask, maskBounding_auto = sprite.maskBounding_auto, maskBounding_fullImage = sprite.maskBounding_fullImage, maskBounding_manual = sprite.maskBounding_manual, maskAlphaTolerance = sprite.maskAlphaTolerance, maskBottom = sprite.maskBottom, maskLeft = sprite.maskLeft, maskRight = sprite.maskRight, maskTop = sprite.maskTop });
         }
-        foreach (GameBackground background in backgrounds)
+        foreach (var background in backgrounds)
         {
             string p = null, gspPath = null;
             if (background.image != null)
@@ -145,7 +140,7 @@ public class GameProject
             }
             sitems.Add(new SerializeableBackground { name = background.name, path = gspPath });
         }
-        foreach (GameSound sound in sounds)
+        foreach (var sound in sounds)
         {
             string p = "", gspPath = "";
             if (!string.IsNullOrWhiteSpace(sound.filePath))
@@ -166,11 +161,11 @@ public class GameProject
             }
             sitems.Add(new SerializeableGameSound { name = sound.name, path = gspPath, volume = sound.volume, type = sound.Type });
         }
-        foreach (GamePath gpath in gpathes)
+        foreach (var gpath in gpathes)
         {
             sitems.Add(new SerializeableGamePath { name = gpath.name, points = gpath.points.ToArray(), close = gpath.close });
         }
-        foreach (GameFont font in fonts)
+        foreach (var font in fonts)
         {
             var sfont = new SerializeableGameFont(font);
 
@@ -182,8 +177,8 @@ public class GameProject
                 MessageBox.Show($"Couldn't find .ttf file for font '{font.name}'.");
             else
             {
-                string fontsDir = res + $@"\fonts";
-                string p = fontsDir + @$"\{font.name}.ttf";
+                var fontsDir = res + $@"\fonts";
+                var p = fontsDir + @$"\{font.name}.ttf";
                 Directory.CreateDirectory(fontsDir);
                 File.Copy(sfont.ttf, p, true);
                 sfont.ttf = p;
@@ -192,46 +187,46 @@ public class GameProject
         }
 
         // save all scripts
-        foreach (GameScript script in scripts)
+        foreach (var script in scripts)
         {
             string p = path + @"\" + script.name + ".cs", gspPath = @"\" + script.name + ".cs";
             SaveTextFile(p, script.Script);
             var sscript = new SerializeableGameScript { name = script.name, path = gspPath };
             sitems.Add(sscript);
         }
-        foreach (GameObject obj in objects)
+        foreach (var obj in objects)
         {
             // save script files
-            foreach (EventScripts evscripts in obj.EventScripts)
+            foreach (var evscripts in obj.EventScripts)
             {
-                int i = 0;
-                foreach (EventScript script in evscripts.Scripts)
+                var i = 0;
+                foreach (var script in evscripts.Scripts)
                 {
-                    string p = path + @"\" + obj.name + "." + evscripts.Event + (i++) + ".cs";
+                    var p = path + @"\" + obj.name + "." + evscripts.Event + (i++) + ".cs";
                     SaveTextFile(p, script.Script);
                 }
             }
 
             // create serializeable
-            string spr = obj.sprite == null ? "" : obj.sprite.name;
+            var spr = obj.sprite == null ? "" : obj.sprite.name;
             var sobj = new SerializeableGameObject { name = obj.name, sprite = spr, solid = obj.solid, depth = obj.depth, parent = obj.parent?.name };
             sobj.events = [.. obj.EventScripts];
             sobj.extraProperties = [.. obj.ExtraProperties.Map(ep => new ArcadeMaker.Core.Resources.Serializeables.ObjectProperty { Name = ep.Name, Constant = ep.Constant, InitValueCode = ep.InitValueCode, Nullable = ep.Nullable, Private = ep.Private, Type = ep.Type })];
             sitems.Add(sobj);
         }
-        foreach (GameRoom room in rooms)
+        foreach (var room in rooms)
         {
             string p = path + @"\" + room.name + ".cs", gspPath = @"\" + room.name + ".cs";
             SaveTextFile(p, room.Script);
             SerializeableRoomObject[] robjs = new SerializeableRoomObject[room.objects.Count];
-            for (int i = 0; i < robjs.Length; i++)
+            for (var i = 0; i < robjs.Length; i++)
             {
                 robjs[i] = new SerializeableRoomObject { id = room.objects[i].id, obj = room.objects[i].obj.name, x = room.objects[i].x, y = room.objects[i].y };
                 if (room.objects[i].HasCustomCreationCode())
                     robjs[i].creationCode = room.objects[i].Script;
             }
-            List<SerializeableRoomView> views = new List<SerializeableRoomView>();
-            foreach (RoomView view in room.views)
+            List<SerializeableRoomView> views = [];
+            foreach (var view in room.views)
             {
                 views.Add(new SerializeableRoomView
                 {
@@ -275,15 +270,14 @@ public class GameProject
         sproject.userAssemblies = assemblyReferences.ToArray();
 
         // save project tree
-        Func<ProjectFolderTreeStruct<GameItem>, string, SerializeableGameProjectTreeNode> TranslateStruct = null;
-        TranslateStruct = (ProjectFolderTreeStruct<GameItem> folder, string type) =>
+        static SerializeableGameProjectTreeNode TranslateStruct(ProjectFolderTreeStruct<GameItem> folder, string type)
         {
-            SerializeableGameProjectTreeNode sfolder = new SerializeableGameProjectTreeNode();
+            var sfolder = new SerializeableGameProjectTreeNode();
             sfolder.type = type;
             sfolder.name = folder.Name;
             sfolder.isFolder = true;
             sfolder.nodes = new SerializeableGameProjectTreeNode[folder.Structs.Count];
-            for (int n = 0; n < sfolder.nodes.Length; n++)
+            for (var n = 0; n < sfolder.nodes.Length; n++)
             {
                 if (folder.Structs[n] is ProjectItemTreeStruct<GameItem> itemStruct)
                 {
@@ -298,13 +292,13 @@ public class GameProject
                 }
             }
             return sfolder;
-        };
+        }
 
         Type[] gameItemTypes = new Type[] { typeof(GameSprite), typeof(GameSound), typeof(GameBackground), typeof(GamePath), typeof(GameScript), typeof(GameFont), typeof(GameObject), typeof(GameRoom) };
         SerializeableGameProjectTreeNode[] mainNodes = new SerializeableGameProjectTreeNode[gameItemTypes.Length];
-        for (int t = 0; t < gameItemTypes.Length; t++)
+        for (var t = 0; t < gameItemTypes.Length; t++)
         {
-            ProjectFolderTreeStruct<GameItem> projectStruct = Global.form1.GetProjectStruct<GameItem>(gameItemTypes[t]);
+            var projectStruct = Global.form1.GetProjectStruct<GameItem>(gameItemTypes[t]);
             mainNodes[t] = TranslateStruct(projectStruct, gameItemTypes[t].FullName);
         }
 
@@ -312,8 +306,8 @@ public class GameProject
 
         // generate xml file describes project
         TextWriter writer = null;
-        string savePath = path + @"\" + fileName + ".gsp";
-        string existsText = ReadTextFile(savePath);
+        var savePath = path + @"\" + fileName + ".gsp";
+        var existsText = ReadTextFile(savePath);
         try
         {
             saved = true;
@@ -341,7 +335,7 @@ public class GameProject
                 cancelErr = cancelEx.Message;
             }
 
-            string err = "Could not save project:\n" + ex;
+            var err = "Could not save project:\n" + ex;
             if (cancelErr != null)
                 err += "\n\nWarning: Your project might be deleted, due to the following error:\n" + cancelErr +
                        "\nFix the saving error and save the project without closing the program!";
@@ -383,10 +377,7 @@ public class GameProject
                 typeof(Sound.Types)
     ];
 
-    public static GameProject Open(string path)
-    {
-        return Open(path, out object[] ignore);
-    }
+    public static GameProject Open(string path) => Open(path, out var ignore);
 
     public static GameProject Open(string path, out object[] projectMainFoldersStructs)
     {
@@ -401,7 +392,7 @@ public class GameProject
             }
             catch (Exception ex)
             {
-                string err = "Cannot open project: Bad .gsp file";
+                var err = "Cannot open project: Bad .gsp file";
 #if DEBUG
                 err += "\n\n" + ex.ToString();
 #endif
@@ -415,8 +406,8 @@ public class GameProject
             project = new GameProject(sproject.name);
             project.saved = true;
             project.projectFilePath = path;
-            string projectFileLocation = path.FileLocation();
-            foreach (SerializeableGameItem item in sproject.items)
+            var projectFileLocation = path.FileLocation();
+            foreach (var item in sproject.items)
             {
                 if (item is SerializeableGameSprite)
                 {
@@ -442,7 +433,7 @@ public class GameProject
                     }
                     catch (Exception ex)
                     {
-                        string msg = string.Format("Error loading image for sprite \"{0}\"", sprite.name);
+                        var msg = string.Format("Error loading image for sprite \"{0}\"", sprite.name);
                         if (!Global.ShowDebugMessage(msg + "\n" + ex))
                         {
                             MessageBox.Show(msg);
@@ -507,11 +498,11 @@ public class GameProject
                 else if (item is SerializeableGameObject sobj)
                 {
                     GameObject obj = new GameObject(sobj.name);
-                    if (sobj.sprite != null && sobj.sprite != "")
+                    if (sobj.sprite is not null and not "")
                         obj.sprite = project.items.OfType<GameSprite>().ToList().Find(spr => spr.name == sobj.sprite);
                     obj.solid = sobj.solid;
                     obj.depth = sobj.depth;
-                    if (sobj.parent != null && sobj.parent != "")
+                    if (sobj.parent is not null and not "")
                         obj.parent = project.items.OfType<GameObject>().ToList().Find(gobj => gobj.name == sobj.parent);
                     obj.ExtraProperties.AddRange(sobj.extraProperties.Map(pro => new IDEObjectProperty(obj) { Constant = pro.Constant, InitValueCode = pro.InitValueCode, Name = pro.Name, Nullable = pro.Nullable, Private = pro.Private, Type = pro.Type }));
 
@@ -555,11 +546,11 @@ public class GameProject
                     if (sroom.views != null)
                     {
                         room.views.Clear();
-                        List<RoomView> views = new List<RoomView>();
-                        foreach (SerializeableRoomView sview in sroom.views)
+                        List<RoomView> views = [];
+                        foreach (var sview in sroom.views)
                         {
                             GameObject followObj = null;
-                            foreach (GameObject obj in project.items.OfType<GameObject>())
+                            foreach (var obj in project.items.OfType<GameObject>())
                             {
                                 if (obj.name == sview.objFollow)
                                     followObj = obj;
@@ -595,8 +586,8 @@ public class GameProject
                     {
                         System.Windows.Forms.MessageBox.Show(string.Format("Error loading code for room \"{0}\" from location {1}", room.name, sroom.scriptPath));
                     }
-                    int sroomIndex = 100; // do not set this to 1000, the 100 serie is set for room objects with undefined ID
-                    foreach (SerializeableRoomObject srobj in sroom.objects)
+                    var sroomIndex = 100; // do not set this to 1000, the 100 serie is set for room objects with undefined ID
+                    foreach (var srobj in sroom.objects)
                     {
                         if (!srobj.id.StartsWith("R"))
                             srobj.id = $"R{room.index}INST{sroomIndex++}";
@@ -617,26 +608,25 @@ public class GameProject
             if (sproject.treeMainNodes != null)
             {
                 projectMainFoldersStructs = new object[sproject.treeMainNodes.Length];
-                Func<SerializeableGameProjectTreeNode, bool, object> TranslateNode = null;
-                TranslateNode = (SerializeableGameProjectTreeNode node, bool isBaseFolder) =>
+                object TranslateNode(SerializeableGameProjectTreeNode node, bool isBaseFolder)
                 {
                     object @struct = null;
 
                     try
                     {
-                        GameItem item = project.items.ToList().Find(i => i.name == node.name);
+                        var item = project.items.ToList().Find(i => i.name == node.name);
                         if (!node.isFolder)
                         {
                             if (node.type == null)
                                 throw new Exception("node.type == null");
-                            Type genericType = typeof(ProjectItemTreeStruct<>).MakeGenericType(Type.GetType(node.type));
+                            var genericType = typeof(ProjectItemTreeStruct<>).MakeGenericType(Type.GetType(node.type));
                             @struct = Activator.CreateInstance(genericType, item);
                         }
                         else
                         {
-                            Type genericType = typeof(ProjectFolderTreeStruct<>).MakeGenericType(Type.GetType(node.type));
-                            object[] children = new object[node.nodes.Length];
-                            for (int c = 0; c < children.Length; c++)
+                            var genericType = typeof(ProjectFolderTreeStruct<>).MakeGenericType(Type.GetType(node.type));
+                            var children = new object[node.nodes.Length];
+                            for (var c = 0; c < children.Length; c++)
                                 children[c] = TranslateNode(node.nodes[c], false);
 
                             @struct = Activator.CreateInstance(genericType, node.name, isBaseFolder, children);
@@ -646,7 +636,7 @@ public class GameProject
                     {
                         try
                         {
-                            string err = "Error loading project tree, game items will not be inserted into folders";
+                            var err = "Error loading project tree, game items will not be inserted into folders";
 #if DEBUG
                             err += "\n\n[Debug Mode]\n" + ex;
 #endif
@@ -657,9 +647,9 @@ public class GameProject
                     }
 
                     return @struct;
-                };
+                }
 
-                for (int i = 0; i < projectMainFoldersStructs.Length; i++)
+                for (var i = 0; i < projectMainFoldersStructs.Length; i++)
                 {
                     projectMainFoldersStructs[i] = TranslateNode(sproject.treeMainNodes[i], true);
                 }
@@ -667,7 +657,7 @@ public class GameProject
         }
         catch (Exception ex)
         {
-            string err = "Error opening project";
+            var err = "Error opening project";
 #if DEBUG
             err += "\n\n" + ex.ToString();
 #endif
@@ -685,8 +675,8 @@ public class GameProject
 #endif
             return;
         }
-        StreamWriter writer = File.CreateText(path);
-        foreach (char c in file)
+        var writer = File.CreateText(path);
+        foreach (var c in file)
             writer.Write(c);
         writer.Close();
     }

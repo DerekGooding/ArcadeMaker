@@ -6,10 +6,7 @@ public partial class SpriteMaskEditor : Form
 {
     private SpriteMask[] masks;
 
-    private SpriteMask Mask
-    {
-        get => masks[Sprite.separateMask ? PreviewImageIndex : 0];
-    }
+    private SpriteMask Mask => masks[Sprite.separateMask ? PreviewImageIndex : 0];
 
     private readonly GameSprite Sprite = null;
     private int right;
@@ -94,10 +91,7 @@ public partial class SpriteMaskEditor : Form
         }
     } = false;
 
-    private void boundingManualOpt_CheckedChanged(object sender, EventArgs e)
-    {
-        ManualMode = boundingManualOpt.Checked;
-    }
+    private void boundingManualOpt_CheckedChanged(object sender, EventArgs e) => ManualMode = boundingManualOpt.Checked;
 
     private bool mouseDown = false;
     private Point mouseDownPos = new Point(0, 0);
@@ -136,7 +130,7 @@ public partial class SpriteMaskEditor : Form
             return;
 
         int x = 0, y = 0;
-        for (int i = 0; i < Mask.length; i++)
+        for (var i = 0; i < Mask.length; i++)
         {
             if (Mask[i] && x >= Left && x <= Right && y >= Top && y <= Bottom)
                 e.Graphics.DrawRectangle(HighlightPen, x, y, 1, 1);
@@ -385,7 +379,7 @@ public partial class SpriteMaskEditor : Form
         if (Sprite.separateMask)
         {
             masks = new SpriteMask[Sprite.images.Count];
-            for (int i = 0; i < Sprite.images.Count; i++)
+            for (var i = 0; i < Sprite.images.Count; i++)
                 masks[i] = new SpriteMask(Sprite.preciseMask, AlphaTolerance, Sprite.images[i]);
         }
         else
@@ -405,7 +399,7 @@ public partial class SpriteMaskEditor : Form
 
     private void SetBoundingAutomatic()
     {
-        SpriteMask.CalculateAutoBounding(Sprite, out int t, out int r, out int b, out int l);
+        SpriteMask.CalculateAutoBounding(Sprite, out var t, out var r, out var b, out var l);
         Top = t;
         Right = r;
         Bottom = b;
@@ -416,31 +410,25 @@ public partial class SpriteMaskEditor : Form
 public class SpriteMask : IDisposable
 {
     public readonly int width, height;
-    private readonly List<bool> points = new List<bool>();
+    private readonly List<bool> points = [];
 
-    public int length
-    {
-        get => points.Count;
-    }
+    public int length => points.Count;
 
-    public bool this[int index]
-    {
-        get => points[index];
-    }
+    public bool this[int index] => points[index];
 
     public SpriteMask(bool precise, int alphaTolerance, params Bitmap[] images)
     {
         width = images[0].Width;
         height = images[0].Height;
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
                 if (precise)
                 {
-                    bool found = false;
-                    foreach (Bitmap image in images)
+                    var found = false;
+                    foreach (var image in images)
                     {
                         if (image.GetPixel(x, y).A > alphaTolerance)
                         {
@@ -460,19 +448,19 @@ public class SpriteMask : IDisposable
 
     public static void CalculateAutoBounding(GameSprite sprite, out int top, out int right, out int bottom, out int left)
     {
-        Bitmap image = sprite.images[0];
+        var image = sprite.images[0];
 
         // find max top, left, right, down points of the mask
         // use new mask, so that this would work even when precise mask is false
         using (SpriteMask Mask = new SpriteMask(true, sprite.maskAlphaTolerance, sprite.images.ToArray()))
         {
-            int maxTop = Mask.height - 1;
-            int maxLeft = Mask.width - 1;
-            int maxBottom = 0;
-            int maxRight = 0;
+            var maxTop = Mask.height - 1;
+            var maxLeft = Mask.width - 1;
+            var maxBottom = 0;
+            var maxRight = 0;
 
             int x = 0, y = 0;
-            for (int i = 0; i < Mask.length; i++)
+            for (var i = 0; i < Mask.length; i++)
             {
                 if (Mask[i])
                 {

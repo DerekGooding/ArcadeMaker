@@ -17,10 +17,7 @@ public partial class ObjectPropertiesModifier : UserControl
         }
     }
 
-    public ObjectPropertiesModifier()
-    {
-        InitializeComponent();
-    }
+    public ObjectPropertiesModifier() => InitializeComponent();
 
     public void Init(GameObject gameObject)
     {
@@ -44,7 +41,7 @@ public partial class ObjectPropertiesModifier : UserControl
 
         panel.Controls.Add(modifier);
         CheckBox selectorBox = new() { Location = new(5, lastModifierY) };
-        selectorBox.CheckedChanged += (s, e) => { DeleteBtn.Enabled = propertySelectors.Any(pair => pair.Key.Checked); };
+        selectorBox.CheckedChanged += (s, e) => DeleteBtn.Enabled = propertySelectors.Any(pair => pair.Key.Checked);
         propertySelectors.Add(selectorBox, modifier);
         panel.Controls.Add(selectorBox);
         lastModifierY += modifier.Size.Height + modifiersSpacing;
@@ -57,7 +54,7 @@ public partial class ObjectPropertiesModifier : UserControl
     private void AddBtn_Click(object sender, EventArgs e)
     {
         IDEObjectProperty pro = new(GameObject);
-        int i = 1;
+        var i = 1;
         string name;
         do
         {

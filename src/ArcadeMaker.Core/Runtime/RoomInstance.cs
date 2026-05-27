@@ -50,8 +50,5 @@ public class RoomInstance
         instance.DepthChanged -= MarkDepthChanged;
     }
 
-    public void MarkDepthChanged(object? sender, double depth)
-    {
-        isSorted = false;
-    }
+    public void MarkDepthChanged(object? sender, double depth) => isSorted = false;
 }

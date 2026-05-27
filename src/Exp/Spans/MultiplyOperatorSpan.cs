@@ -18,7 +18,7 @@ internal class MultiplyOperatorSpan : OperatorSpan, ISymbol
             if (left.IsString() && right.IsNumber)
             {
                 string str = "", original = Interpreter.ExpStringToString(left.Inst);
-                for (int i = 0; i < Math.Floor(right.Number); i++)
+                for (var i = 0; i < Math.Floor(right.Number); i++)
                     str += original;
                 return str.ToExpString();
             }

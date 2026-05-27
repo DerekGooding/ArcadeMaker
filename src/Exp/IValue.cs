@@ -16,13 +16,9 @@ public interface IValue
 
     string TypeName { get; }
 
-    void Unexpected(string expected)
-    {
-        Interpreter.Activated.ThrowRuntime($"A value of type {expected} was expected, but {TypeName} received.", RuntimeException.INVALID_ARGUMENT);
-    }
+    void Unexpected(string expected) => Interpreter.Activated.ThrowRuntime($"A value of type {expected} was expected, but {TypeName} received.", RuntimeException.INVALID_ARGUMENT);
 
-    IValue Pass()
-    {
+    IValue Pass() =>
         // unneccsary since value types (bool, char, number) are now readonly
         //if (IsBool)
         //    return Bool.ToExp();
@@ -30,6 +26,5 @@ public interface IValue
         //    return Char.ToExp();
         //if (IsNumber)
         //    return Number.ToExp();
-        return this;
-    }
+        this;
 }

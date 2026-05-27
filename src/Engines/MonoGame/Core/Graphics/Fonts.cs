@@ -13,15 +13,12 @@ internal static class Fonts
 
     internal static SpriteFont FromTTF(string ttfPath, float size, GraphicsDevice graphicsDevice)
     {
-        byte[] fdata = File.ReadAllBytes(ttfPath);
+        var fdata = File.ReadAllBytes(ttfPath);
 
         // bake the font into a SpriteFont
         var fontBakeResult = TtfFontBaker.Bake(fdata, size, 1024, 1024, [CharacterRange.BasicLatin]);
         return fontBakeResult.CreateSpriteFont(graphicsDevice);
     }
 
-    internal static SpriteFont FromGameFont(GameFont gameFont, GraphicsDevice graphicsDevice)
-    {
-        return FromTTF(gameFont.ttf, gameFont.size, graphicsDevice);
-    }
+    internal static SpriteFont FromGameFont(GameFont gameFont, GraphicsDevice graphicsDevice) => FromTTF(gameFont.ttf, gameFont.size, graphicsDevice);
 }

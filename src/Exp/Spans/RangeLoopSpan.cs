@@ -26,7 +26,7 @@ internal class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     {
         get
         {
-            string s = $"{Keyword} {VarName} from {FromReadText} to {ToReadText}";
+            var s = $"{Keyword} {VarName} from {FromReadText} to {ToReadText}";
             if (Id != null || Counter != null)
                 s += " : ";
             if (Id != null)

@@ -21,10 +21,7 @@ public partial class ObjectPropertyModifier : UserControl
             debugTimer.Stop();
 
             HashSet<ExpError>? errors = null;
-            await Task.Run(() =>
-            {
-                Debugging.Debug.TryBuild(out errors);
-            });
+            await Task.Run(() => Debugging.Debug.TryBuild(out errors));
 
             Global.form1.errorsBox.Items.Clear();
 
@@ -148,10 +145,7 @@ public class IDEObjectProperty(GameObject? obj) : Core.Resources.Serializeables.
     {
     } // for serializing
 
-    public bool IsValidName(string name)
-    {
-        return Exp.Extensions.IsLiterallyValidName(name) && !Object.ExtraProperties.Any(p => p != this && p.Name == name) && !Core.Runtime.Instance.csProperties.Any(pair => pair.Key.Name.StartWithLowerCase() == name);
-    }
+    public bool IsValidName(string name) => Exp.Extensions.IsLiterallyValidName(name) && !Object.ExtraProperties.Any(p => p != this && p.Name == name) && !Core.Runtime.Instance.csProperties.Any(pair => pair.Key.Name.StartWithLowerCase() == name);
 
     public static string GetDefaultInitVal(VariableType type)
     {

@@ -21,7 +21,7 @@ public partial class FontEditor : Form
             skipSetFontProperties = false;
         };
 
-        foreach (FontFamily family in FontFamily.Families)
+        foreach (var family in FontFamily.Families)
         {
             familiesBox.Items.Add(family.Name);
         }
@@ -96,13 +96,7 @@ public partial class FontEditor : Form
         UpdatePreview();
     }
 
-    private void UpdatePreview()
-    {
-        previewLbl.Font = new Font(font.family, font.size, font.bold && font.italic ? FontStyle.Bold | FontStyle.Italic : font.bold ? FontStyle.Bold : font.italic ? FontStyle.Italic : FontStyle.Regular);
-    }
+    private void UpdatePreview() => previewLbl.Font = new Font(font.family, font.size, font.bold && font.italic ? FontStyle.Bold | FontStyle.Italic : font.bold ? FontStyle.Bold : font.italic ? FontStyle.Italic : FontStyle.Regular);
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
+    private void okBtn_Click(object sender, EventArgs e) => Close();
 }

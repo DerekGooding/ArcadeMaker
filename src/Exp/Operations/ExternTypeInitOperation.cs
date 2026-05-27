@@ -19,8 +19,5 @@ internal class ExternTypeInitOperation : IReadingOperation
             Interpreter.Activated.Error($"Extern class '{extrn.GetExpTypeName(false)}' does not contain a constructor taking {Args.Length} parameters.");
     }
 
-    public IValue Read()
-    {
-        return Interpreter.NewExtern(Extern.Type, [.. Args.Map(a => a.Read())]);
-    }
+    public IValue Read() => Interpreter.NewExtern(Extern.Type, [.. Args.Map(a => a.Read())]);
 }

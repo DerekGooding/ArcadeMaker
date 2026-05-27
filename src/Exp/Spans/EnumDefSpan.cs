@@ -20,8 +20,8 @@ internal class EnumDefSpan : WordSpan, IDefinition, ICanSetAttr, IKeyword, IExpI
     {
         get
         {
-            string vals = "";
-            int index = 0;
+            var vals = "";
+            var index = 0;
             foreach (var val in Values)
                 vals += val.FullText + (++index >= Values.Length ? "" : ",") + "\n";
             return Keyword + $" {Name}\n{{\n\t{vals}\n}}";

@@ -39,9 +39,9 @@ public partial class SoundEditor : Form
             List<(string, string)> formats = [];
             foreach (var format in typeof(ArcadeMaker.Core.Resources.Sound.Formats).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
             {
-                string comment = "";
+                var comment = "";
                 var supportedOSAttr = format.GetCustomAttributes(typeof(SupportedOSPlatformAttribute), false) ?? [];
-                int i = 0;
+                var i = 0;
                 foreach (var os in supportedOSAttr)
                 {
                     comment += (os as SupportedOSPlatformAttribute)?.PlatformName ?? "";
@@ -57,11 +57,9 @@ public partial class SoundEditor : Form
         }
     }
 
-    private void okBtn_Click(object sender, EventArgs e)
-    {
+    private void okBtn_Click(object sender, EventArgs e) =>
         //soundPlayer?.Dispose();
         Close();
-    }
 
     private void MusicEditor_Load(object sender, EventArgs e)
     {
@@ -74,7 +72,7 @@ public partial class SoundEditor : Form
         {
             fileNameLbl.Text = "";
         }
-        float originalVolume = sound.volume;
+        var originalVolume = sound.volume;
         volumeBar.Value = (int)(100 * sound.volume);
 
         // set pan and pitch bars
@@ -107,7 +105,7 @@ public partial class SoundEditor : Form
             }
             catch (Exception ex)
             {
-                string err = "Cannot play the selected sound";
+                var err = "Cannot play the selected sound";
 #if DEBUG
                 err += "\n\nError message:\n" + ex.Message;
 #endif
@@ -187,10 +185,7 @@ public partial class SoundEditor : Form
         renaming = false;
     }
 
-    private void volumeBar_Scroll(object sender, EventArgs e)
-    {
-        sound.volume = (volumeBar.Value - volumeBar.Minimum) * 1F / (volumeBar.Maximum - volumeBar.Minimum);
-    }
+    private void volumeBar_Scroll(object sender, EventArgs e) => sound.volume = (volumeBar.Value - volumeBar.Minimum) * 1F / (volumeBar.Maximum - volumeBar.Minimum);
 
     private void soundEffectBtn_CheckedChanged(object sender, EventArgs e)
     {
@@ -209,15 +204,9 @@ public partial class SoundEditor : Form
         pitchBar.Value = pitchBar.Maximum / 2;
     }
 
-    private void panBar_Scroll(object sender, EventArgs e)
-    {
-        sound.Pan = (float)Core.Math.Formulas.LinearMapping(panBar.Minimum, panBar.Maximum, -1d, 1d, panBar.Value);
-    }
+    private void panBar_Scroll(object sender, EventArgs e) => sound.Pan = (float)Core.Math.Formulas.LinearMapping(panBar.Minimum, panBar.Maximum, -1d, 1d, panBar.Value);
 
-    private void pitchBar_Scroll(object sender, EventArgs e)
-    {
-        sound.Pitch = (float)Core.Math.Formulas.LinearMapping(pitchBar.Minimum, pitchBar.Maximum, -1d, 1d, pitchBar.Value);
-    }
+    private void pitchBar_Scroll(object sender, EventArgs e) => sound.Pitch = (float)Core.Math.Formulas.LinearMapping(pitchBar.Minimum, pitchBar.Maximum, -1d, 1d, pitchBar.Value);
 }
 
 internal interface ISoundPlayer : IDisposable

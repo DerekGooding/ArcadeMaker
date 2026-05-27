@@ -4,5 +4,5 @@ public interface IDefinition
 {
     string Name { get; }
     string? Namespace { get; set; }
-    public string FullName { get => (Namespace == null ? "" : (Namespace + NamespaceSpecificationSpan.Symbol)) + Name; }
+    public string FullName => (Namespace == null ? "" : (Namespace + NamespaceSpecificationSpan.Symbol)) + Name;
 }

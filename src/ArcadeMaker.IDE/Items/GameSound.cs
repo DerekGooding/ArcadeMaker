@@ -11,10 +11,7 @@ public class GameSound : GameItem
     /// <summary>
     /// The extension of the file, without dot ("wav", "mp3" "mid"...)
     /// </summary>
-    public string fileExtension
-    {
-        get => filePath != null && filePath.Contains('.') ? filePath.Substring(filePath.LastIndexOf('.') + 1) : null;
-    }
+    public string fileExtension => filePath != null && filePath.Contains('.') ? filePath.Substring(filePath.LastIndexOf('.') + 1) : null;
 
     public float volume = 1.0F;
     public Sound.Types Type { get; set; } = Sound.Types.SoundEffect;
@@ -29,10 +26,8 @@ public class GameSound : GameItem
             }
             return base.Editor as SoundEditor;
         }
-        set
-        {
-            base.editor = value;
-        }
+
+        set => base.editor = value;
     }
 
     public float Pan { get; internal set; }
@@ -41,10 +36,7 @@ public class GameSound : GameItem
     public GameSound(string name, string filePath = null) : base(name)
     {
         this.filePath = filePath;
-        base.getEditor += (s, e) =>
-        {
-            e = editor;
-        };
+        base.getEditor += (s, e) => e = editor;
         editor = new SoundEditor(this);
     }
 }

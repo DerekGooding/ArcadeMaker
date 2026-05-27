@@ -49,7 +49,7 @@ public class FuncDefSpan : WordSpan, IContext, IDefinition, IKeyword, IClassMemb
 
         // create variables for parameter
         ParamVariables = new Variable[Args.Length];
-        for (int i = 0; i < ParamVariables.Length; i++)
+        for (var i = 0; i < ParamVariables.Length; i++)
         {
             Variable pv = new(Args[i].Name, null, null, false);
             Vars.Add(pv);
@@ -75,12 +75,12 @@ public class FuncDefSpan : WordSpan, IContext, IDefinition, IKeyword, IClassMemb
     {
         get
         {
-            string argsStr = "";
+            var argsStr = "";
             foreach (var a in Args)
                 argsStr += a.ToString() + " , ";
             if (Args.Length > 0)
                 argsStr = argsStr.Substring(0, argsStr.Length - 3);
-            string s = Static ? "static " : "";
+            var s = Static ? "static " : "";
             s += $"{Keyword} {Name} ( {argsStr} )\n{{\n\t{InnerSource.ToString(" ")}\n}}";
             return s;
         }
