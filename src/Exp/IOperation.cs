@@ -498,7 +498,7 @@ internal class InitOperation : IReadingOperation
         // find the constructor with the given num of arguments
         var ctors = def.Funcs.Where(f => !f.Static && f.Args.Length == args.Length && f is ConstructorDefSpan);
         if (ctors.Count() == 0 && def.Funcs.OfType<ConstructorDefSpan>().Any())
-            Interpreter.Activated.Error($"{((IDefination)def).FullName} does not contain a constructor taking {args.Length} parameters.");
+            Interpreter.Activated.Error($"{((IDefinition)def).FullName} does not contain a constructor taking {args.Length} parameters.");
         if (ctors.Count() >= 2)
             throw new Exception($"More than 1 constructor taking {args.Length} parameters found.");
 

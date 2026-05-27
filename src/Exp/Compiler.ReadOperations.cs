@@ -216,7 +216,7 @@ public partial class Interpreter
                     continue; // bc it's not an operation
                 }
                 //else if (word.GetType().Name != "WordSpan") { operation = Operation.Custom(() => { }); }
-                else if (word is IDefination or NamespaceWordSpan or UsingWordSpan or ExternClassDefSpan)
+                else if (word is IDefinition or NamespaceWordSpan or UsingWordSpan or ExternClassDefSpan)
                     continue;
                 else
                 {

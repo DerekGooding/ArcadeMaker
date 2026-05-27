@@ -26,7 +26,7 @@ public partial class Interpreter
             if (func.Vars[i].Value.IsInst && (cls == null || func.Vars[i].Value.Inst.def == cls))
                 return func.Vars[i].Value.Inst;
             else
-                ThrowRuntime($"Parameter '{func.Vars[i].Name}' must be of type '{((IDefination)cls)?.FullName ?? "any non-premitive"}'.", RuntimeException.INVALID_ARGUMENT);
+                ThrowRuntime($"Parameter '{func.Vars[i].Name}' must be of type '{((IDefinition)cls)?.FullName ?? "any non-premitive"}'.", RuntimeException.INVALID_ARGUMENT);
             return null;
         }
 
@@ -272,9 +272,9 @@ public partial class Interpreter
                         string propName = GetInstArg(1, ClassDefSpan.ExpStringDef).ToString();
                         ICanSetAttr prop = (ICanSetAttr)cls.Props.FirstOrDefault(p => p.Name == propName) ?? cls.Vars.OfType<ClassStaticVar>().FirstOrDefault(p => p.Name == propName);
                         if (prop == null)
-                            ThrowRuntime($"'{((IDefination)cls).FullName}' does not contain a property named '{propName}'.", RuntimeException.INVALID_ARGUMENT);
+                            ThrowRuntime($"'{((IDefinition)cls).FullName}' does not contain a property named '{propName}'.", RuntimeException.INVALID_ARGUMENT);
                         if (prop.AttrInfo == null)
-                            ThrowRuntime($"{((IDefination)cls).FullName}.{propName} does not have tags.", RuntimeException.INVALID_ARGUMENT);
+                            ThrowRuntime($"{((IDefinition)cls).FullName}.{propName} does not have tags.", RuntimeException.INVALID_ARGUMENT);
 
                         func.Returns = prop.AttrInfo.ToExpArray();
                         func.Return = true;
@@ -289,9 +289,9 @@ public partial class Interpreter
                         int paramsCount = (int)GetArg<IValue>(2).Number;
                         FuncDefSpan fn = cls.Funcs.FirstOrDefault(p => p.Args.Length == paramsCount && p.Name == funcName);
                         if (fn == null)
-                            ThrowRuntime($"'{((IDefination)cls).FullName}' does not contain a function named '{funcName}' taking {paramsCount} parameters.", RuntimeException.INVALID_ARGUMENT);
+                            ThrowRuntime($"'{((IDefinition)cls).FullName}' does not contain a function named '{funcName}' taking {paramsCount} parameters.", RuntimeException.INVALID_ARGUMENT);
                         if (fn.AttrInfo == null)
-                            ThrowRuntime($"{((IDefination)cls).FullName}.{funcName}(..{paramsCount}) does not have tags.", RuntimeException.INVALID_ARGUMENT);
+                            ThrowRuntime($"{((IDefinition)cls).FullName}.{funcName}(..{paramsCount}) does not have tags.", RuntimeException.INVALID_ARGUMENT);
 
                         func.Returns = fn.AttrInfo.ToExpArray();
                         func.Return = true;
@@ -438,7 +438,7 @@ public partial class Interpreter
                     // get ctor def
                     c = cls.Funcs.FirstOrDefault(f => f is ConstructorDefSpan && f.Args.Length == args.ArrayValues.Length) as ConstructorDefSpan;
                     if (c == null)
-                        ThrowRuntime($"{((IDefination)cls).FullName} does not contain a constructor takes {args.ArrayValues.Length} parameters.", RuntimeException.NOT_FOUND);
+                        ThrowRuntime($"{((IDefinition)cls).FullName} does not contain a constructor takes {args.ArrayValues.Length} parameters.", RuntimeException.NOT_FOUND);
                     ValidateAccess(c, cls, currentContext);
 
                     // invoke

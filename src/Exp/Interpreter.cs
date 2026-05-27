@@ -150,14 +150,14 @@ public partial class Interpreter : IVarSystem
 
     internal IEnumerable<ClassDefSpan> UsedClasses(Span from) => UsedDefinations(from).OfType<ClassDefSpan>();
 
-    internal IEnumerable<IDefination> UsedDefinations(Span from)
+    internal IEnumerable<IDefinition> UsedDefinations(Span from)
     {
         return definations.Where(d => d.Namespace == null || from.Document.Namespace == d.Namespace || from.Document.Usings?.Contains(d.Namespace) == true);
     }
 
     internal List<ExternClassDefSpan> externs = [];
 
-    public readonly List<IDefination> definations = [];
+    public readonly List<IDefinition> definations = [];
 
     /// <summary>
     /// The currently activated <see cref="Interpreter"/> instance.
@@ -185,7 +185,7 @@ public partial class Interpreter : IVarSystem
         this._currentVarSystem_ = this;
     }
 
-    public void Build(ScriptDocument source, IEnumerable<IDefination>? defsToImport = null, params ScriptDocument[] imports)
+    public void Build(ScriptDocument source, IEnumerable<IDefinition>? defsToImport = null, params ScriptDocument[] imports)
     {
         "build started...".Println();
         Activated = this;
@@ -546,7 +546,7 @@ public partial class Interpreter : IVarSystem
             {
                 var valop = ReadReadingOperation();
                 if (valop is not ConstValueReadingOperation or ConstArrayReadingOperation)
-                    Error($"Argument {i} of attribute {((IDefination)attr).FullName} must be a constant value.");
+                    Error($"Argument {i} of attribute {((IDefinition)attr).FullName} must be a constant value.");
                 var val = valop.Read();
 
                 // check type match
@@ -557,7 +557,7 @@ public partial class Interpreter : IVarSystem
                     typeMismatch = attr.Params[i].Type != val?.GetType();
 
                 if (typeMismatch)
-                    Error($"Argument {i} of attribute {((IDefination)attr).FullName} must be of type {attr.Params[i].ExpType?.Vars[1].Value.GetExpTypeName(true) ?? attr.Params[i].Type.GetExpTypeName()} (Type read: {Extensions.GetExpTypeName(val, true)}).");
+                    Error($"Argument {i} of attribute {((IDefinition)attr).FullName} must be of type {attr.Params[i].ExpType?.Vars[1].Value.GetExpTypeName(true) ?? attr.Params[i].Type.GetExpTypeName()} (Type read: {Extensions.GetExpTypeName(val, true)}).");
 
                 args.Add(val);
 
@@ -579,7 +579,7 @@ public partial class Interpreter : IVarSystem
                 || taggedItem is ConstructorDefSpan && !attr.AllowFor_Constructor
                 || taggedItem is AttributeDefSpan && !attr.AllowFor_Attr)
             {
-                Error($"The {((IDefination)attr).FullName} attribute cannot be set for {(taggedItem as IExpItem)?.GetItemName()}.");
+                Error($"The {((IDefinition)attr).FullName} attribute cannot be set for {(taggedItem as IExpItem)?.GetItemName()}.");
             }
 
             // validate AllowMultiple

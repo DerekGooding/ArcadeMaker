@@ -833,8 +833,8 @@ public partial class Interpreter
                 span = new MultiplyOperatorSpan();
             else if (text == DivideOperatorSpan.Symbol)
                 span = new DivideOperatorSpan();
-            else if (text == ModuluOperatorSpan.Symbol)
-                span = new ModuluOperatorSpan();
+            else if (text == ModuleOperatorSpan.Symbol)
+                span = new ModuleOperatorSpan();
             else if (text == GreaterThanOperatorSpan.Symbol)
                 span = new GreaterThanOperatorSpan();
             else if (text == LowerThanOperatorSpan.Symbol)

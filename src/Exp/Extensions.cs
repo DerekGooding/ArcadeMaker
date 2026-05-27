@@ -236,13 +236,13 @@ public static class Extensions
             if (val.IsNumber)
                 return ValueHelper.tnum;
             if (val.IsInst)
-                return ((IDefination)val.Inst.def).FullName;
+                return ((IDefinition)val.Inst.def).FullName;
             if (val.IsFunc)
                 return ValueHelper.tfunc;
             if (val is SpecialValue special)
                 obj = special.Value;
         }
-        if (obj is IDefination def)
+        if (obj is IDefinition def)
             return def.FullName;
         if (obj == Void.Return)
             return obj.ToString();

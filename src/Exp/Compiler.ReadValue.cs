@@ -92,9 +92,9 @@ public partial class Interpreter
                         var stpropName = ReadWord().FullText;
                         var val = defName.Class.Vars.FirstOrDefault(v => v.Name == stpropName);
                         if (val == null)
-                            Error($"Unknown static constant {(defName.Class as IDefination).FullName}{NamespaceSpecificationSpan.Symbol}{stpropName}");
+                            Error($"Unknown static constant {(defName.Class as IDefinition).FullName}{NamespaceSpecificationSpan.Symbol}{stpropName}");
                         if (!val.Const)
-                            Error($"{(defName.Class as IDefination).FullName}{NamespaceSpecificationSpan.Symbol}{stpropName} is not marked as constant and can't be read here.");
+                            Error($"{(defName.Class as IDefinition).FullName}{NamespaceSpecificationSpan.Symbol}{stpropName} is not marked as constant and can't be read here.");
                         if ((val.Value.IsInst && val.Value.Inst.def != ClassDefSpan.ExpStringDef) || !(val.Value == null || val.Value.IsBool || val.Value.IsChar || val.Value.IsNumber || val.Value.IsInst))
                             ThrowOnlyConst();
                         value = val.Value;
@@ -253,7 +253,7 @@ public partial class Interpreter
             {
                 nullCoalscingEx = ReadValue<Instance>(allowUnknownVars: allowUnknownVars);
                 if (nullCoalscingEx == null || nullCoalscingEx.def != ClassDefSpan.ExpExceptionDef)
-                    Error($"Only instances of type {(ClassDefSpan.ExpExceptionDef as IDefination)?.FullName ?? "system::Exception"} can be thrown.");
+                    Error($"Only instances of type {(ClassDefSpan.ExpExceptionDef as IDefinition)?.FullName ?? "system::Exception"} can be thrown.");
             }
 
             if (val is int i32)
@@ -310,7 +310,7 @@ public partial class Interpreter
         // calculate math-first operations
         for (int i = 0; i < ops.Count; i++)
         {
-            if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuluOperatorSpan)
+            if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuleOperatorSpan)
             {
                 nums[i] = MakeOperation(nums[i], ops[i], nums[i + 1]);
                 nums.RemoveAt(i + 1);

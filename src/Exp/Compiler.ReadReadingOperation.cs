@@ -251,7 +251,7 @@ public partial class Interpreter
         // calculate math-first operations
         for (int i = 0; i < ops.Count; i++)
         {
-            if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuluOperatorSpan)
+            if (ops[i] is MultiplyOperatorSpan or DivideOperatorSpan or ModuleOperatorSpan)
             {
                 nums[i] = CreateOperation(nums[i], ops[i], nums[i + 1]);
                 nums.RemoveAt(i + 1);

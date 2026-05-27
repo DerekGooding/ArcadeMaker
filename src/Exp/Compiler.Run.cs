@@ -715,7 +715,7 @@ public partial class Interpreter
 
             if (span is IContext ctx)
                 ctx.Parent = this;
-            if (span is IDefination def)
+            if (span is IDefinition def)
             {
                 def.Namespace = span.Document?.Namespace;
                 if (def is FuncDefSpan { Name: null } namelessFunc)

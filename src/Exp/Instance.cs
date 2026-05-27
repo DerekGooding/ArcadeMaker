@@ -49,7 +49,7 @@ public class Instance : IVarSystem, IValue, IExpItem
         {
             if (orNull)
                 return null;
-            Interpreter.Activated.ThrowRuntime($"{((IDefination)def).FullName} does not contain a property which is marked as basearray.", RuntimeException.INVALID_OPERATION);
+            Interpreter.Activated.ThrowRuntime($"{((IDefinition)def).FullName} does not contain a property which is marked as basearray.", RuntimeException.INVALID_OPERATION);
         }
         Instance val = Vars.FirstOrDefault(v => v.Name == basearr.Name)?.Value?.Inst;
         if (val == null)
@@ -89,14 +89,14 @@ public class Instance : IVarSystem, IValue, IExpItem
     {
         if (a.def == ClassDefSpan.ExpStringDef || (b as Instance)?.def == ClassDefSpan.ExpStringDef)
             return (a.ToString() + (b?.ToString() ?? "NULL")).ToExpString();
-        throw new InvalidOperationException($"Cannot add {Extensions.GetExpTypeName(b, true)} to {((IDefination)a.def).FullName}.");
+        throw new InvalidOperationException($"Cannot add {Extensions.GetExpTypeName(b, true)} to {((IDefinition)a.def).FullName}.");
     }
 
     public static Instance operator +(object a, Instance b)
     {
         if (b.def == ClassDefSpan.ExpStringDef || (a as Instance)?.def == ClassDefSpan.ExpStringDef)
             return ((a?.ToString() ?? "NULL") + b.ToString()).ToExpString();
-        throw new InvalidOperationException($"Cannot add {Extensions.GetExpTypeName(b, true)} to {((IDefination)b.def).FullName}.");
+        throw new InvalidOperationException($"Cannot add {Extensions.GetExpTypeName(b, true)} to {((IDefinition)b.def).FullName}.");
     }
 }
 

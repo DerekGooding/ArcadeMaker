@@ -91,7 +91,7 @@ public partial class Interpreter
     internal void ThrowRuntime(Instance ex, Span? throwing = null, bool beforeCurrentSpan = true, bool byExpThrowStmt = false)
     {
         if (ex == null || ex.def != ClassDefSpan.ExpExceptionDef)
-            ThrowRuntime(nameof(ex) + $" was not an instance of {((IDefination)ClassDefSpan.ExpExceptionDef).FullName}.", RuntimeException.INVALID_ARGUMENT, throwing);
+            ThrowRuntime(nameof(ex) + $" was not an instance of {((IDefinition)ClassDefSpan.ExpExceptionDef).FullName}.", RuntimeException.INVALID_ARGUMENT, throwing);
 
         GetLocLine(beforeCurrentSpan, out int line, out int col, out string sourceName, throwing);
 
