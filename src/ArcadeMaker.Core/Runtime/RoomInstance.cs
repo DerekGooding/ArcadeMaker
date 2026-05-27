@@ -1,8 +1,5 @@
 ﻿using ArcadeMaker.Core.Models;
 using Exp;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.Core.Runtime
 {
@@ -11,6 +8,7 @@ namespace ArcadeMaker.Core.Runtime
         public RoomModel Model { get; }
         private readonly List<Instance> instances = [];
         public List<Instance> Instances => instances;
+
         public IEnumerable<Instance> SortedInstances
         {
             get
@@ -25,6 +23,7 @@ namespace ArcadeMaker.Core.Runtime
         }
 
         private bool isSorted = false;
+
         public RoomInstance(RoomModel model)
         {
             this.Model = model;

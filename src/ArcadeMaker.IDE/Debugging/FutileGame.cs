@@ -1,12 +1,7 @@
-﻿using ArcadeMaker.Core.Math.Shapes;
-using ArcadeMaker.Core.Models;
+﻿using ArcadeMaker.Core.Models;
 using ArcadeMaker.Core.Resources;
 using ArcadeMaker.Core.Runtime;
 using Exp;
-using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.IDE.Debugging;
 
@@ -23,12 +18,22 @@ internal class FutileGame : ArcadeMaker.Core.IGame
     public TextureAtlasMap MainTextureAtlasMap { get; set; }
     public int CurrentViewIndex { get; }
 
-    public void Init() { }
+    public void Init()
+    { }
+
     public Exp.Void DrawInstance(ArcadeMaker.Core.Runtime.Instance instance) => Exp.Void.Return;
-    public void DrawBackground() { }
-    public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness) { }
-    public void SetWindowsSize(int w, int h) { }
-    public void SetCaption(string caption) { }
+
+    public void DrawBackground()
+    { }
+
+    public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness)
+    { }
+
+    public void SetWindowsSize(int w, int h)
+    { }
+
+    public void SetCaption(string caption)
+    { }
 
     public Exp.Void ShowMessage(Exp.Instance? _, IValue?[] args) => Exp.Void.Return;
 

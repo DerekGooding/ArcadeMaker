@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Media;
-using IntelliSense.CSharp;
+﻿using ArcadeMaker.IDE.Items;
 using Exp;
+using System.Data;
 using System.Runtime.Versioning;
-using ArcadeMaker.IDE.Items;
 
 namespace ArcadeMaker.IDE
 {
     public partial class SoundEditor : Form
     {
         private GameSound sound = null;
+
         public SoundEditor(GameSound sound)
         {
             InitializeComponent();
@@ -97,6 +88,7 @@ namespace ArcadeMaker.IDE
 
         //private AudioPlayer soundPlayer = null;
         private bool isPlaying = false;
+
         private void playBtn_Click(object sender, EventArgs e)
         {
             if (isPlaying)
@@ -129,6 +121,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool userStoppedAudio = false;
+
         private void SoundPlayer_PlaybackStopped(object sender, object e)
         {
             //Global.ShowDebugMessage("playback stopped");
@@ -177,6 +170,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool renaming = false;
+
         private void nameBox_TextChanged(object sender, EventArgs e)
         {
             renaming = true;
@@ -196,7 +190,6 @@ namespace ArcadeMaker.IDE
         private void volumeBar_Scroll(object sender, EventArgs e)
         {
             sound.volume = (volumeBar.Value - volumeBar.Minimum) * 1F / (volumeBar.Maximum - volumeBar.Minimum);
-
         }
 
         private void soundEffectBtn_CheckedChanged(object sender, EventArgs e)
@@ -227,11 +220,14 @@ namespace ArcadeMaker.IDE
         }
     }
 
-    interface ISoundPlayer : IDisposable
+    internal interface ISoundPlayer : IDisposable
     {
         void Init();
+
         void Play();
+
         void Stop();
+
         event EventHandler PlaybackStopped;
     }
 }

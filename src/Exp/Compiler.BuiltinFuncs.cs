@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Exp.Operations;
+﻿using Exp.Operations;
 using Exp.Spans;
-using System.Threading.Tasks;
 
 namespace Exp
 {
     public partial class Interpreter
     {
-        bool skipBuiltinFuncs = false;
+        private bool skipBuiltinFuncs = false;
+
         private bool BuiltinFuncs(IContext ctx, Instance instance)
         {
             FuncDefSpan func = null;
@@ -46,7 +42,7 @@ namespace Exp
                 if (ExternInvokers.TryGetValue(func, out ExternFunc? extrn))
                 {
                     func.Return = true;
-                    func.Returns = extrn.Func?.Invoke(instance, [..func.ParamVariables.Map(p => p.Value)]);
+                    func.Returns = extrn.Func?.Invoke(instance, [.. func.ParamVariables.Map(p => p.Value)]);
                     bin = true;
                 }
                 else if (func == FuncDefSpan.ArrayIndexGetter)
@@ -251,8 +247,6 @@ namespace Exp
                     func.Return = false;
                     bin = true;
                 }
-
-
                 else if (func.Namespace == "reflection")
                 {
                     Instance ToExpPropertyInst(Variable v)

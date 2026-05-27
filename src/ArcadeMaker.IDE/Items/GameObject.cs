@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ArcadeMaker.Core.Resources.Serializeables;
+﻿using ArcadeMaker.Core.Resources.Serializeables;
 using ArcadeMaker.IDE.Editors.Object.ObjectProperties;
-using Exp;
 
 namespace ArcadeMaker.IDE.Items
 {
@@ -23,6 +16,7 @@ namespace ArcadeMaker.IDE.Items
 
         private string _part2script = null;
         private GameSprite _sprite = null;
+
         public GameSprite sprite
         {
             get
@@ -49,6 +43,7 @@ namespace ArcadeMaker.IDE.Items
                 }
             }
         }
+
         public new ObjectEditor editor
         {
             get
@@ -64,6 +59,7 @@ namespace ArcadeMaker.IDE.Items
                 base.editor = value;
             }
         }
+
         public GameObject(string name) : base(name)
         {
             getEditor += (s, e) =>

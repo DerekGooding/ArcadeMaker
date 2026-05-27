@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE.Items
 {
@@ -12,10 +6,13 @@ namespace ArcadeMaker.IDE.Items
     {
         [XmlIgnore]
         private string Name;
+
         [XmlIgnore]
         public int treeImageIndex = -1;
+
         [XmlIgnore]
         public TreeNode treeNode = null;
+
         public string name
         {
             get
@@ -38,6 +35,7 @@ namespace ArcadeMaker.IDE.Items
                     throw new Exception("Item name must be uniq and contain English letters and digits only");
             }
         }
+
         public event EventHandler<GameItemNameChangedEventArgs> NameChanged;
 
         public event EventHandler<Form> getEditor;
@@ -69,10 +67,13 @@ namespace ArcadeMaker.IDE.Items
                 }
             }
         }
+
         [XmlIgnore]
         protected Form Editor;
+
         [XmlIgnore]
         protected bool editorClosed = false;
+
         public GameItem(string name)
         {
             this.name = name;
@@ -98,7 +99,6 @@ namespace ArcadeMaker.IDE.Items
         public string oldName { get; }
         public string newName { get; }
     }
-
 
     public static class SeperatingAxisTheorem
     {
@@ -147,7 +147,6 @@ namespace ArcadeMaker.IDE.Items
             double y4 = y1 + height * cos;
             return new double[] { x1, y1, x2, y2, x3, y3, x4, y4 };
         }
-
 
         // helper method to calculate the axes to project onto
         private static double[] CalculateAxes(double[] r1Corners, double[] r2Corners)

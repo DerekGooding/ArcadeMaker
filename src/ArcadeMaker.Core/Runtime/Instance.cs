@@ -1,11 +1,7 @@
 ﻿using ArcadeMaker.Core.Models;
 using ArcadeMaker.Core.Resources.Serializeables;
 using Exp;
-using Exp.Spans;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace ArcadeMaker.Core.Runtime;
 
@@ -50,7 +46,9 @@ public class Instance : Exp.Instance
     public TypeVariable ImageYScale { get; }
 
     private double depth;
+
     public event EventHandler<double>? DepthChanged;
+
     [ExpProperty]
     public CustomVariable Depth { get; }
 
@@ -60,6 +58,7 @@ public class Instance : Exp.Instance
     internal PathDrive? CurrentPathDrive { get; set; }
 
     public static readonly Dictionary<PropertyInfo, ExpPropertyAttribute> csProperties;
+
     static Instance()
     {
         // init csProperties

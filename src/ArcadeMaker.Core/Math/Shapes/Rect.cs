@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ArcadeMaker.Core.Math.Shapes
+﻿namespace ArcadeMaker.Core.Math.Shapes
 {
     public class Rect : Shape
     {

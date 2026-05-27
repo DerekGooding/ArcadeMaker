@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using ArcadeMaker.Core.Resources.Serializeables;
+﻿using ArcadeMaker.Core.Resources.Serializeables;
 
 namespace ArcadeMaker.IDE.Items
 {
@@ -32,6 +26,7 @@ namespace ArcadeMaker.IDE.Items
 
         private const string defaultScript = "namespace Game\n{\n\tpublic partial class RoomName\n\t{\n\t\tprotected override void Create()\n\t\t{\n\t\t\t\n\t\t}\n\t}\n}";
         private string creationCode = null;
+
         public string Script
         {
             get
@@ -90,6 +85,7 @@ namespace ArcadeMaker.IDE.Items
     public class RoomSize
     {
         public int width, height;
+
         public RoomSize(int width, int height)
         {
             this.width = width;

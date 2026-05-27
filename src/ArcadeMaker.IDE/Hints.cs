@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Drawing;
-using System.Xml.Serialization;
+﻿using System.Diagnostics;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
-using System.Diagnostics;
-using System.Windows.Forms;
-
+using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE.Scripting
 {
@@ -49,7 +41,9 @@ namespace ArcadeMaker.IDE.Scripting
 
     public class Description : IXmlSerializable
     {
-        public interface IInnerElement { }
+        public interface IInnerElement
+        { }
+
         public List<string> TextSpans { get; set; } = new List<string>();
         public List<IInnerElement> InnerElements { get; set; } = new List<IInnerElement>();
         public List<int> InnerElementsIndices { get; set; } = new List<int>();
@@ -86,7 +80,6 @@ namespace ArcadeMaker.IDE.Scripting
 
         public void WriteXml(XmlWriter writer)
         {
-
         }
 
         public void ReadXml(XmlReader reader)
@@ -186,7 +179,6 @@ namespace ArcadeMaker.IDE.Scripting
 
         public void WriteXml(XmlWriter writer)
         {
-
         }
 
         public void ReadXml(XmlReader reader)
@@ -267,13 +259,11 @@ namespace ArcadeMaker.IDE.Scripting
     [XmlRoot(Roots.SeeAlsoRelation)]
     public class SeeAlsoRelation : Relation
     {
-
     }
 
     [XmlRoot(Roots.TypeParamRef)]
     public class TypeParamRef : ParamRef
     {
-
     }
 
     [XmlRoot(Roots.ParamRef)]
@@ -308,10 +298,12 @@ namespace ArcadeMaker.IDE.Scripting
     }
 
     [XmlRoot(Roots.SingleLineCodeSpan)]
-    public class SingleLineCodeSpan : CodeSpan { }
+    public class SingleLineCodeSpan : CodeSpan
+    { }
 
     [XmlRoot(Roots.Example)]
-    public class Example : Description, Description.IInnerElement { }
+    public class Example : Description, Description.IInnerElement
+    { }
 
     [XmlRoot(Roots.InheritDoc)]
     public class InheritDoc : Description.IInnerElement
@@ -387,7 +379,7 @@ namespace ArcadeMaker.IDE.Scripting
                                 }
                                 if (value[s] == '=')
                                 {
-                                    int start  = value.IndexOf('\'', s + 1) + 1;
+                                    int start = value.IndexOf('\'', s + 1) + 1;
                                     int length = value.IndexOf('\'', start + 1) - start;
 
                                     nodes.Last().SpecificAttributeValue = value.Substring(start, length);
@@ -547,7 +539,6 @@ namespace ArcadeMaker.IDE.Scripting
         }
     }
 
-
     public enum RelationKind
     {
         None = 0,
@@ -561,7 +552,7 @@ namespace ArcadeMaker.IDE.Scripting
         ErrorString = '!'
     }
 
-    static class Roots
+    internal static class Roots
     {
         public const string Main = "member";
         public const string Summary = "summary";
@@ -650,7 +641,7 @@ namespace ArcadeMaker.IDE.TextSharp
                                 rect += ' ';
                         }
                         else
-                        { // text alignment: center 
+                        { // text alignment: center
                             for (int s = 0; s < (widths[j] / 2.0) - (currentLine.Length / 2.0); s++) spaces += ' ';
                             rect = '|' + spaces + currentLine;
                             if (rect.Length + spaces.Length > widths[j] + 5)

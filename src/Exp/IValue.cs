@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Exp.Spans;
+﻿using Exp.Spans;
 
 namespace Exp;
 
@@ -19,8 +16,8 @@ public interface IValue
     FuncPntr FuncPntr { get { Unexpected(ValueHelper.tfunc); throw null; } } // set => Unexpected(ValueHelper.tfunc); }
     object Object => IsBool ? Bool : IsChar ? Char : IsNumber ? Number : this;
 
-
     string TypeName { get; }
+
     void Unexpected(string expected)
     {
         Interpreter.Activated.ThrowRuntime($"A value of type {expected} was expected, but {TypeName} received.", RuntimeException.INVALID_ARGUMENT);
@@ -43,11 +40,13 @@ public class BoolValue(bool value) : IValue
 {
     public string TypeName => ValueHelper.tbool;
     bool IValue.IsBool => true;
-    bool IValue.Bool=> value;
+    bool IValue.Bool => value;
     public bool Bool => value;
 
     public static implicit operator BoolValue(bool val) => new(val);
+
     public static implicit operator bool(BoolValue val) => val.Bool;
+
     public override string ToString() => value ? "true" : "false";
 }
 
@@ -58,6 +57,7 @@ public class CharValue(char value) : IValue
     char IValue.Char => value;
 
     public static implicit operator CharValue(char val) => new(val);
+
     public override string ToString() => value.ToString();
 }
 
@@ -68,7 +68,9 @@ public readonly struct NumberValue(double value) : IValue
     double IValue.Number => value;
 
     public static implicit operator NumberValue(double val) => new(val);
+
     public static implicit operator double(NumberValue val) => ((IValue)val).Number;
+
     public override string ToString() => value.ToString();
 }
 
@@ -92,23 +94,28 @@ public class SpecialValue<T> : IValue
 {
     public string TypeName => typeof(T).Name;
     public T Value { get; set; }
+
     public override string ToString() => Value?.ToString() ?? "NULL";
+
     IValue IValue.Pass()
     {
         return SpecialValue.From(Value);
     }
+
     object IValue.Object => Value;
 }
 
 public class SpecialValue : SpecialValue<object>
 {
     public SpecialValue(object value) => Value = value;
+
     public static SpecialValue<T> From<T>(T val) => new SpecialValue<T> { Value = val };
 }
 
 public static class ValueHelper
 {
     public const string tbool = "bool", tchar = "char", tnum = "number", tfunc = "function", tinst = "instance";
+
     internal static void Unexpected(string exp, string rec)
     {
         Interpreter.Activated.ThrowRuntime($"A value of type {exp} was expected, but {rec} received.", RuntimeException.INVALID_ARGUMENT);

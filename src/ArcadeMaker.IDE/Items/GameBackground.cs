@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-
-namespace ArcadeMaker.IDE.Items
+﻿namespace ArcadeMaker.IDE.Items
 {
     public class GameBackground : GameItem
     {
@@ -64,6 +57,7 @@ namespace ArcadeMaker.IDE.Items
         private static readonly List<GameBackground> instances = new List<GameBackground>();
 
         private static readonly List<GameBackgroundInvitation> invitations = new List<GameBackgroundInvitation>();
+
         public static void Invite(RoomBackground sender, string name)
         {
             invitations.Add(new GameBackgroundInvitation(name, sender));

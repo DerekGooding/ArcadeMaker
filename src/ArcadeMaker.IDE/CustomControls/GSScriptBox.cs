@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ArcadeMaker.IDE.CustomControls;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ArcadeMaker.IDE.CustomControls;
 
 namespace ArcadeMaker.IDE
 {
     public partial class GSScriptBox : UserControl
     {
         private string text = "";
-        FontDialog fontDialog = new FontDialog();
+        private FontDialog fontDialog = new FontDialog();
         private int caret = 0;
         private int lineCount = 0;
         private RichTextBox textHolder = null;
@@ -60,10 +52,9 @@ namespace ArcadeMaker.IDE
 
         private void GSScriptBox_Load(object sender, EventArgs e)
         {
-
         }
 
-        ScriptBoxSpan[] spans = null;
+        private ScriptBoxSpan[] spans = null;
 
         private void ColorTextBox(int startSpan = 0, int endSpan = -1, RichTextBox textBox = null)
         {
@@ -123,9 +114,8 @@ namespace ArcadeMaker.IDE
             skipRefill = false;
         }
 
-        
+        private bool skipText = false;
 
-        bool skipText = false;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Text
         {
@@ -170,7 +160,6 @@ namespace ArcadeMaker.IDE
                     Point scroll = Point.Empty;
                     try
                     {
-                        
                         scroll = textBox.GetScrollPoint();
                         scrollPosFound = true;
                     }
@@ -319,6 +308,7 @@ namespace ArcadeMaker.IDE
         }
 
         private SpansTextBox2SearchForm searchForm = null;
+
         private void searchBtn_Click(object sender, EventArgs e)
         {
             //if (searchForm == null || searchForm.IsDisposed)
@@ -346,6 +336,7 @@ namespace ArcadeMaker.IDE
     public class ScriptBoxSpan : IDisposable
     {
         private string _text = "";
+
         public string text
         {
             get => _text;
@@ -359,12 +350,14 @@ namespace ArcadeMaker.IDE
                 }
             }
         }
+
         public Color color = Color.Black;
         public Color backColor = Color.Transparent;
         public SpanType type = SpanType.Normal;
         public bool insideFormattedString = false;
         public bool isKeyword = false;
         public string link = null;
+
         public bool isLink
         {
             get
@@ -421,7 +414,7 @@ namespace ArcadeMaker.IDE
         MultiLineComment,
     }
 
-    static class RichTextBoxExtensions
+    internal static class RichTextBoxExtensions
     {
         public static void AppendText(this RichTextBox box, string text, Color color)
         {
@@ -434,9 +427,10 @@ namespace ArcadeMaker.IDE
         }
     }
 
-    class TextEditor : RichTextBoxEx
+    internal class TextEditor : RichTextBoxEx
     {
         public event EventHandler<PaintEventArgs> Paint;
+
         private const int WM_PAINT = 15;
         private const int WM_VSCROLL = 0x115;
         private const int WM_MOUSEWHEEL = 0x20A;
@@ -504,7 +498,7 @@ namespace ArcadeMaker.IDE
         }
     }
 
-    class TextEditorScrolledEventArgs : EventArgs
+    internal class TextEditorScrolledEventArgs : EventArgs
     {
         public Point Point;
     }

@@ -1,10 +1,6 @@
 ﻿using Exp;
 using Exp.Spans;
-using System;
-using System.Collections.Generic;
 using System.Reflection.Metadata;
-using System.Text;
-using System.Xml.Serialization;
 
 namespace ArcadeMaker.Core.Resources.Serializeables;
 
@@ -69,7 +65,10 @@ public class SerializeableGameFont : SerializeableGameItem
     public GameFont font;
     public string ttf;
     public float heightInPixels;
-    public SerializeableGameFont() { }
+
+    public SerializeableGameFont()
+    { }
+
     public SerializeableGameFont(GameFont font)
     {
         this.font = font;
@@ -85,8 +84,6 @@ public class SerializeableGameObject : SerializeableGameItem
     public EventScripts[] events;
     public ObjectProperty[] extraProperties;
 }
-
-
 
 public class EventScript : IContainsScript
 {
@@ -104,6 +101,7 @@ public class EventScript : IContainsScript
             this.Description = description;
         }
     }
+
     public string Description { get; set; }
 
     public EventScript(string script)
@@ -111,7 +109,10 @@ public class EventScript : IContainsScript
         this.Script = script;
     }
 
-    public EventScript() : this("") { } // for the serializer
+    public EventScript() : this("")
+    {
+    } // for the serializer
+
     public override string ToString() => Description;
 }
 
@@ -119,7 +120,10 @@ public class EventScripts(ObjectEvent ev, params IEnumerable<string> scripts)
 {
     public List<EventScript> Scripts = [.. scripts.Map(s => new EventScript(s))];
     public ObjectEvent Event { get => ev; set => ev = value; }
-    public EventScripts() : this(ObjectEvent.Create) { }
+
+    public EventScripts() : this(ObjectEvent.Create)
+    {
+    }
 }
 
 public class SerializeableGameRoom : SerializeableGameItem
@@ -172,7 +176,8 @@ public class GameFont
     public string ttf;
     public float heightInPixels;
 
-    public GameFont() { }
+    public GameFont()
+    { }
 }
 
 public enum ObjectEvent
@@ -185,8 +190,10 @@ public enum ObjectEvent
     MouseDown,
     MousePress,
     MouseUp,
+
     //MouseMove,
     MouseWheel,
+
     Draw,
     Alarm
 }

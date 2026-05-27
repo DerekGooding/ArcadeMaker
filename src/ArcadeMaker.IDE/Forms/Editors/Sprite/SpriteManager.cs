@@ -1,14 +1,4 @@
 ﻿using ArcadeMaker.IDE.Items;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
@@ -42,7 +32,8 @@ namespace ArcadeMaker.IDE
             NumericUpDown heightBox = new NumericUpDown { Value = 32, Location = new Point(widthBox.Location.X + widthBox.Size.Width + 5, 5), Maximum = 2000 };
             Button okBtn = new Button { Text = "OK", Location = new Point(5, 30) };
             Button cancelBtn = new Button { Text = "Cancel", Location = new Point(okBtn.Location.X + okBtn.Size.Width + 5, 30) };
-            okBtn.Click += (s, ea) => {
+            okBtn.Click += (s, ea) =>
+            {
                 selectSizeFrm.Close();
                 AddImage(new Bitmap((int)widthBox.Value, (int)heightBox.Value));
             };
@@ -108,6 +99,7 @@ namespace ArcadeMaker.IDE
         }
 
         private Bitmap headImage = null;
+
         public event EventHandler<Bitmap> HeadImageChanged;
 
         private void okBtn_Click(object sender, EventArgs e)

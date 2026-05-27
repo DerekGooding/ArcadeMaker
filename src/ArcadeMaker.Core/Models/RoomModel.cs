@@ -1,8 +1,5 @@
 ﻿using ArcadeMaker.Core.Resources;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace ArcadeMaker.Core.Models
 {

@@ -1,10 +1,6 @@
 ﻿using ArcadeMaker.IDE.Items;
 using ArcadeMaker.IDE.Properties;
-using System;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
@@ -305,13 +301,14 @@ namespace ArcadeMaker.IDE
             InsertItemToTree(sound, e);
             CreateItem(sound, "Sound");
         }
+
         private void createScriptBtn_Click(object sender, EventArgs e)
         {
             GameScript script = new GameScript(GenerateItemName("Script"));
             script.InitDefaultCode();
             InsertItemToTree(script, e);
             CreateItem(script, null, show: false);
-            
+
             script.editor.MdiParent = this;
             script.editor.Show();
         }
@@ -329,6 +326,7 @@ namespace ArcadeMaker.IDE
             InsertItemToTree(obj, e);
             CreateItem(obj, "Object");
         }
+
         private void createRoomBtn_Click(object sender, EventArgs e)
         {
             GameRoom room = new GameRoom("r");
@@ -340,7 +338,7 @@ namespace ArcadeMaker.IDE
         {
             int index = 0;
 
-            restart:
+        restart:
             foreach (GameItem pitem in Environment.project.items)
             {
                 if (pitem.name == baseName + index)
@@ -516,7 +514,7 @@ namespace ArcadeMaker.IDE
                 "      this.Close(); // close the program https://www.google.co.il naviagte http://www.sport5.co.il\n      " +
                 "\n      return 0;\n   }\n" +
                 "}";
-            
+
             if (show)
             {
                 Form debug = new Form { Size = new Size(500, 500) };
@@ -667,7 +665,7 @@ namespace ArcadeMaker.IDE
                                                                                                  // so given the path of the .gsp, first FileLocation() would return the root folder,
                                                                                                  // and second would return the folder that was selected in
                                                                                                  // the dialog when the project was first saved.
-            
+
             if (Environment.project.projectFilePath != null)
                 Environment.project.name = Environment.project.projectFilePath.FileNameWithoutExtension();
             Environment.project.Save(rootFolder);
@@ -784,6 +782,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool renameSentByButton = false;
+
         private void projectTree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             if (e.Node.Parent == null || !renameSentByButton)
@@ -873,7 +872,7 @@ namespace ArcadeMaker.IDE
             if (targetNode == null || draggedNode == null || !CanDragTo(draggedNode, targetNode))
                 return;
 
-            // confirm that the node at the drop location is not 
+            // confirm that the node at the drop location is not
             // the dragged node and that the base folder of both nodes is the same
             // and that the target node is a folder
             if (!draggedNode.Equals(targetNode))
@@ -955,6 +954,7 @@ namespace ArcadeMaker.IDE
     {
         public GameItem GameItem = null;
         public TreeNode Folder = null;
+
         public CreateGameItemEventArgs(GameItem item = null, TreeNode folder = null)
         {
             GameItem = item;

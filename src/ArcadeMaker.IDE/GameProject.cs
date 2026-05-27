@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Drawing;
-using System.Windows.Forms;
-using ArcadeMaker.IDE.Editors.Object.ObjectProperties;
-//using ArcadeMaker.Core.Resources.Serializeables;
+﻿//using ArcadeMaker.Core.Resources.Serializeables;
 using ArcadeMaker.Core.Resources;
-using IDEObjectProperty = ArcadeMaker.IDE.Editors.Object.ObjectProperties.IDEObjectProperty;
-using Exp;
-using ArcadeMaker.IDE.Items;
 using ArcadeMaker.Core.Resources.Serializeables;
+using ArcadeMaker.IDE.Items;
+using Exp;
+using System.Collections.ObjectModel;
+using System.Xml.Serialization;
 using GameFont = ArcadeMaker.IDE.Items.GameFont;
+using IDEObjectProperty = ArcadeMaker.IDE.Editors.Object.ObjectProperties.IDEObjectProperty;
 using PathPoint = ArcadeMaker.IDE.Items.PathPoint;
 using RoomBackground = ArcadeMaker.IDE.Items.RoomBackground;
 
@@ -75,14 +65,13 @@ namespace ArcadeMaker.IDE
                     string p = res + @"\" + sprite.name + index++ + ".png";
                     try
                     {
-                        
                         //try
                         //{
                         //    if (File.Exists(p))
                         //        File.Delete(p);
                         //}
                         //catch { }
-                        
+
                         image?.Save(p, System.Drawing.Imaging.ImageFormat.Png);
                     }
                 */
@@ -140,7 +129,6 @@ namespace ArcadeMaker.IDE
                     gspPath = @"\res\" + background.name + ".png";
                     try
                     {
-
                         try
                         {
                             if (File.Exists(p))
@@ -227,7 +215,7 @@ namespace ArcadeMaker.IDE
                 // create serializeable
                 string spr = obj.sprite == null ? "" : obj.sprite.name;
                 var sobj = new SerializeableGameObject { name = obj.name, sprite = spr, solid = obj.solid, depth = obj.depth, parent = obj.parent?.name };
-                sobj.events = [..obj.EventScripts];
+                sobj.events = [.. obj.EventScripts];
                 sobj.extraProperties = [.. obj.ExtraProperties.Map(ep => new ArcadeMaker.Core.Resources.Serializeables.ObjectProperty { Name = ep.Name, Constant = ep.Constant, InitValueCode = ep.InitValueCode, Nullable = ep.Nullable, Private = ep.Private, Type = ep.Type })];
                 sitems.Add(sobj);
             }
@@ -331,10 +319,10 @@ namespace ArcadeMaker.IDE
                 saved = true;
 
                 XmlSerializer serializer = new XmlSerializer(sproject.GetType(), extraTypes: serializerExtraTypes);
-                
+
                 writer = File.CreateText(savePath);
                 serializer.Serialize(writer, sproject);
-                
+
                 if (successMsg)
                     MessageBox.Show("Project Successfuly saved");
             }
@@ -365,7 +353,7 @@ namespace ArcadeMaker.IDE
             }
         }
 
-        private static readonly Type[] serializerExtraTypes = 
+        private static readonly Type[] serializerExtraTypes =
         [
                     typeof(SerializeableGameProjectTreeNode),
                     typeof(GameItem),
@@ -771,7 +759,9 @@ namespace ArcadeMaker.IDE
         public string ttf;
         internal float heightInPixels;
 
-        public SerializeableGameFont() { }
+        public SerializeableGameFont()
+        { }
+
         public SerializeableGameFont(GameFont font)
         {
             this.font = font;
@@ -788,8 +778,6 @@ namespace ArcadeMaker.IDE
         public EventScripts[] events;
         public ArcadeMaker.Core.Resources.Serializeables.ObjectProperty[] extraProperties;
     }
-
-    
 
     public class SerializeableGameRoom : SerializeableGameItem
     {

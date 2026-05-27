@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ArcadeMaker.IDE;
-using ArcadeMaker.IDE.Editors.Object.ObjectProperties;
+﻿using ArcadeMaker.Core.Resources.Serializeables;
 using ArcadeMaker.IDE.Items;
-using Exp;
-using ArcadeMaker.Core.Resources.Serializeables;
 
 namespace ArcadeMaker.IDE
 {
     public partial class ObjectEditor : Form
     {
         private GameObject obj = null;
+
         public GameSprite sprite
         {
             get
@@ -111,6 +98,7 @@ namespace ArcadeMaker.IDE
         }
 
         private SelectEventDialog SelectEventDialog = new SelectEventDialog();
+
         private void addEventBtn_Click(object sender, EventArgs e)
         {
             SelectEventDialog.ShowDialog();
@@ -121,7 +109,7 @@ namespace ArcadeMaker.IDE
             obj.solid = solidBox.Checked;
         }
 
-        bool firstEdit = true;
+        private bool firstEdit = true;
         //private void fullCodeBtn_Click(object sender, EventArgs e)
         //{
         //    /*

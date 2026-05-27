@@ -1,13 +1,5 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
@@ -15,10 +7,11 @@ namespace ArcadeMaker.IDE
     {
         public readonly ContextMenuStrip Menu = new ContextMenuStrip();
         private T resource = null;
+
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public T Resource
         {
-            get 
+            get
             {
                 return resource;
             }
@@ -31,8 +24,11 @@ namespace ArcadeMaker.IDE
                     nameBox.Text = defaultItemTitle;
             }
         }
+
         public event EventHandler<T> SelectionChanged;
+
         private string defaultItemTitle;
+
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string DefaultItemTitle
         {
@@ -77,7 +73,6 @@ namespace ArcadeMaker.IDE
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -132,6 +127,7 @@ namespace ArcadeMaker.IDE
         {
             ShowMenu(nameBox, e.Location);
         }
+
         private void SelectResource(T res)
         {
             Resource = res;
@@ -163,7 +159,12 @@ namespace ArcadeMaker.IDE
         }
     }
 
-    public class GameObjectPickerBox : GameResourcePickerBox<GameObject> { }
-    public class GameSpritePickerBox : GameResourcePickerBox<GameSprite> { }
-    public class GameBackgroundPickerBox : GameResourcePickerBox<GameBackground> { }
+    public class GameObjectPickerBox : GameResourcePickerBox<GameObject>
+    { }
+
+    public class GameSpritePickerBox : GameResourcePickerBox<GameSprite>
+    { }
+
+    public class GameBackgroundPickerBox : GameResourcePickerBox<GameBackground>
+    { }
 }

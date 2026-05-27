@@ -1,10 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using ArcadeMaker.Core.Resources.Serializeables;
+using Microsoft.Xna.Framework.Graphics;
+using SpriteFontPlus;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using SpriteFontPlus;
-using ArcadeMaker.Core.Resources.Serializeables;
 
 namespace ArcadeMaker.Engines.MonoGame.Core.Graphics
 {
@@ -12,6 +10,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core.Graphics
     {
         internal static List<SpriteFont> All { get; } = [];
         internal static SpriteFont? Current { get; set; }
+
         internal static SpriteFont FromTTF(string ttfPath, float size, GraphicsDevice graphicsDevice)
         {
             byte[] fdata = File.ReadAllBytes(ttfPath);

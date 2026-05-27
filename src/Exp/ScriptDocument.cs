@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
+﻿using Exp.Operations;
 using Exp.Spans;
-using Exp.Operations;
 
 namespace Exp;
 
@@ -48,7 +44,6 @@ public class ScriptDocument
         Namespace = null;
         Usings = [];
         SettingsErrors = [];
-
 
         int spanIndex = 0, line = 0, col = 1;
         TextSpan? NextSpan()
@@ -192,7 +187,7 @@ public class InstanceScriptDocument(string name, ClassDefSpan def, string script
 
         CodeSpans = compiler.GetCodeSpans(TextSpans);
         var argSpans = args.Map(a => new ArgumentSpan(a));
-        Runner = new FuncDefSpan(Name + ".runner", [..argSpans], CodeSpans, Def) { Static = false, Document = this };
+        Runner = new FuncDefSpan(Name + ".runner", [.. argSpans], CodeSpans, Def) { Static = false, Document = this };
         Def.Funcs = Def.Funcs.Append(Runner).ToArray();
         Runner.Operations = compiler.ReadOperations(CodeSpans, Runner);
 

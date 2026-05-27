@@ -1,8 +1,6 @@
 ﻿namespace GameStudioEngine.Properties
 {
     using System;
-    using System.Runtime.CompilerServices;
-
 
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
@@ -54,6 +52,7 @@
         //}
 
         public static event EventHandler<ResourceRequestEventArgs> ResourceRequest;
+
         public static object GetObject(string name)
         {
             ResourceRequestEventArgs args = new ResourceRequestEventArgs(name);
@@ -66,6 +65,7 @@
     {
         public string name;
         public object resource;
+
         public ResourceRequestEventArgs(string name)
         {
             this.name = name;

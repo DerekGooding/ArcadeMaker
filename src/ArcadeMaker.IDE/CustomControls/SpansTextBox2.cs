@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Windows.Forms;
-using System.Collections;
-using ArcadeMaker.IDE.Scripting;
 
 namespace ArcadeMaker.IDE
 {
@@ -105,29 +98,46 @@ namespace ArcadeMaker.IDE
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Font Font { get => _font; set { _font = value; knownCharWidthes_chars.Clear(); knownCharWidthes_widthes.Clear(); Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public float ScrollX { get => _scrollX; set { _scrollX = value; Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public float ScrollY { get; set { field = value; Invalidate(); } }
-        public event EventHandler<int> SelectionStartChanged;
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int SelectionStart { get => _selectionStart; set { _selectionStart = value; SelectionStartChanged?.Invoke(this, value); Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int SelectionLength { get => _selectionLength; set { _selectionLength = value; Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color SelectionColor { get => _selectionColor; set { _selectionColor = value; Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color SelectionBackColor { get => _selectionBackColor; set { _selectionBackColor = value; Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Brush CurrentLineHighlightBrush { get => _currentLineHighlightBrush; set { _currentLineHighlightBrush = value; Invalidate(); } }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color LineNumbersColor { get => _lineNumbersColor; set { _lineNumbersColor = value; Invalidate(); } }
+        public Font Font
+        { get => _font; set { _font = value; knownCharWidthes_chars.Clear(); knownCharWidthes_widthes.Clear(); Invalidate(); } }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public float ScrollX
+        { get => _scrollX; set { _scrollX = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public float ScrollY
+        { get; set { field = value; Invalidate(); } }
+
+        public event EventHandler<int> SelectionStartChanged;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int SelectionStart
+        { get => _selectionStart; set { _selectionStart = value; SelectionStartChanged?.Invoke(this, value); Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int SelectionLength
+        { get => _selectionLength; set { _selectionLength = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color SelectionColor
+        { get => _selectionColor; set { _selectionColor = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color SelectionBackColor
+        { get => _selectionBackColor; set { _selectionBackColor = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Brush CurrentLineHighlightBrush
+        { get => _currentLineHighlightBrush; set { _currentLineHighlightBrush = value; Invalidate(); } }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color LineNumbersColor
+        { get => _lineNumbersColor; set { _lineNumbersColor = value; Invalidate(); } }
 
         public new event EventHandler<SpansTextBox2TextChangedEventArgs> TextChanged;
-        public event EventHandler<SpansTextBox2CharAlertEventArgs> CharAlert;
 
+        public event EventHandler<SpansTextBox2CharAlertEventArgs> CharAlert;
 
         private System.Windows.Forms.Timer CaretTimer = new() { Interval = 700 };
 
@@ -136,6 +146,7 @@ namespace ArcadeMaker.IDE
         private readonly ToolStripMenuItem copyMenuBtn = new("Copy");
         private readonly ToolStripMenuItem cutMenuBtn = new("Cut");
         private readonly ToolStripMenuItem pasteMenuBtn = new("Paste");
+
         public SpansTextBox2()
         {
             InitializeComponent();
@@ -154,13 +165,13 @@ namespace ArcadeMaker.IDE
             };
 
             ContextMenuStrip = new();
-            copyMenuBtn.Click  += (s, e) => Copy();
-            cutMenuBtn.Click   += (s, e) => Cut();
+            copyMenuBtn.Click += (s, e) => Copy();
+            cutMenuBtn.Click += (s, e) => Cut();
             pasteMenuBtn.Click += (s, e) => Paste();
             copyMenuBtn.ShortcutKeys = Keys.Control | Keys.C;
             cutMenuBtn.ShortcutKeys = Keys.Control | Keys.X;
             pasteMenuBtn.ShortcutKeys = Keys.Control | Keys.V;
-            ContextMenuStrip.Items.AddRange([ copyMenuBtn, cutMenuBtn, pasteMenuBtn ]);
+            ContextMenuStrip.Items.AddRange([copyMenuBtn, cutMenuBtn, pasteMenuBtn]);
             ContextMenuStrip.Opened += ContextMenu_Popup;
         }
 
@@ -173,6 +184,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipNextCaretTimerTick = false;
+
         private void CaretTimer_Tick(object sender, EventArgs e)
         {
             if (skipNextCaretTimerTick)
@@ -218,11 +230,13 @@ namespace ArcadeMaker.IDE
         /// The number of lines in the last drawn text (excluding first line)
         /// </summary>
         private int displayTextLineCount = -1;
+
         private string displayedText = null;
         private float[] displayCharWidthes = null;
 
-        List<char> knownCharWidthes_chars = new List<char>();
-        List<float> knownCharWidthes_widthes = new List<float>();
+        private List<char> knownCharWidthes_chars = new List<char>();
+        private List<float> knownCharWidthes_widthes = new List<float>();
+
         private void SpanTextBox2_Paint(object sender, PaintEventArgs e)
         {
             string Text = GetTextStats(out int lineCount);
@@ -355,7 +369,7 @@ namespace ArcadeMaker.IDE
                                 }
 
                                 // highlight current line
-                                HighlightLine:
+                            HighlightLine:
                                 if (caretAtCurrentLine)
                                 {
                                     float highlightY = (SelectionStart == 0 ? textStartLocY : y) + 2;
@@ -551,13 +565,14 @@ namespace ArcadeMaker.IDE
                         e.Graphics.FillRectangle(pen.Brush, Width / 2 - rwidth / 2, Height / 2 - rheight / 2, rwidth, rheight);
                         /* using (*/
                         Brush textBrush = Brushes.White;
-                            e.Graphics.DrawString(text, Font, textBrush, Width / 2 - textSize.Width / 2, Height / 2 - textSize.Height / 2);
+                        e.Graphics.DrawString(text, Font, textBrush, Width / 2 - textSize.Width / 2, Height / 2 - textSize.Height / 2);
                     }
                 }
             }
         }
 
         private int mouseDownCharInd = 0;
+
         private async void SpanTextBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (completionBox.Visible)
@@ -725,6 +740,7 @@ namespace ArcadeMaker.IDE
         private const char KeyEnter = (char)13;
         private const char KeyEscape = (char)27;
         private bool interceptEnterKeyPress = false;
+
         private void SpanTextBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             invalidatedByKeyPress = true;
@@ -841,7 +857,6 @@ namespace ArcadeMaker.IDE
 
                 return true;
             }
-
             else if (keyData == Keys.Right)
             {
                 // caret right
@@ -1004,7 +1019,7 @@ namespace ArcadeMaker.IDE
                         }
                     }
 
-                    BreakPoint:
+                BreakPoint:
                     CharAlert?.Invoke(this, new SpansTextBox2CharAlertEventArgs(text[SelectionStart - 1], SelectionStart - 1, span));
                 }
             }
@@ -1305,6 +1320,7 @@ namespace ArcadeMaker.IDE
         }
 
         private Point lastMouseHoverLoc = Point.Empty;
+
         private void SpansTextBox2_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -1478,6 +1494,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int suggestionSpanStart, suggestionSpanEnd;
+
         public void ShowSuggestions(SpansTextBox2Suggestion[] suggestions, int start, int end)
         {
             completionBox.Items.Clear();
@@ -1559,6 +1576,7 @@ namespace ArcadeMaker.IDE
 
         private Point ToolTipShowLoc { get; set; } = new Point(-1, -1);
         private string toolTipText = null;
+
         public void ShowHint(string text, Point position, string title = null)
         {
             toolTip.ToolTipTitle = title;
@@ -1596,12 +1614,15 @@ namespace ArcadeMaker.IDE
                 e.Graphics.DrawString(e.ToolTipText, toolTipFont, pen.Brush, textLayout);
             }
         }
+
         private readonly Font toolTipFont = new Font(FontFamily.GenericMonospace, 8);
         private Font toolTipTitleFont => this.Font;
         private SizeF toolTipTitleSize = SizeF.Empty;
         private SizeF toolTipTextSize = SizeF.Empty;
+
         /// <summary>The maximum possible size of the tool tip is <c>DisplayRectangle.Size</c> minus this size</summary>
         private SizeF maxToolTipPadding = new Size(100, 100);
+
         private void toolTip_Popup(object sender, PopupEventArgs e)
         {
             using (Graphics graphics = CreateGraphics())
@@ -1624,6 +1645,7 @@ namespace ArcadeMaker.IDE
         }
 
         public event EventHandler<CompletionItemInfoEventArgs> OnCompletionItemShowInfo;
+
         private void ShowCompletionItemInfo()
         {
             toolTipText = null;
@@ -1665,6 +1687,7 @@ namespace ArcadeMaker.IDE
         {
             public char Char { get; }
             public SizeF Size { get; }
+
             public KnownCharSize(char c, SizeF size)
             {
                 Char = c;
@@ -1796,6 +1819,7 @@ namespace ArcadeMaker.IDE
     public class SuggestionsSorter : IComparer<SpansTextBox2Suggestion>
     {
         public string Span { get; set; }
+
         public int Compare(SpansTextBox2Suggestion a, SpansTextBox2Suggestion b)
         {
             if (Span == "" || Span == null)

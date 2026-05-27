@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using Exp.Operations;
 using Exp.Spans;
-using System.Collections;
-using Exp.Operations;
+
 //using Exp.Compiler;
 
 namespace Exp;
@@ -124,7 +121,6 @@ public partial class Interpreter
                 return ReadSingle(out wasval, out bracketWasRead);
             else
                 Error($"Unexpected symbol in value reading: {span.GetType().Name}.", span);
-
 
             // "is" check
             if (Spoiler() is IsWordSpan)
@@ -557,7 +553,6 @@ public partial class Interpreter
                             {
                                 Error($"Extern class '{defname.Defination.FullName} ({defname.Extern.Type})' does not contain a static property with the name '{name}'.");
                             }
-
                             else
                             {
                                 // check set value
@@ -574,7 +569,6 @@ public partial class Interpreter
                                 }
                                 else if (pinfo != null && pinfo.GetMethod == null)
                                     Error($"Extern class property '{defname.Extern.Type.FullName}.{pinfo.Name}' is write-only and cannot be read.");
-
                             }
 
                             if (pinfo != null)
@@ -593,7 +587,6 @@ public partial class Interpreter
                         //ReadErrorPointing(true);
                         return null;
                     }
-
                 }
             }
 

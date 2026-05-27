@@ -1,16 +1,13 @@
 ﻿using ArcadeMaker.Core.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArcadeMaker.IDE.Items
 {
     public class GameSound : GameItem
     {
-        /* do not change property name!!! */ public static System.Drawing.Bitmap icon { get; } = Properties.Resources.sound;
+        /* do not change property name!!! */
+        public static System.Drawing.Bitmap icon { get; } = Properties.Resources.sound;
         public string filePath { get; set; } = null;
+
         /// <summary>
         /// The extension of the file, without dot ("wav", "mp3" "mid"...)
         /// </summary>
@@ -18,6 +15,7 @@ namespace ArcadeMaker.IDE.Items
         {
             get => filePath != null && filePath.Contains('.') ? filePath.Substring(filePath.LastIndexOf('.') + 1) : null;
         }
+
         public float volume = 1.0F;
         public Sound.Types Type { get; set; } = Sound.Types.SoundEffect;
 

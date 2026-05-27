@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-
-namespace ArcadeMaker.IDE.Items
+﻿namespace ArcadeMaker.IDE.Items
 {
     public class GamePath : GameItem
     {
-        /* do not change property name!!! */ public static Bitmap icon { get; } = Properties.Resources.path;
+        /* do not change property name!!! */
+        public static Bitmap icon { get; } = Properties.Resources.path;
 
         public List<PathPoint> points = new List<PathPoint>();
         public bool close = false;
@@ -61,7 +55,8 @@ namespace ArcadeMaker.IDE.Items
             this.y = point.Y;
         }
 
-        public PathPoint() { }
+        public PathPoint()
+        { }
 
         public static Point operator -(PathPoint left, Size right)
         {

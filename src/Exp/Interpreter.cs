@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.ConstrainedExecution;
-using Exp.Operations;
+﻿using Exp.Operations;
 using Exp.Spans;
+using System.Reflection;
+
 //using Exp.Compiler;
 
 namespace Exp
@@ -21,7 +18,7 @@ namespace Exp
         string Name { get; }
     }
 
-    interface INamedValue
+    internal interface INamedValue
     {
         string Name { get; }
         bool Private { get; }
@@ -71,7 +68,6 @@ namespace Exp
 
         public ExternFunc(Func<Instance, IValue?[], IValue?> func, int paramsCount, string? name = null, string? @namespace = null) : this(func, [paramsCount], name, @namespace)
         {
-            
         }
 
         public string Name { get; }
@@ -79,7 +75,6 @@ namespace Exp
         public string? Namespace { get; }
         public Func<Instance, IValue?[], IValue?> Func { get; }
     }
-
 
     /// <summary>
     /// An Exp interpreter. Can run Exp scripts.
@@ -90,6 +85,7 @@ namespace Exp
 
         private string source;
         private TextSpan[] _sourceSpans_;
+
         private TextSpan[] SourceSpans
         {
             get => _sourceSpans_;
@@ -101,8 +97,10 @@ namespace Exp
                     source += ss.text;
             }
         }
+
         private int codeCursor = 0;
         private Span[] _codeSpans_;
+
         private Span[] CodeSpans
         {
             get => _codeSpans_;
@@ -124,9 +122,11 @@ namespace Exp
         /// Contains variables that were defined out of any scope.
         /// </summary>
         public List<Variable> Vars { get; } = [];
+
         public IVarSystem Parent { get; set; }
 
         private Dictionary<FuncDefSpan, ExternFunc> ExternInvokers { get; } = [];
+
         public void AddExternFunc(ExternFunc fn, ClassDefSpan? def = null, bool statc = false)
         {
             ArgumentNullException.ThrowIfNull(fn);
@@ -147,7 +147,9 @@ namespace Exp
         }
 
         internal IEnumerable<FuncDefSpan> UsedFuncs(Span from) => UsedDefinations(from).OfType<FuncDefSpan>();
+
         internal IEnumerable<ClassDefSpan> UsedClasses(Span from) => UsedDefinations(from).OfType<ClassDefSpan>();
+
         internal IEnumerable<IDefination> UsedDefinations(Span from)
         {
             return definations.Where(d => d.Namespace == null || from.Document.Namespace == d.Namespace || from.Document.Usings?.Contains(d.Namespace) == true);
@@ -163,12 +165,14 @@ namespace Exp
         public static Interpreter Activated { get; private set; }
 
         internal event EventHandler CollectDefsCompleted;
+
         internal bool CollectedDefs { get; private set; } = false;
 
         /// <summary>
         /// The document to run.
         /// </summary>
         public ScriptDocument MainDoc { get; private set; }
+
         internal event EventHandler AfterAllOperationsCreated;
 
         /// <summary>
@@ -273,7 +277,6 @@ namespace Exp
             }
         }
 
-
         private IValue[] ReadParamList(bool arrayBrackets = false, bool openerWasAlreadyRead = false, bool allowUnknownVars = false)
         {
             if (!openerWasAlreadyRead)
@@ -358,9 +361,9 @@ namespace Exp
         private class FutileContext : IContext
         {
             public IVarSystem Parent { get; set; }
-            public List<Variable> Vars { get; } = []; 
+            public List<Variable> Vars { get; } = [];
             public Span[] InnerSource { get; set; }
-            public IOperation[] Operations { get; set;}
+            public IOperation[] Operations { get; set; }
         }
 
         private Span[] ReadInnerSource(bool readOpener = true, bool allowSingleCmd = false, bool singleCmd = false)
@@ -871,6 +874,7 @@ namespace Exp
         public string Doc { get; }
         public int Line { get; }
         public int Col { get; }
+
         public ExpError(string sourceName, int line, int col, string msg) : base(msg)
         {
             this.Doc = sourceName;

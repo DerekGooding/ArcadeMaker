@@ -1,14 +1,4 @@
-﻿
-global using ObjectEvent = ArcadeMaker.Core.Resources.Serializeables.ObjectEvent;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿global using ObjectEvent = ArcadeMaker.Core.Resources.Serializeables.ObjectEvent;
 
 namespace ArcadeMaker.IDE
 {
@@ -21,7 +11,6 @@ namespace ArcadeMaker.IDE
 
         private void SelectEventDialog_Load(object sender, EventArgs e)
         {
-
         }
 
         public event EventHandler<ObjectEvent> EventSelected;
@@ -87,6 +76,7 @@ namespace ArcadeMaker.IDE
         {
             SelectEvent(ObjectEvent.MouseWheel);
         }
+
         private void alarmBtn_Click(object sender, EventArgs e)
         {
             SelectEvent(ObjectEvent.Alarm);
@@ -102,6 +92,5 @@ namespace ArcadeMaker.IDE
             if (e.Button != MouseButtons.Right) // else the menu will automatically open
                 mouseMenuBtn.ContextMenuStrip.Show(mouseMenuBtn, Point.Empty);
         }
-
     }
 }

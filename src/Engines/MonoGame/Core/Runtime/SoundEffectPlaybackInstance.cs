@@ -1,9 +1,5 @@
 ﻿using ArcadeMaker.Core.Resources;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.Engines.MonoGame.Core.Runtime;
 
@@ -27,9 +23,7 @@ internal class SoundEffectPlaybackInstance : ArcadeMaker.Core.Runtime.SoundPlayb
         set => Instance.Pitch = value;
     }
 
-
     internal SoundEffectPlaybackInstance(Sound sound, SoundEffectInstance instance) : base(sound, instance)
     {
-
     }
 }

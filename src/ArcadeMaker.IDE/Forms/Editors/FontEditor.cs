@@ -1,19 +1,11 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
     public partial class FontEditor : Form
     {
-        GameFont font = null;
+        private GameFont font = null;
+
         public FontEditor(GameFont font)
         {
             this.font = font;
@@ -36,6 +28,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipSetFontProperties = false;
+
         private void FontEditor_Load(object sender, EventArgs e)
         {
             skipSetFontProperties = true;

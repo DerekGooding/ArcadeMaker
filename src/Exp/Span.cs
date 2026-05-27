@@ -1,25 +1,22 @@
-﻿
-using Exp.Operations;
-using System;
-using System.Collections.Generic;
+﻿using Exp.Operations;
 using System.Reflection;
-using System.Linq;
 
 namespace Exp.Spans;
 
-interface IKeyword
+internal interface IKeyword
 {
     static abstract string Keyword { get; }
 }
 
-interface ISymbol
+internal interface ISymbol
 {
     static abstract string Symbol { get; }
 }
 
-interface IExpItem
+internal interface IExpItem
 {
     static abstract string ItemName { get; }
+
     string GetItemName()
     {
         if (this is ClassDefSpan)
@@ -87,106 +84,134 @@ public abstract class Span
 
 public class WordSpan : Span
 {
-    internal WordSpan(string text) : base(text) { }
+    internal WordSpan(string text) : base(text)
+    {
+    }
 }
 
-abstract class OperatorSpan : Span
+internal abstract class OperatorSpan : Span
 {
-    internal OperatorSpan(string op) : base(op) { }
+    internal OperatorSpan(string op) : base(op)
+    {
+    }
+
     internal abstract IValue Result(IValue left, IValue right);
+
     internal virtual IValue Result(IReadingOperation left, IReadingOperation right) => Result(left?.Read(), right?.Read());
+
     internal abstract bool TwoSides { get; }
     internal virtual bool Action { get; } = false;
+
     protected static string TypeOrNull(IValue obj)
     {
         return Extensions.GetExpTypeName(obj, true);
     }
+
     protected static void OperationFailed(string err, Span throwing = null)
     {
         Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, throwing);
     }
+
     protected void OperationFailed(string err)
     {
         Interpreter.Activated.ThrowRuntime(err, RuntimeException.INVALID_OPERATION, this);
     }
 }
 
-class PrintWordSpan : WordSpan, IKeyword
+internal class PrintWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "print";
-    internal PrintWordSpan() : base(Keyword) { }
+
+    internal PrintWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class LenofWordSpan : WordSpan, IKeyword
+internal class LenofWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "lenof";
-    internal LenofWordSpan() : base(Keyword) { }
+
+    internal LenofWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class NumberSpan : Span
+internal class NumberSpan : Span
 {
     internal double Number;
+
     internal NumberSpan(double num) : base(num.ToString())
     {
         this.Number = num;
     }
+
     internal NumberSpan(string text) : base(text)
     {
         this.Number = Convert.ToDouble(text);
     }
 }
 
-class StringSpan : Span
+internal class StringSpan : Span
 {
     private readonly bool escaped;
+
     internal override string FullText
     {
         get => (escaped ? "@" : "") + "\"" + Text + "\"";
     }
+
     internal StringSpan(string text, bool escaped = false) : base(text)
     {
         this.escaped = escaped;
     }
 }
 
-class CharSpan : Span
+internal class CharSpan : Span
 {
     internal override string FullText => $"'{Text.Replace("\n", @"\n")}'";
-    internal CharSpan(char c) : base("" + c) { }
+
+    internal CharSpan(char c) : base("" + c)
+    {
+    }
 }
 
-class CountSpan : Span
+internal class CountSpan : Span
 {
     internal int Count { get; }
+
     internal CountSpan(int count) : base(".." + count)
     {
         this.Count = count;
     }
 }
 
-class NamespaceWordSpan : WordSpan, IKeyword
+internal class NamespaceWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "namespace";
     internal string Namespace { get; }
+
     internal NamespaceWordSpan(string ns) : base(Keyword)
     {
         this.Namespace = ns;
     }
+
     internal override string FullText => $"{Keyword} {Namespace}:";
 }
 
-class UsingWordSpan : WordSpan, IKeyword
+internal class UsingWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "using";
     internal string Namespace { get; }
+
     internal UsingWordSpan(string ns) : base(Keyword)
     {
         this.Namespace = ns;
     }
+
     internal override string FullText => $"{Keyword} {Namespace}";
 }
 
-class ExternClassDefSpan : WordSpan, IDefination, IKeyword, IExpItem
+internal class ExternClassDefSpan : WordSpan, IDefination, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "extern";
     public static string ItemName { get; } = "extern class";
@@ -199,6 +224,7 @@ class ExternClassDefSpan : WordSpan, IDefination, IKeyword, IExpItem
     internal PropertyInfo[] Props { get; }
     public bool IsEnum { get; }
     public Dictionary<string, IValue> EnumValues { get; } = [];
+
     internal ExternClassDefSpan(string refName, Type type) : base(Keyword)
     {
         this.RefName = refName;
@@ -216,10 +242,11 @@ class ExternClassDefSpan : WordSpan, IDefination, IKeyword, IExpItem
         this.Constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
         this.Props = type.GetProperties(BindingFlags.Public | BindingFlags.Static);
     }
+
     internal override string FullText => $"{Keyword} {RefName} = \"{Type}\"";
 }
 
-class DefNameSpan : WordSpan
+internal class DefNameSpan : WordSpan
 {
     internal string SpecificNs { get; }
     internal string Name { get; }
@@ -229,9 +256,12 @@ class DefNameSpan : WordSpan
     internal AttributeDefSpan Attr { get; private set; }
     internal bool IsUnknownItem { get; private set; }
     internal IDefination Defination => Class ?? Func ?? (IDefination)Extern ?? Attr;
+
     internal event EventHandler Resolved;
+
     internal bool CancelResolve { get; set; }
     internal static bool CancelResolveForNewOnes { get; set; }
+
     internal DefNameSpan(string specNs, string name, ScriptDocument doc, int docLoc, Interpreter compiler) : base(name)
     {
         (this.SpecificNs, this.Name, Document, DocumentLocation) = (specNs, name, doc, docLoc);
@@ -270,7 +300,8 @@ class DefNameSpan : WordSpan
             }
             Resolved?.Invoke(this, null);
             compiler.CollectDefsCompleted -= Resolve;
-        };
+        }
+        ;
 
         if (!CancelResolveForNewOnes)
         {
@@ -284,51 +315,85 @@ class DefNameSpan : WordSpan
     internal override string FullText => (SpecificNs == null ? "" : (SpecificNs + NamespaceSpecificationSpan.Symbol)) + Name;
 }
 
-class TypeOfSpan : WordSpan
+internal class TypeOfSpan : WordSpan
 {
     internal Instance Value { get; set; }
+
     private TypeOfSpan(Instance value) : base("<>") => this.Value = value;
-    internal TypeOfSpan(ExternClassDefSpan ext) : this(ext.Type.AsExtern()) { }
-    internal TypeOfSpan(ClassDefSpan cls) : this(cls.ExpType) { }
-    internal TypeOfSpan(AttributeDefSpan attr) : this(attr.ExpType) { }
-    internal TypeOfSpan() : this(value: null) { }
+
+    internal TypeOfSpan(ExternClassDefSpan ext) : this(ext.Type.AsExtern())
+    {
+    }
+
+    internal TypeOfSpan(ClassDefSpan cls) : this(cls.ExpType)
+    {
+    }
+
+    internal TypeOfSpan(AttributeDefSpan attr) : this(attr.ExpType)
+    {
+    }
+
+    internal TypeOfSpan() : this(value: null)
+    {
+    }
+
     internal override string FullText => LowerThanOperatorSpan.Symbol + Value?.def.Namespace + NamespaceSpecificationSpan.Symbol + Value.Vars.Find(v => v.Name == "name").Value.Inst.ToString() + GreaterThanOperatorSpan.Symbol;
 }
 
 public class NamespaceSpecificationSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "::";
-    internal NamespaceSpecificationSpan() : base(Symbol) { }
+
+    internal NamespaceSpecificationSpan() : base(Symbol)
+    {
+    }
 }
 
-class SetWordSpan : WordSpan, IKeyword
+internal class SetWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "var";
-    internal SetWordSpan() : base(Keyword) { }
+
+    internal SetWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class StaticWordSpan : WordSpan, IKeyword
+internal class StaticWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "static";
-    internal StaticWordSpan() : base(Keyword) { }
+
+    internal StaticWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class SetSymbolSpan : OperatorSpan, ISymbol
+internal class SetSymbolSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "=";
-    internal SetSymbolSpan() : base(Symbol) { }
+
+    internal SetSymbolSpan() : base(Symbol)
+    {
+    }
+
     internal override bool Action { get; } = true;
     internal override bool TwoSides { get; } = true;
+
     internal override IValue Result(IValue left, IValue right) => right;
+
     internal override IValue Result(IReadingOperation left, IReadingOperation right) => Result(null, right.Read());
 }
 
-class PlusPlusOperatorSpan : OperatorSpan, ISymbol
+internal class PlusPlusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "++";
-    internal PlusPlusOperatorSpan() : base(Symbol) { }
+
+    internal PlusPlusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override bool TwoSides => false;
     internal override bool Action => true;
+
     internal override IValue Result(IValue left, IValue right = null)
     {
         if (left == null)
@@ -337,12 +402,17 @@ class PlusPlusOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class MinusMinusOperatorSpan : OperatorSpan, ISymbol
+internal class MinusMinusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "--";
-    internal MinusMinusOperatorSpan() : base(Symbol) { }
+
+    internal MinusMinusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override bool TwoSides => false;
     internal override bool Action => true;
+
     internal override IValue Result(IValue left, IValue right = null)
     {
         if (left == null)
@@ -351,12 +421,17 @@ class MinusMinusOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class PlusOperatorSpan : OperatorSpan, ISymbol
+internal class PlusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "+";
     internal override bool TwoSides { get; } = true;
-    internal PlusOperatorSpan() : base(Symbol) { }
+
+    internal PlusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right) => GetResult(left, right, this);
+
     internal static IValue GetResult(IValue left, IValue right, Span thrower)
     {
         if (left != null || right != null)
@@ -384,12 +459,17 @@ class PlusOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class MinusOperatorSpan : OperatorSpan, ISymbol
+internal class MinusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "-";
     internal override bool TwoSides { get; } = true;
-    internal MinusOperatorSpan() : base(Symbol) { }
+
+    internal MinusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right) => GetResult(left, right, this);
+
     internal static IValue GetResult(IValue left, IValue right, Span throwing)
     {
         if (left != null && right != null)
@@ -408,11 +488,15 @@ class MinusOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class MultiplyOperatorSpan : OperatorSpan, ISymbol
+internal class MultiplyOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "*";
     internal override bool TwoSides { get; } = true;
-    internal MultiplyOperatorSpan() : base(Symbol) { }
+
+    internal MultiplyOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right)
     {
         if (left != null && right != null)
@@ -433,11 +517,15 @@ class MultiplyOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class DivideOperatorSpan : OperatorSpan, ISymbol
+internal class DivideOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "/";
     internal override bool TwoSides { get; } = true;
-    internal DivideOperatorSpan() : base(Symbol) { }
+
+    internal DivideOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right)
     {
         if (left != null && right != null && left.IsNumber && right.IsNumber)
@@ -452,11 +540,15 @@ class DivideOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class ModuluOperatorSpan : OperatorSpan, ISymbol
+internal class ModuluOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "%";
     internal override bool TwoSides { get; } = true;
-    internal ModuluOperatorSpan() : base(Symbol) { }
+
+    internal ModuluOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right)
     {
         if (left != null && right != null && left.IsNumber && right.IsNumber)
@@ -471,12 +563,17 @@ class ModuluOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class EqualsOperatorSpan : OperatorSpan, ISymbol
+internal class EqualsOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "==";
     internal override bool TwoSides { get; } = true;
-    internal EqualsOperatorSpan() : base(Symbol) { }
+
+    internal EqualsOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IValue left, IValue right) => GetResult(left, right);
+
     internal static BoolValue GetResult(IValue left, IValue right)
     {
         if (left == null)
@@ -503,19 +600,27 @@ class EqualsOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class NotEqualsOperatorSpan : OperatorSpan, ISymbol
+internal class NotEqualsOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "!=";
     internal override bool TwoSides { get; } = true;
-    internal NotEqualsOperatorSpan() : base(Symbol) { }
+
+    internal NotEqualsOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override BoolValue Result(IValue left, IValue right) => !((IValue)EqualsOperatorSpan.GetResult(left, right)).Bool;
 }
 
-class GreaterThanOperatorSpan : OperatorSpan, ISymbol
+internal class GreaterThanOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = ">";
     internal override bool TwoSides { get; } = true;
-    internal GreaterThanOperatorSpan() : base(Symbol) { }
+
+    internal GreaterThanOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override BoolValue Result(IValue left, IValue right)
     {
         if (left != null && right != null)
@@ -535,11 +640,14 @@ class GreaterThanOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class LowerThanOperatorSpan : OperatorSpan, ISymbol
+internal class LowerThanOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "<";
     internal override bool TwoSides { get; } = true;
-    internal LowerThanOperatorSpan() : base(Symbol) { }
+
+    internal LowerThanOperatorSpan() : base(Symbol)
+    {
+    }
 
     internal override BoolValue Result(IValue left, IValue right)
     {
@@ -560,11 +668,15 @@ class LowerThanOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class EqualsOrGreaterOperatorSpan : OperatorSpan, ISymbol
+internal class EqualsOrGreaterOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = ">=";
     internal override bool TwoSides { get; } = true;
-    internal EqualsOrGreaterOperatorSpan() : base(Symbol) { }
+
+    internal EqualsOrGreaterOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override BoolValue Result(IValue left, IValue right)
     {
         if (left != null && right != null)
@@ -583,11 +695,15 @@ class EqualsOrGreaterOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class EqualsOrLowerOperatorSpan : OperatorSpan, ISymbol
+internal class EqualsOrLowerOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "<=";
     internal override bool TwoSides { get; } = true;
-    internal EqualsOrLowerOperatorSpan() : base(Symbol) { }
+
+    internal EqualsOrLowerOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override BoolValue Result(IValue left, IValue right)
     {
         if (left != null && right != null)
@@ -606,11 +722,15 @@ class EqualsOrLowerOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class AndOperatorSpan : OperatorSpan, ISymbol
+internal class AndOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "&";
     internal override bool TwoSides { get; } = true;
-    internal AndOperatorSpan() : base(Symbol) { }
+
+    internal AndOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override IValue Result(IReadingOperation left, IReadingOperation right)
     {
         /*
@@ -621,14 +741,19 @@ class AndOperatorSpan : OperatorSpan, ISymbol
         return null;*/
         return (left?.Read()?.Bool == true && right?.Read()?.Bool == true).ToExp();
     }
+
     internal override BoolValue Result(IValue left, IValue right) => left.Bool && right.Bool;
 }
 
-class OrOperatorSpan : OperatorSpan, ISymbol
+internal class OrOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "|";
     internal override bool TwoSides { get; } = true;
-    internal OrOperatorSpan() : base(Symbol) { }
+
+    internal OrOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override BoolValue Result(IReadingOperation left, IReadingOperation right)
     {
         /*
@@ -639,15 +764,21 @@ class OrOperatorSpan : OperatorSpan, ISymbol
         return null;*/
         return left?.Read()?.Bool == true || right?.Read()?.Bool == true;
     }
+
     internal override BoolValue Result(IValue left, IValue right) => left.Bool || right.Bool;
 }
 
-class NullCoalescingOperatorSpan : OperatorSpan, ISymbol
+internal class NullCoalescingOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "??";
     internal override bool TwoSides { get; } = true;
-    internal NullCoalescingOperatorSpan() : base(Symbol) { }
+
+    internal NullCoalescingOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal Instance NullCoalsingEx { get; set; }
+
     internal override IValue Result(IValue left, IValue right)
     {
         IValue value = left ?? right;
@@ -657,70 +788,104 @@ class NullCoalescingOperatorSpan : OperatorSpan, ISymbol
     }
 }
 
-class SetPlusOperatorSpan : OperatorSpan, ISymbol
+internal class SetPlusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "+=";
-    internal SetPlusOperatorSpan() : base(Symbol) { }
+
+    internal SetPlusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override bool TwoSides => true;
     internal override bool Action => true;
+
     internal override IValue Result(IValue left, IValue right) => PlusOperatorSpan.GetResult(left, right, this);
 }
 
-class SetMinusOperatorSpan : OperatorSpan, ISymbol
+internal class SetMinusOperatorSpan : OperatorSpan, ISymbol
 {
     public static string Symbol { get; } = "-=";
-    internal SetMinusOperatorSpan() : base(Symbol) { }
+
+    internal SetMinusOperatorSpan() : base(Symbol)
+    {
+    }
+
     internal override bool TwoSides => true;
     internal override bool Action => true;
+
     internal override IValue Result(IValue left, IValue right) => MinusOperatorSpan.GetResult(left, right, this);
 }
 
-class QuestionMarkSpan : WordSpan, ISymbol
+internal class QuestionMarkSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "?";
-    internal QuestionMarkSpan() : base(Symbol) { }
+
+    internal QuestionMarkSpan() : base(Symbol)
+    {
+    }
 }
 
-class PrivateWordSpan : WordSpan, IKeyword
+internal class PrivateWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "private";
-    internal PrivateWordSpan() : base(Keyword) { }
+
+    internal PrivateWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class BaseArrayWordSpan : WordSpan, IKeyword
+internal class BaseArrayWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "basearray";
-    internal BaseArrayWordSpan() : base(Keyword) { }
+
+    internal BaseArrayWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class ConstWordSpan : WordSpan, IKeyword
+internal class ConstWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "const";
-    internal ConstWordSpan() : base(Keyword) { }
+
+    internal ConstWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class IsWordSpan : WordSpan, IKeyword
+internal class IsWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "is";
-    internal IsWordSpan() : base(Keyword) { }
+
+    internal IsWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class TrueWordSpan : WordSpan, IKeyword
+internal class TrueWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "true";
-    internal TrueWordSpan() : base(Keyword) { }
+
+    internal TrueWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class FalseWordSpan : WordSpan, IKeyword
+internal class FalseWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "false";
-    internal FalseWordSpan() : base(Keyword) { }
+
+    internal FalseWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class NotSymbolSpan : WordSpan, ISymbol
+internal class NotSymbolSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "!";
-    internal NotSymbolSpan() : base(Symbol) { }
+
+    internal NotSymbolSpan() : base(Symbol)
+    {
+    }
 }
 
 // an item that has its own vars list
@@ -730,6 +895,7 @@ public interface IVarSystem
     internal IVarSystem Parent { get; set; }
 
     internal IEnumerable<IValue> BackupValues() => Vars.Map(v => v.Value.Pass());
+
     internal void RestoreValues(IEnumerable<IValue> values)
     {
         int i = 0;
@@ -742,11 +908,12 @@ public interface IContext : IVarSystem
 {
     //IVarSystem OuterVarSystem { get; }
     Span[] InnerSource { get; set; }
+
     IOperation[] Operations { get; set; }
     //IContext Context { get; set; }
 }
 
-interface ILoopContext : IContext
+internal interface ILoopContext : IContext
 {
     bool Break { get; set; }
     bool Continue { get; set; }
@@ -761,23 +928,26 @@ public interface IDefination
     public string FullName { get => (Namespace == null ? "" : (Namespace + NamespaceSpecificationSpan.Symbol)) + Name; }
 }
 
-abstract class ConditionSpan : WordSpan, IContext
+internal abstract class ConditionSpan : WordSpan, IContext
 {
     public List<Variable> Vars { get; } = [];
     public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
     internal Span[] Condition { get; }
     public IContext Context { get; set; }
     internal bool ConditionWasTrue { get; set; }
     internal override string FullText => Text + ' ' + Condition + "\n{\n\t" + InnerSource + "\n}";
+
     internal ConditionSpan(string text, Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(text)
     {
         this.InnerSource = innerSource;
         this.Condition = condition;
         this.OuterVarSystem = varSystem;
     }
+
     internal override Span Container
     {
         get;
@@ -785,24 +955,29 @@ abstract class ConditionSpan : WordSpan, IContext
     }
 }
 
-class IfConditionSpan : ConditionSpan, IKeyword, IExpItem
+internal class IfConditionSpan : ConditionSpan, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "if";
     public static string ItemName { get; } = "if statement";
-    internal IfConditionSpan(Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem) { }
+
+    internal IfConditionSpan(Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem)
+    {
+    }
 }
 
-class ElseConditionSpan : WordSpan, IContext, IKeyword, IExpItem
+internal class ElseConditionSpan : WordSpan, IContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "else";
     public static string ItemName { get; } = "else statement";
     public List<Variable> Vars { get; } = []; public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
     public IContext Context { get; set; }
 
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";
+
     internal ElseConditionSpan(Span[] innerSource, IVarSystem varSystem) : base(Keyword)
     {
         this.InnerSource = innerSource;
@@ -811,7 +986,7 @@ class ElseConditionSpan : WordSpan, IContext, IKeyword, IExpItem
     }
 }
 
-class WhileConditionSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
+internal class WhileConditionSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "while";
     public static string ItemName { get; } = "while loop";
@@ -819,6 +994,7 @@ class WhileConditionSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
     public bool Continue { get; set; }
     public string Counter { get; set; }
     public string Id { get; set; }
+
     internal override string FullText
     {
         get
@@ -836,10 +1012,13 @@ class WhileConditionSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
             return s;
         }
     }
-    internal WhileConditionSpan(Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem) { }
+
+    internal WhileConditionSpan(Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem)
+    {
+    }
 }
 
-class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
+internal class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "for";
     public static string ItemName { get; } = "for loop";
@@ -849,6 +1028,7 @@ class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
     internal Span[] InitExe { get; set; }
     internal Span[] StepExe { get; }
     public string Id { get; set; }
+
     internal override string FullText
     {
         get
@@ -866,6 +1046,7 @@ class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
             return s;
         }
     }
+
     internal ForLoopSpan(Span[] initExe, Span[] condition, Span[] stepExe, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem)
     {
         this.InitExe = initExe;
@@ -875,7 +1056,6 @@ class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
         SetContainer(condition);
     }
 
-
     internal override Span Container
     {
         get;
@@ -883,7 +1063,7 @@ class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
     }
 }
 
-class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
+internal class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "foreach";
     public static string ItemName { get; } = "foreach loop";
@@ -895,7 +1075,8 @@ class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     public List<Variable> Vars { get; } = [];
     public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
     public IContext Context { get; set; }
     public bool Break { get; set; }
@@ -905,6 +1086,7 @@ class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     internal string VarName { get; }
     internal bool ConstVar { get; }
     public string Id { get; set; }
+
     internal override string FullText
     {
         get
@@ -939,14 +1121,15 @@ class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     }
 }
 
-class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
+internal class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "foreach";
     public static string ItemName { get; } = "foreach loop";
     public List<Variable> Vars { get; } = [];
     public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
     public IContext Context { get; set; }
     public bool Break { get; set; }
@@ -957,6 +1140,7 @@ class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     internal string VarName { get; }
     internal bool ConstVar { get; }
     public string Id { get; set; }
+
     internal override string FullText
     {
         get
@@ -992,81 +1176,116 @@ class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
     }
 }
 
-
-class BreakWordSpan : WordSpan, IKeyword
+internal class BreakWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "break";
-    internal BreakWordSpan() : base(Keyword) { }
+
+    internal BreakWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class ContinueWordSpan : WordSpan, IKeyword
+internal class ContinueWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "continue";
-    internal ContinueWordSpan() : base(Keyword) { }
+
+    internal ContinueWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class OpeningBracketSpan : WordSpan, ISymbol
+internal class OpeningBracketSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "(";
-    internal OpeningBracketSpan() : base("(") { }
+
+    internal OpeningBracketSpan() : base("(")
+    {
+    }
 }
 
-class ArrayOpenerSpan : WordSpan, ISymbol
+internal class ArrayOpenerSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "[";
-    internal ArrayOpenerSpan() : base(Symbol) { }
+
+    internal ArrayOpenerSpan() : base(Symbol)
+    {
+    }
 }
 
-class ArrayCloserSpan : WordSpan, ISymbol
+internal class ArrayCloserSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "]";
-    internal ArrayCloserSpan() : base(Symbol) { }
+
+    internal ArrayCloserSpan() : base(Symbol)
+    {
+    }
 }
 
-class ClosingBracketSpan : WordSpan, ISymbol
+internal class ClosingBracketSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = ")";
-    internal ClosingBracketSpan() : base(Symbol) { }
+
+    internal ClosingBracketSpan() : base(Symbol)
+    {
+    }
 }
 
-class SourceOpenerSpan : WordSpan, ISymbol
+internal class SourceOpenerSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "{";
-    internal SourceOpenerSpan() : base(Symbol) { }
+
+    internal SourceOpenerSpan() : base(Symbol)
+    {
+    }
 }
 
-class SourceCloserSpan : WordSpan, ISymbol
+internal class SourceCloserSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = "}";
-    internal SourceCloserSpan() : base(Symbol) { }
+
+    internal SourceCloserSpan() : base(Symbol)
+    {
+    }
 }
 
-class CommaSpan : WordSpan, ISymbol
+internal class CommaSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = ",";
-    internal CommaSpan() : base(Symbol) { }
+
+    internal CommaSpan() : base(Symbol)
+    {
+    }
 }
 
-class SemicolonSpan : WordSpan, ISymbol
+internal class SemicolonSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = ";";
-    internal SemicolonSpan() : base(Symbol) { }
+
+    internal SemicolonSpan() : base(Symbol)
+    {
+    }
 }
 
-class DotSpan : WordSpan, ISymbol
+internal class DotSpan : WordSpan, ISymbol
 {
     public static string Symbol { get; } = ".";
-    internal DotSpan() : base(Symbol) { }
+
+    internal DotSpan() : base(Symbol)
+    {
+    }
 }
 
-class WhiteSpaceSpan : Span
+internal class WhiteSpaceSpan : Span
 {
-    internal WhiteSpaceSpan(string txt) : base(txt) { }
+    internal WhiteSpaceSpan(string txt) : base(txt)
+    {
+    }
 }
 
-class CommentSpan : Span
+internal class CommentSpan : Span
 {
     private readonly bool multiLine;
+
     internal CommentSpan(string comment, bool multiLine = false) : base(comment)
     {
         this.multiLine = multiLine;
@@ -1083,7 +1302,8 @@ public class FuncDefSpan : WordSpan, IContext, IDefination, IKeyword, IClassMemb
     public List<Variable> Vars { get; } = [];
     public IVarSystem Parent { get; set; } //= Interpreter.Activated.ParentVs;
     public IVarSystem OuterVarSystem { get; set; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
     public IContext Context { get; set; }
     internal bool IsRunning { get; set; }
@@ -1111,6 +1331,7 @@ public class FuncDefSpan : WordSpan, IContext, IDefination, IKeyword, IClassMemb
     internal static FuncDefSpan ExternPropGetSet = new("extern.pgetset", [new ArgumentSpan("extrn", notNull: true), new ArgumentSpan("pinfo", true), new ArgumentSpan("inst"), new ArgumentSpan("value", notNull: false), new ArgumentSpan("set", notNull: true)], [], null);
 
     internal Variable[] ParamVariables { get; }
+
     internal FuncDefSpan(string name, ArgumentSpan[] args, Span[] innerSource, ClassDefSpan definedAt, string text = null) : base(text ?? Keyword)
     {
         this.Name = name;
@@ -1158,6 +1379,7 @@ public class FuncDefSpan : WordSpan, IContext, IDefination, IKeyword, IClassMemb
     }
 
     string IDefination.FullName => (DefinedAt != null ? (DefinedAt.GetExpTypeName(false) + ".") : (Namespace == null ? "" : (Namespace + NamespaceSpecificationSpan.Symbol))) + Name + "(.." + Args.Length + ")";
+
     public override string ToString() => Keyword + " " + ((IDefination)this).FullName;
 }
 
@@ -1165,6 +1387,7 @@ public class ConstructorDefSpan : FuncDefSpan, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "constructor";
     public static string ItemName { get; } = "constructor";
+
     public ConstructorDefSpan(ArgumentSpan[] args, Span[] innerSource, ClassDefSpan definedAt, Interpreter toThrowWith) : base(definedAt == null ? null : $"{definedAt.Name}.ctor", args, innerSource, definedAt, Keyword)
     {
         if (definedAt == null)
@@ -1194,6 +1417,7 @@ public class ArgumentSpan : WordSpan, IExpItem
     public static string ItemName { get; } = "argument";
     internal string Name { get; }
     internal bool NotNull { get; }
+
     internal ArgumentSpan(string name, bool notNull = false) : base(name)
     {
         this.Name = name;
@@ -1212,34 +1436,49 @@ public class ArgumentSpan : WordSpan, IExpItem
     }
 }
 
-class NotNullWordSpan : WordSpan, IKeyword
+internal class NotNullWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "notnull";
-    internal NotNullWordSpan() : base(Keyword) { }
+
+    internal NotNullWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class ReturnWordSpan : WordSpan, IKeyword
+internal class ReturnWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "return";
-    internal ReturnWordSpan() : base(Keyword) { }
+
+    internal ReturnWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class ReturnSymbolSpan : Span, ISymbol
+internal class ReturnSymbolSpan : Span, ISymbol
 {
     public static string Symbol { get; } = "=>";
-    internal ReturnSymbolSpan() : base(Symbol) { }
+
+    internal ReturnSymbolSpan() : base(Symbol)
+    {
+    }
 }
 
-class DoSymbolSpan : Span, ISymbol
+internal class DoSymbolSpan : Span, ISymbol
 {
     public static string Symbol { get; } = "->";
-    internal DoSymbolSpan() : base(Symbol) { }
+
+    internal DoSymbolSpan() : base(Symbol)
+    {
+    }
 }
 
-class NullWordSpan : WordSpan, IKeyword
+internal class NullWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "null";
-    internal NullWordSpan() : base(Keyword) { }
+
+    internal NullWordSpan() : base(Keyword)
+    {
+    }
 }
 
 public class ClassDefSpan : WordSpan, IDefination, IVarSystem, IKeyword, ICanSetAttr, IExpItem
@@ -1250,6 +1489,7 @@ public class ClassDefSpan : WordSpan, IDefination, IVarSystem, IKeyword, ICanSet
         //n.Props.ForEach(pr => pr.Def = n); now done at constructor
         return n;
     }
+
     public static ClassDefSpan ExpArrayDef { get; private set; } = new("Array", []);
     public static ClassDefSpan ExpStringDef { get; private set; } = Create("string", [new Property(null, true, "chars", true, true)]);
     public static ClassDefSpan ExpExceptionDef { get; private set; } = new("Exception", []);
@@ -1266,6 +1506,7 @@ public class ClassDefSpan : WordSpan, IDefination, IVarSystem, IKeyword, ICanSet
     public Property[] Props { get; }
     public FuncDefSpan[] Funcs { get; set; }
     internal Property BaseArrayProp => Props.FirstOrDefault(p => p.BaseArray);
+
     public Instance ExpType
     {
         get
@@ -1280,6 +1521,7 @@ public class ClassDefSpan : WordSpan, IDefination, IVarSystem, IKeyword, ICanSet
             return _expType;
         }
     }
+
     private Instance _expType;
     public List<Span[]> TagsCode { get; set; } = [];
     public Instance[] AttrInfo { get; set; }
@@ -1330,7 +1572,7 @@ public class ClassDefSpan : WordSpan, IDefination, IVarSystem, IKeyword, ICanSet
     }
 }
 
-class EnumDefSpan : WordSpan, IDefination, ICanSetAttr, IKeyword, IExpItem
+internal class EnumDefSpan : WordSpan, IDefination, ICanSetAttr, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "enum";
     public static string ItemName { get; } = "enum";
@@ -1339,11 +1581,13 @@ class EnumDefSpan : WordSpan, IDefination, ICanSetAttr, IKeyword, IExpItem
     internal EnumValueSpan[] Values { get; }
     public List<Span[]> TagsCode { get; set; } = [];
     public Instance[] AttrInfo { get; set; }
+
     internal EnumDefSpan(string name, EnumValueSpan[] values) : base(Keyword)
     {
         this.Name = name;
         this.Values = values;
     }
+
     internal override string FullText
     {
         get
@@ -1357,7 +1601,7 @@ class EnumDefSpan : WordSpan, IDefination, ICanSetAttr, IKeyword, IExpItem
     }
 }
 
-class EnumValueSpan : WordSpan, ICanSetAttr, IExpItem
+internal class EnumValueSpan : WordSpan, ICanSetAttr, IExpItem
 {
     public static string ItemName { get; } = "enum value";
     internal string Name { get; }
@@ -1365,6 +1609,7 @@ class EnumValueSpan : WordSpan, ICanSetAttr, IExpItem
     internal bool CustomValue { get; }
     public List<Span[]> TagsCode { get; set; } = [];
     public Instance[] AttrInfo { get; set; }
+
     internal EnumValueSpan(string name, double value, bool customValue) : base(name)
     {
         this.Name = name;
@@ -1375,11 +1620,12 @@ class EnumValueSpan : WordSpan, ICanSetAttr, IExpItem
     internal override string FullText => Name + (CustomValue ? $" = {Value}" : "");
 }
 
-class InstInitSpan : WordSpan, IKeyword, IExpItem
+internal class InstInitSpan : WordSpan, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "new";
     public static string ItemName { get; } = "new statement";
     internal DefNameSpan DefName { get; }
+
     internal InstInitSpan(DefNameSpan defName) : base(Keyword)
     {
         ArgumentNullException.ThrowIfNull(defName, nameof(defName));
@@ -1392,19 +1638,25 @@ class InstInitSpan : WordSpan, IKeyword, IExpItem
     }
 }
 
-class ThisWordSpan : WordSpan, IKeyword
+internal class ThisWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "this";
-    internal ThisWordSpan() : base(Keyword) { }
+
+    internal ThisWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class ThrowWordSpan : WordSpan, IKeyword
+internal class ThrowWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "throw";
-    internal ThrowWordSpan() : base(Keyword) { }
+
+    internal ThrowWordSpan() : base(Keyword)
+    {
+    }
 }
 
-class TryWordSpan : WordSpan, IContext, IKeyword, IExpItem
+internal class TryWordSpan : WordSpan, IContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "try";
     public static string ItemName { get; } = "try block";
@@ -1413,8 +1665,10 @@ class TryWordSpan : WordSpan, IContext, IKeyword, IExpItem
     public IVarSystem OuterVarSystem { get; }
     internal CatchWordSpan Catch { get; set; }
     internal FinallyWordSpan Finally { get; set; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
+
     internal TryWordSpan(Span[] innerSource, IVarSystem vs, CatchWordSpan catc, FinallyWordSpan finaly) : base(Keyword)
     {
         this.InnerSource = innerSource;
@@ -1422,10 +1676,11 @@ class TryWordSpan : WordSpan, IContext, IKeyword, IExpItem
         this.Finally = finaly;
         this.OuterVarSystem = vs;
     }
+
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";
 }
 
-class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
+internal class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "catch";
     public static string ItemName { get; } = "catch block";
@@ -1435,8 +1690,10 @@ class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
     public IVarSystem OuterVarSystem { get; }
     internal string VarName { get; }
     internal WhenWordSpan When { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
+
     internal CatchWordSpan(string varname, WhenWordSpan when, Span[] innerSource, IVarSystem vs) : base(Keyword)
     {
         this.VarName = varname;
@@ -1444,6 +1701,7 @@ class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
         this.InnerSource = innerSource;
         this.OuterVarSystem = vs;
     }
+
     internal override string FullText
     {
         get
@@ -1459,7 +1717,7 @@ class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
     }
 }
 
-class FinallyWordSpan : WordSpan, IContext, IKeyword, IExpItem
+internal class FinallyWordSpan : WordSpan, IContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "finally";
     public static string ItemName { get; } = "finally block";
@@ -1467,20 +1725,24 @@ class FinallyWordSpan : WordSpan, IContext, IKeyword, IExpItem
     public List<Variable> Vars { get; set; } = [];
     public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
+
     internal FinallyWordSpan(Span[] innerSource, IVarSystem vs) : base(Keyword)
     {
         this.InnerSource = innerSource;
         this.OuterVarSystem = vs;
     }
+
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";
 }
 
-class WhenWordSpan : WordSpan, IKeyword
+internal class WhenWordSpan : WordSpan, IKeyword
 {
     public static string Keyword { get; } = "when";
     internal Span[] Condition { get; }
+
     internal WhenWordSpan(Span[] condition) : base(Keyword)
     {
         this.Condition = condition;
@@ -1490,14 +1752,15 @@ class WhenWordSpan : WordSpan, IKeyword
     internal override string FullText => $"{Keyword}\n{{\n\t{Condition.ToString(" ")}\n}}";
 }
 
-class SectionWordSpan : WordSpan, IContext, IKeyword, IExpItem
+internal class SectionWordSpan : WordSpan, IContext, IKeyword, IExpItem
 {
     public static string Keyword { get; } = "section";
     public static string ItemName { get; } = "section block";
     public IContext Context { get; set; }
     public List<Variable> Vars { get; } = []; public IVarSystem Parent { get; set; }
     public IVarSystem OuterVarSystem { get; }
-    public Span[] InnerSource { get; set { field = value; SetContainer(value); } }
+    public Span[] InnerSource
+    { get; set { field = value; SetContainer(value); } }
     public IOperation[] Operations { get; set; }
 
     internal SectionWordSpan(Span[] innerSource, IVarSystem vs) : base(Keyword)
@@ -1509,12 +1772,12 @@ class SectionWordSpan : WordSpan, IContext, IKeyword, IExpItem
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";
 }
 
-class AttributeDefSpan : WordSpan, IDefination, IKeyword, ICanSetAttr, IExpItem
+internal class AttributeDefSpan : WordSpan, IDefination, IKeyword, ICanSetAttr, IExpItem
 {
-    internal static new AttributeDefSpan ToString = new("Translator", [])
+    internal new static AttributeDefSpan ToString = new("Translator", [])
     { AllowFor_Class = false, AllowFor_Constructor = false, AllowFor_Func = true, AllowFor_Property = false, AllowFor_Attr = false, LimitTo1InCls = true, Func_StaticRequirement = StaticRequirement.NonStatic, Func_ParamsCountRequirement = 0 };
 
-    internal static new AttributeDefSpan EqualizerAttr = new("Equalizer", [])
+    internal new static AttributeDefSpan EqualizerAttr = new("Equalizer", [])
     { AllowFor_Class = false, AllowFor_Constructor = false, AllowFor_Func = true, AllowFor_Property = false, AllowFor_Attr = false, LimitTo1InCls = true, Func_StaticRequirement = StaticRequirement.NonStatic, Func_ParamsCountRequirement = 1 };
 
     internal static AttributeDefSpan AllowFor = new("AllowFor",
@@ -1566,14 +1829,17 @@ class AttributeDefSpan : WordSpan, IDefination, IKeyword, ICanSetAttr, IExpItem
     internal bool AllowFor_Attr { get; set; } = true;
     internal bool AllowMultiple { get; set; }
     internal bool LimitTo1InCls { get; set; }
+
     internal enum StaticRequirement
     {
         Static,
         NonStatic,
         Nevermind
     }
+
     internal StaticRequirement Func_StaticRequirement { get; set; } = StaticRequirement.Nevermind;
     internal int Func_ParamsCountRequirement = -1;
+
     internal Instance ExpType
     {
         get
@@ -1588,7 +1854,9 @@ class AttributeDefSpan : WordSpan, IDefination, IKeyword, ICanSetAttr, IExpItem
             return _expType;
         }
     }
+
     private Instance _expType;
+
     internal AttributeDefSpan(string name, AttributeParamSpan[] param) : base(Keyword)
     {
         this.Name = name;
@@ -1600,13 +1868,14 @@ class AttributeDefSpan : WordSpan, IDefination, IKeyword, ICanSetAttr, IExpItem
     }
 }
 
-class AttributeParamSpan : WordSpan, IExpItem
+internal class AttributeParamSpan : WordSpan, IExpItem
 {
     public static string ItemName { get; } = "attribute parameter";
     internal string Name { get; }
     internal Instance ExpType { get; private set; }
     internal DefNameSpan ExpTypeName { get; }
     internal Type Type { get; }
+
     private AttributeParamSpan(string name) : base(name)
     {
         this.Name = name;
@@ -1642,10 +1911,12 @@ class AttributeParamSpan : WordSpan, IExpItem
     }
 }
 
-class TagSpan : WordSpan, IExpItem
+internal class TagSpan : WordSpan, IExpItem
 {
     public static string ItemName { get; } = "property tag";
     internal Span[] Code { get; }
+
     internal TagSpan(string name, Span[] code) : base(name) => this.Code = code;
+
     internal override string FullText => "@" + Text;
 }

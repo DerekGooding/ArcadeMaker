@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Exp.Spans;
-
-namespace Exp;
+﻿namespace Exp;
 
 public static class CSBasicTypes
 {
@@ -81,20 +76,29 @@ public static class CSBasicTypes
 
 public class Test : IDisposable
 {
-    public void Dispose() { }
-    public static void Met(double d) { }
+    public void Dispose()
+    { }
+
+    public static void Met(double d)
+    { }
+
     public void Met(object[] i) => $"Great o[] {i.Length}".Print();
+
     public static void Met(Test[] i) => $"Great t[] {i.Length}".Print();
+
     //public Test() { }
     public double D { get; set; } = 355;
+
     public static object Reado { get; } = 777;
     public static object Writeo { set => $"setted to {value}".Println(); }
+
     public override string ToString() => $"[Amazing Test where d = {D}]";
 }
 
 public class GTest<T>
 {
     public void Met(T obj) => obj.Println();
+
     public static object Testing(object[] args)
     {
         return null;
@@ -103,8 +107,11 @@ public class GTest<T>
         //return !string.IsNullOrEmpty(s1) && (s1[0] == c1);
     }
 
-    static void F(int a) { }
-    static void F(int a, int b) { }
+    private static void F(int a)
+    { }
+
+    private static void F(int a, int b)
+    { }
 }
 
 public static class StatCls;

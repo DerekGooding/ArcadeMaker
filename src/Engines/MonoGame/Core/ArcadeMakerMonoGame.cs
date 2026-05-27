@@ -1,42 +1,39 @@
+using ArcadeMaker.Core;
+using ArcadeMaker.Core.ExpSrc;
+using ArcadeMaker.Core.Models;
+using ArcadeMaker.Core.Resources;
+using ArcadeMaker.Core.Resources.Serializeables;
+using ArcadeMaker.Core.Runtime;
+using ArcadeMaker.Engines.MonoGame.Core.Graphics;
 using ArcadeMaker.Engines.MonoGame.Core.Localization;
+using Exp;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using static System.Net.Mime.MediaTypeNames;
-using ArcadeMaker.Core;
-using ArcadeMaker.Core.Models;
-using ArcadeMaker.Core.Runtime;
-using Microsoft.Xna.Framework.Content;
-using Exp;
-using ArcadeMaker.Core.Resources;
-using ArcadeMaker.Engines.MonoGame.Core.Graphics;
-using ArcadeMaker.Core.ExpSrc;
-using ArcadeMaker.Core.Resources.Serializeables;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
 using System.Linq;
-using Exp.Spans;
-using System.Reflection;
-using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
-using System.Runtime.CompilerServices;
 
 namespace ArcadeMaker.Engines.MonoGame.Core
 {
     /// <summary>
-    /// The main class for the game, responsible for managing game components, settings, 
+    /// The main class for the game, responsible for managing game components, settings,
     /// and platform-specific configurations.
     /// </summary>
     public partial class ArcadeMakerMonoGame : Game, IGame
     {
         public event EventHandler<RuntimeException> OnExpRuntimeError;
+
         public event EventHandler<Exception> OnCsError;
 
         // resources
         private readonly GraphicsDeviceManager graphicsDeviceManager;
+
         private SpriteBatch SpriteBatch { get; set; }
         private List<Sprite> Sprites { get; } = [];
         private Dictionary<Background, Texture2D> BackgroundTextures { get; } = [];
@@ -48,6 +45,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
         public List<ScriptDocument> Scripts { get; } = [];
         public List<RoomModel> Rooms { get; } = [];
         private List<(Viewport port, OrthographicCamera camera)> Cameras { get; } = [];
+
         public RoomInstance? CurrentRoom
         {
             get;
@@ -73,6 +71,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
                 }
             }
         }
+
         public TextureAtlasMap MainTextureAtlasMap { get; set; }
         public TextureAtlas MainTextureAtlas { get; private set; }
 
@@ -82,16 +81,16 @@ namespace ArcadeMaker.Engines.MonoGame.Core
         /// <summary>
         /// Indicates if the game is running on a mobile platform.
         /// </summary>
-        public readonly static bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
+        public static readonly bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
 
         /// <summary>
         /// Indicates if the game is running on a desktop platform.
         /// </summary>
-        public readonly static bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
+        public static readonly bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
 
         /// <summary>
-        /// Initializes a new instance of the game. Configures platform-specific settings, 
-        /// initializes services like settings and leaderboard managers, and sets up the 
+        /// Initializes a new instance of the game. Configures platform-specific settings,
+        /// initializes services like settings and leaderboard managers, and sets up the
         /// screen manager for screen transitions.
         /// </summary>
         public ArcadeMakerMonoGame(string projectFile)
@@ -116,7 +115,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
         }
 
         /// <summary>
-        /// Initializes the game, including setting up localization and adding the 
+        /// Initializes the game, including setting up localization and adding the
         /// initial screens to the ScreenManager.
         /// </summary>
         protected override void Initialize()
@@ -203,6 +202,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
 #if !DEBUG
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
+
         private void Try(Action action) // TODO: consider using a more efficient way to handle this, as this might cause performance issues when used in Update and Draw methods.
         {
             try
@@ -239,7 +239,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
             Gamepad2State = null;
             Gamepad3State = null;
             Gamepad4State = null;
-            MouseState    = null;
+            MouseState = null;
 
             Try(GameRunner.FireStep);
 
@@ -302,7 +302,6 @@ namespace ArcadeMaker.Engines.MonoGame.Core
 
         public void DrawBackground()
         {
-
         }
 
         public Exp.Void DrawInstance(ArcadeMaker.Core.Runtime.Instance inst)
@@ -348,12 +347,18 @@ namespace ArcadeMaker.Engines.MonoGame.Core
             return Exp.Void.Return;
         }
 
-        private KeyboardState? KeyboardState { get { field ??= Keyboard.GetState(); return field; } set; }
-        private GamePadState? Gamepad1State { get { field ??= GamePad.GetState(PlayerIndex.One); return field; } set; }
-        private GamePadState? Gamepad2State { get { field ??= GamePad.GetState(PlayerIndex.Two); return field; } set; }
-        private GamePadState? Gamepad3State { get { field ??= GamePad.GetState(PlayerIndex.Three); return field; } set; }
-        private GamePadState? Gamepad4State { get { field ??= GamePad.GetState(PlayerIndex.Four); return field; } set; }
-        private MouseState? MouseState { get { field ??= Mouse.GetState(); return field; } set; }
+        private KeyboardState? KeyboardState
+        { get { field ??= Keyboard.GetState(); return field; } set; }
+        private GamePadState? Gamepad1State
+        { get { field ??= GamePad.GetState(PlayerIndex.One); return field; } set; }
+        private GamePadState? Gamepad2State
+        { get { field ??= GamePad.GetState(PlayerIndex.Two); return field; } set; }
+        private GamePadState? Gamepad3State
+        { get { field ??= GamePad.GetState(PlayerIndex.Three); return field; } set; }
+        private GamePadState? Gamepad4State
+        { get { field ??= GamePad.GetState(PlayerIndex.Four); return field; } set; }
+        private MouseState? MouseState
+        { get { field ??= Mouse.GetState(); return field; } set; }
 
         public BoolValue KeyDown(Exp.Instance _, IValue[] args)
         {
@@ -426,6 +431,7 @@ namespace ArcadeMaker.Engines.MonoGame.Core
         }
 
         public IValue GetMouseX(Exp.Instance? _, IValue?[] args) => MouseState.Value.X.ToExp();
+
         public IValue GetMouseY(Exp.Instance? _, IValue?[] args) => MouseState.Value.Y.ToExp();
 
         protected override void Dispose(bool disposing)

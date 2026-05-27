@@ -3,20 +3,10 @@ using ArcadeMaker.Core.Models;
 using ArcadeMaker.Core.Resources;
 using ArcadeMaker.Core.Resources.Serializeables;
 using ArcadeMaker.Core.Runtime;
-using ArcadeMaker.Core.ExpSrc;
 using Exp;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection.Metadata;
-using System.Runtime.InteropServices.Marshalling;
-using System.Text;
 using System.Xml.Serialization;
-using ArcadeMaker.Core.Math;
-using ArcadeMaker.Core.Math.Shapes;
-using Exp.Spans;
-using System.ComponentModel.DataAnnotations;
 
 namespace ArcadeMaker.Core;
 
@@ -34,14 +24,21 @@ public partial interface IGame
     int CurrentViewIndex { get; }
 
     void Init();
+
     Exp.Void DrawInstance(Runtime.Instance inst);
+
     void DrawBackground();
+
     void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness);
+
     void SetWindowsSize(int w, int h);
+
     void SetCaption(string caption);
 
     internal RoomInstance GetActivatedRoom() => CurrentRoom ?? throw new NoActivatedRoomException();
+
     private static event EventHandler OnProjectLoadingComplete;
+
     public void LoadFromProject(SerializeableGameProject sproject, string filePath)
     {
         try
@@ -102,7 +99,7 @@ public partial interface IGame
                             goto Beginning;
                         }
                     }
-                    Paths.Add(new(spath.name, startX, startY, [..steps]));
+                    Paths.Add(new(spath.name, startX, startY, [.. steps]));
                 }
                 else if (item is SerializeableGameScript script)
                 {
@@ -136,7 +133,7 @@ public partial interface IGame
                         evscripts.Scripts.ForEach(script => { if (!string.IsNullOrWhiteSpace(script.Script)) list.Add(ExpSrc.ExpSrc.CreateInstanceScriptDocument($"{evscripts.Event} event of {sobj.name}", null, script.Script, evscripts.Event == ObjectEvent.Draw ? [ExpSrc.ExpSrc.CURRENT_VIEW_INDEX_ARG_NAME] : [])); });
                     }
 
-                    ObjectModel obj = new(sobj.name, sprites.FirstOrDefault(spr => spr.Name == sobj.sprite), new([..createEv], [..stepEv], [..drawEv]), sobj.extraProperties)
+                    ObjectModel obj = new(sobj.name, sprites.FirstOrDefault(spr => spr.Name == sobj.sprite), new([.. createEv], [.. stepEv], [.. drawEv]), sobj.extraProperties)
                     {
                         InitValues = (Depth: sobj.depth, Visible: true, Solid: sobj.solid)
                     };

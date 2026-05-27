@@ -1,12 +1,5 @@
 ﻿using ArcadeMaker.IDE.Items;
-using Exp;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE.Editors.Object.ObjectProperties
 {
@@ -42,6 +35,7 @@ namespace ArcadeMaker.IDE.Editors.Object.ObjectProperties
         private readonly Dictionary<CheckBox, ObjectPropertyModifier> propertySelectors = [];
         private const int modifiersSpacing = 5;
         private int lastModifierY = modifiersSpacing;
+
         private void LoadProperty(IDEObjectProperty pro)
         {
             ObjectPropertyModifier modifier = new(pro);
@@ -58,7 +52,6 @@ namespace ArcadeMaker.IDE.Editors.Object.ObjectProperties
 
         private void ObjectPropertiesModifier_Load(object sender, EventArgs e)
         {
-
         }
 
         private void AddBtn_Click(object sender, EventArgs e)

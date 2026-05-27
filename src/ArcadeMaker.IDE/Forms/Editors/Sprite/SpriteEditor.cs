@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using ArcadeMaker.IDE.Items;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using ArcadeMaker.IDE.Items;
 
 namespace ArcadeMaker.IDE
 {
     public partial class SpriteEditor : Form
     {
         private GameSprite sprite = null;
+
         public SpriteEditor(GameSprite sprite)
         {
             InitializeComponent();
@@ -212,7 +201,8 @@ namespace ArcadeMaker.IDE
             }
         }
 
-        Pen originPen = new Pen(Color.Black);
+        private Pen originPen = new Pen(Color.Black);
+
         private void imageBox_Paint(object sender, PaintEventArgs e)
         {
             if (sprite.image == null)

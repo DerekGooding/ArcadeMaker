@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ArcadeMaker.Core.Resources;
+﻿namespace ArcadeMaker.Core.Resources;
 
 public class Sprite(string name, string imageFile, int numOfImages, int originX, int originY, SpriteMask mask) : IItem
 {

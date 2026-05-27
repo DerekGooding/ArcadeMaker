@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Exp.Spans;
+﻿using System.Drawing;
 
 namespace Exp.Spans;
 
@@ -53,6 +47,7 @@ public static class Spanner
                         case '\t':
                             span.type = SpanType.Space;
                             break;
+
                         case '.':
                             if (i < length - 1 && text[i + 1] == '.')
                             {
@@ -60,11 +55,13 @@ public static class Spanner
                             }
                             else goto case ':';
                             break;
+
                         case ',':
                         case ';':
                         case ':':
                             span.type = SpanType.DotCom;
                             break;
+
                         case '(':
                         case ')':
                         case '{':
@@ -73,6 +70,7 @@ public static class Spanner
                         case ']':
                             span.type = SpanType.Brace;
                             break;
+
                         case '@':
                         case '$':
                             if (i < length - 1 && text[i + 1] == '\"')
@@ -98,12 +96,15 @@ public static class Spanner
                             else
                                 span.type = SpanType.Tag;
                             break;
+
                         case '\"':
                             span.type = SpanType.String;
                             break;
+
                         case '\'':
                             span.type = SpanType.Char;
                             break;
+
                         case '/':
                             if (i < length - 1)
                             {
@@ -122,10 +123,12 @@ public static class Spanner
                             if (span.type == SpanType.Normal)
                                 span.type = SpanType.Symbol;
                             break;
+
                         case '?':
                         case '!':
                             span.type = SpanType.Symbol;
                             break;
+
                         default:
                             bool minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
                             if ((c >= '0' && c <= '9') || minusNumber)
@@ -155,6 +158,7 @@ public static class Spanner
                         if (isSep)
                             nextSpan = true;
                         break;
+
                     case SpanType.DotCom:
                         if (c == ':')
                         {
@@ -167,11 +171,13 @@ public static class Spanner
                             nextSpan = true;
                         }
                         break;
+
                     case SpanType.Normal:
                         isSep = !char.IsLetterOrDigit(c) && c != '_';
                         if (isSep)
                             nextSpan = true;
                         break;
+
                     case SpanType.Number:
                         bool isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
                         if (isHex)
@@ -196,6 +202,7 @@ public static class Spanner
                             }
                         }
                         break;
+
                     case SpanType.Count:
                         if (spanText.Length >= 3) // after ..
                         {
@@ -203,6 +210,7 @@ public static class Spanner
                             nextSpan = true;
                         }
                         break;
+
                     case SpanType.Symbol:
                         if (c == '+')
                         {
@@ -235,17 +243,18 @@ public static class Spanner
                             nextSpan = true;
                         }
 
-
                         //isSep = Filter.Operators.FirstOrDefault(op => op.StartsWith(spanText + c)) == null;
                         //if (isSep)
                         //{
                         //    nextSpan = true;
                         //}
                         break;
+
                     case SpanType.Brace:
                         isSep = true;
                         nextSpan = true;
                         break;
+
                     case SpanType.String:
                     case SpanType.Char:
                     case SpanType.FormattedString:
@@ -301,17 +310,21 @@ public static class Spanner
                             */
                         }
                         break;
+
                     case SpanType.EscapedString:
                         isSep = c == '\"';
                         break;
+
                     case SpanType.Tag:
                         isSep = true;
                         nextSpan = true;
                         break;
+
                     case SpanType.Comment:
                         isSep = c == '\n';
                         nextSpan = true;
                         break;
+
                     case SpanType.MultiLineComment:
                         isSep = c == '/' && i > 0 && text[i - 1] == '*';
                         break;
@@ -404,12 +417,15 @@ public static class Spanner
                         sp.isKeyword = true;
                     }
                     break;
+
                 case SpanType.Number:
                     sp.color = Color.Purple;
                     break;
+
                 case SpanType.Symbol:
                     sp.color = Color.OrangeRed;
                     break;
+
                 case SpanType.String:
                 case SpanType.EscapedString:
                 case SpanType.FormattedString:
@@ -417,6 +433,7 @@ public static class Spanner
                     sp.color = Color.Red;
                     checkLink = true; // even for char
                     break;
+
                 case SpanType.Comment:
                 case SpanType.MultiLineComment:
                     checkLink = true;
@@ -553,6 +570,7 @@ public enum SpanType
 public class TextSpan : IDisposable
 {
     private string _text = "";
+
     public string text
     {
         get => _text;
@@ -566,6 +584,7 @@ public class TextSpan : IDisposable
             }
         }
     }
+
     public int location;
     public ScriptDocument Doc { get; set; }
     public Color color = Color.Black;
@@ -574,6 +593,7 @@ public class TextSpan : IDisposable
     public bool insideFormattedString = false;
     public bool isKeyword = false;
     public string link = null;
+
     public bool isLink
     {
         get
@@ -581,13 +601,16 @@ public class TextSpan : IDisposable
             return link != null;
         }
     }
+
     //public SyntaxKind SyntaxKind { get; set; } = SyntaxKind.None;
 
     public event EventHandler<string> TextChanged;
+
     public TextSpan(int location)
     {
         this.location = location;
     }
+
     private bool disposed = false;
 
     public void Dispose()

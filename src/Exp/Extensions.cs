@@ -1,12 +1,5 @@
-﻿using Exp.Operations;
-using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Exp.Spans;
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Exp;
 
@@ -116,8 +109,11 @@ public static class Extensions
     }
 
     public static BoolValue ToExp(this bool b) => b;
+
     public static CharValue ToExp(this char c) => c;
+
     public static NumberValue ToExp(this double n) => n;
+
     public static NumberValue ToExp(this int n) => n;
 
     public static bool IsString(this IValue val) => val.IsInst && val.Inst.def == ClassDefSpan.ExpStringDef;

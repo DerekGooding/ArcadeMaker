@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing.Text;
 using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE.Items
@@ -57,7 +51,6 @@ namespace ArcadeMaker.IDE.Items
         // used by XML seralizition
         public GameFont() : this(Global.GenerateRandomGameItemName("Font")) { }
 
-
         // Source - https://stackoverflow.com/a/52695239
         // Posted by Moji
         // Retrieved 2026-04-12, License - CC BY-SA 4.0
@@ -91,6 +84,5 @@ namespace ArcadeMaker.IDE.Items
 
             return result[0];
         }
-
     }
 }

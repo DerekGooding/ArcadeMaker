@@ -1,14 +1,4 @@
-﻿using ArcadeMaker.IDE;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Reflection;
 using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE
@@ -66,6 +56,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipSet = false;
+
         private void assembliesBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             skipSet = true;
@@ -220,6 +211,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool btnClose = false;
+
         private void AssemblyManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (btnClose)
@@ -245,7 +237,9 @@ namespace ArcadeMaker.IDE
             IncludeAsEmbeddedResource = includeAsEmbeddedResource;
             this.UsedByIDE = UsedByIDE;
         }
-        public AssemblyReference() { }
+
+        public AssemblyReference()
+        { }
 
         [XmlIgnore]
         public string Title
@@ -267,6 +261,7 @@ namespace ArcadeMaker.IDE
 
         [XmlIgnore]
         public Assembly UsedByIDE { get; } = null;
+
         public override string ToString()
         {
             return Title ?? "Unknown Assembly";

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Exp.Spans;
+﻿using Exp.Spans;
 
 namespace Exp;
 
@@ -106,6 +103,7 @@ public class Instance : IVarSystem, IValue, IExpItem
 public class ExternTypeInstance : Instance
 {
     public object ExternInstance { get; }
+
     public ExternTypeInstance(object inst) : base(ClassDefSpan.ExternTypeValueDef)
     {
         ArgumentNullException.ThrowIfNull(inst);

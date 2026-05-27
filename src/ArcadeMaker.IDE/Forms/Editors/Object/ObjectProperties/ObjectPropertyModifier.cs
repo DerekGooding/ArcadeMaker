@@ -1,14 +1,7 @@
-﻿using Exp;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml.Serialization;
-using ArcadeMaker.Core.Resources.Serializeables;
+﻿using ArcadeMaker.Core.Resources.Serializeables;
 using ArcadeMaker.IDE.Items;
+using Exp;
+using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE.Editors.Object.ObjectProperties;
 
@@ -16,6 +9,7 @@ public partial class ObjectPropertyModifier : UserControl
 {
     private readonly bool isInited = false;
     public IDEObjectProperty Property { get; }
+
     public ObjectPropertyModifier(IDEObjectProperty property)
     {
         this.Property = property;
@@ -67,7 +61,6 @@ public partial class ObjectPropertyModifier : UserControl
 
     private void ObjectPropertyModifier_Load(object sender, EventArgs e)
     {
-
     }
 
     private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -89,6 +82,7 @@ public partial class ObjectPropertyModifier : UserControl
     }
 
     private readonly System.Windows.Forms.Timer debugTimer = new() { Interval = 3000 };
+
     private void InitValBox_TextChanged(object sender, EventArgs e)
     {
         if (!isInited)
@@ -149,7 +143,10 @@ public class IDEObjectProperty(GameObject? obj) : Core.Resources.Serializeables.
 {
     [XmlIgnore]
     public GameObject? Object => obj;
-    public IDEObjectProperty() : this(null) { } // for serializing
+
+    public IDEObjectProperty() : this(null)
+    {
+    } // for serializing
 
     public bool IsValidName(string name)
     {

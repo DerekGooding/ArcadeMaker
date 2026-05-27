@@ -1,9 +1,4 @@
 ﻿using ArcadeMaker.Core.Resources.Serializeables;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArcadeMaker.IDE.Items
 {

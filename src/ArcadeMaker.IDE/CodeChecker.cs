@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ArcadeMaker.IDE;
+﻿using ArcadeMaker.IDE;
 using IntelliSense.CSharp;
 
 namespace IntelliSense
@@ -44,6 +39,7 @@ namespace IntelliSense
                             case '\t':
                                 span.type = SpanType.Space;
                                 break;
+
                             case '(':
                             case ')':
                             case '{':
@@ -52,6 +48,7 @@ namespace IntelliSense
                             case ']':
                                 span.type = SpanType.Brace;
                                 break;
+
                             case '@':
                             case '$':
                                 if (i < length - 1 && code[i + 1] == '\"')
@@ -60,12 +57,15 @@ namespace IntelliSense
                                     ignore = 1;
                                 }
                                 break;
+
                             case '\"':
                                 span.type = SpanType.String;
                                 break;
+
                             case '\'':
                                 span.type = SpanType.Char;
                                 break;
+
                             case '/':
                                 if (i < length - 1)
                                 {
@@ -82,6 +82,7 @@ namespace IntelliSense
                                     }
                                 }
                                 break;
+
                             default:
                                 if (c >= '0' && c <= '9')
                                 {
@@ -111,25 +112,30 @@ namespace IntelliSense
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Normal:
                             isSep = !char.IsLetterOrDigit(c) && c != '_';
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Number:
                             isSep = (c < '0' || c > '9') && !(c == '.' && spanText.CountOf('.') == 1 && i < length - 1 && code[i + 1] >= '0' && code[i + 1] <= '9');
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Symbol:
                             isSep = !CSharpFilter.Operators.Contains(spanText + c);
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Brace:
                             isSep = true;
                             nextSpan = true;
                             break;
+
                         case SpanType.String:
                         case SpanType.Char:
                         case SpanType.FormattedString:
@@ -185,12 +191,15 @@ namespace IntelliSense
                                 */
                             }
                             break;
+
                         case SpanType.EscapedString:
                             isSep = c == '\"';
                             break;
+
                         case SpanType.Comment:
                             isSep = c == '\n';
                             break;
+
                         case SpanType.MultiLineComment:
                             isSep = c == '/' && i > 0 && code[i - 1] == '*';
                             break;
@@ -396,7 +405,7 @@ namespace IntelliSense
                     spanIndex += cSpans.Length + 2; // +2 for 2 braces
                     List<ClassMember> members = new List<ClassMember>();
                     ClassMember item = new ClassMember();
-                    
+
                     bool @readonly = false, @const = false;
                     string type = null, name = null;
 
@@ -456,7 +465,7 @@ namespace IntelliSense
                             methodSpans.InsertRange(0, beforeSpans);
                             i += methodSpans.Count + 2; // +2 for 2 braces
                             Build(method, methodSpans.ToArray());
-                            
+
                             item = new ClassMember();
                         }
                         else
@@ -473,7 +482,8 @@ namespace IntelliSense
 
     namespace CSharp
     {
-        public class CSItem { }
+        public class CSItem
+        { }
 
         public enum AccessModifier
         {
@@ -554,7 +564,6 @@ namespace IntelliSense
 
         public class Operation : CSItem
         {
-
         }
 
         public class LocalVariableDeclarationOperation : Operation
@@ -588,15 +597,13 @@ namespace IntelliSense
         {
             public Value Value = null;
         }
-        
+
         public class BreakOperation : Operation
         {
-
         }
 
         public class ContinueOperation : Operation
         {
-            
         }
 
         public class ControlStructure : Operation
@@ -636,6 +643,7 @@ namespace IntelliSense
         public class Catch : ControlStructure
         {
             public LocalVariableDeclarationOperation Exception = null;
+
             public Catch(LocalVariableDeclarationOperation Exception = null)
             {
                 if (Exception != null)
@@ -654,14 +662,13 @@ namespace IntelliSense
 
         public class Finally : ControlStructure
         {
-
         }
 
         public class Using : ControlStructure
         {
             public LocalVariableDeclarationOperation DeclarationOperation;
         }
-        
+
         public class Method : ClassMember
         {
             public bool Abstract, Virtual;
@@ -714,6 +721,7 @@ namespace IntelliSense
     public class BuildException : Exception
     {
         public readonly string code = null;
+
         public BuildException(string code, string message = null) : base(message)
         {
             this.code = code;
@@ -724,7 +732,6 @@ namespace IntelliSense
     {
         public IdentifierExpectedException() : base("CS1001", "Identifier Expected")
         {
-
         }
     }
 
@@ -732,7 +739,6 @@ namespace IntelliSense
     {
         public OpeningCurlyBraceExpected() : base("CS1514", "{ expected")
         {
-
         }
     }
 
@@ -740,7 +746,6 @@ namespace IntelliSense
     {
         public ClosingCurlyBraceExpected() : base("CS1513", "} expected")
         {
-
         }
     }
 
@@ -748,7 +753,6 @@ namespace IntelliSense
     {
         public NameDoesNotExistsInCurrentContextException(string name) : base("CS1007", "The name '" + name + "' does not exist in the current context.")
         {
-
         }
     }
 
@@ -756,13 +760,11 @@ namespace IntelliSense
     {
         public UnvalidModifierException(string modifier) : base("CS0106", "The modifier '" + modifier + "' is not valid for this item")
         {
-
         }
     }
 
     public static class CSharpFilter
     {
-
         public static readonly string[] Operators = new string[]
         {
             "++", "--", "+=", "-=", "/=", "*=", "==", "!=", "^=", "%=", "&=", "|=", "<<=", "&&", "||"
@@ -778,6 +780,5 @@ namespace IntelliSense
                       "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint",
                       "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"
         };
-
     }
 }

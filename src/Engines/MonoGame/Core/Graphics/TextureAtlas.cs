@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using ArcadeMaker.Core.Resources;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿using ArcadeMaker.Core.Resources;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ArcadeMaker.Engines.MonoGame.Core.Graphics;
 
@@ -17,6 +12,7 @@ public class TextureAtlas
         public Sprite Sprite => sprite;
         public int Index => index;
     }
+
     private readonly Dictionary<SpriteAndImageIndex, TextureRegion> _regions;
 
     /// <summary>
@@ -113,7 +109,7 @@ public class TextureAtlas
                 atlas.Texture = content.Load<Texture2D>(texturePath);
 
                 // The <Regions> element contains individual <Region> elements, each one describing
-                // a different texture region within the atlas.  
+                // a different texture region within the atlas.
                 //
                 // Example:
                 // <Regions>

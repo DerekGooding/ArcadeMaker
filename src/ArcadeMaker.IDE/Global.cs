@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using System.Drawing;
+﻿using ArcadeMaker.IDE;
+using ArcadeMaker.IDE.Items;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Xml.Serialization;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
-using ArcadeMaker.IDE;
-using ArcadeMaker.IDE.Items;
+using System.Xml.Serialization;
 
 namespace ArcadeMaker.IDE
 {
@@ -25,6 +16,7 @@ namespace ArcadeMaker.IDE
 
         public static bool allowClosing = false;
         public static Form1 form1 = null;
+
         public static bool IsEnglishLettersAndNumbers(this string text, char[] specials = null, bool allowEmpty = true)
         {
             if (text == null)
@@ -132,6 +124,7 @@ namespace ArcadeMaker.IDE
         }
 
         private static bool canceled = true;
+
         public static void SetCloseAsHide(this Form frm)
         {
             if (canceled)
@@ -147,22 +140,23 @@ namespace ArcadeMaker.IDE
         }
 
         private static string part2script = null;
+
         public static string ObjectPart2Script
         {
             get
             {
                 throw new NotImplementedException();
-//                if (part2script == null)
-//                {
-//#if DEBUG
-//                    TextReader tr = new StreamReader(@"C:\Users\איתן\Desktop\GameStudio\res\GameObjectUserPart.cs");
-//                    part2script = tr.ReadToEnd();
-//                    tr.Close();
-//#else
-//                    part2script = Properties.Resources.GameObjectUserPart;
-//#endif
-//                }
-//                return part2script;
+                //                if (part2script == null)
+                //                {
+                //#if DEBUG
+                //                    TextReader tr = new StreamReader(@"C:\Users\איתן\Desktop\GameStudio\res\GameObjectUserPart.cs");
+                //                    part2script = tr.ReadToEnd();
+                //                    tr.Close();
+                //#else
+                //                    part2script = Properties.Resources.GameObjectUserPart;
+                //#endif
+                //                }
+                //                return part2script;
             }
         }
 
@@ -339,7 +333,6 @@ namespace ArcadeMaker.IDE
             return destImage;
         }
 
-
         public static void DrawTransparentBackground(this PictureBox box)
         {
             System.Drawing.Bitmap image = new System.Drawing.Bitmap(32, 32);
@@ -393,6 +386,7 @@ namespace ArcadeMaker.IDE
         }
 
         private static System.Drawing.Bitmap noSpriteIcon = null;
+
         public static System.Drawing.Bitmap NoSpriteIcon
         {
             get
@@ -459,9 +453,11 @@ namespace ArcadeMaker.IDE
                             case '\t':
                                 span.type = SpanType.Space;
                                 break;
+
                             case '.':
                                 span.type = SpanType.Dot;
                                 break;
+
                             case '(':
                             case ')':
                             case '{':
@@ -470,6 +466,7 @@ namespace ArcadeMaker.IDE
                             case ']':
                                 span.type = SpanType.Brace;
                                 break;
+
                             case '@':
                             case '$':
                                 if (i < length - 1 && text[i + 1] == '\"')
@@ -493,12 +490,15 @@ namespace ArcadeMaker.IDE
                                     }
                                 }
                                 break;
+
                             case '\"':
                                 span.type = SpanType.String;
                                 break;
+
                             case '\'':
                                 span.type = SpanType.Char;
                                 break;
+
                             case '/':
                                 if (i < length - 1)
                                 {
@@ -515,6 +515,7 @@ namespace ArcadeMaker.IDE
                                     }
                                 }
                                 break;
+
                             default:
                                 bool minusNumber = c == '-' && i + 1 < text.Length && text[i + 1] >= '0' && text[i + 1] <= '9';
                                 if ((c >= '0' && c <= '9') || minusNumber)
@@ -544,15 +545,18 @@ namespace ArcadeMaker.IDE
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Dot:
                             isSep = true;
                             nextSpan = true;
                             break;
+
                         case SpanType.Normal:
                             isSep = !char.IsLetterOrDigit(c) && c != '_';
                             if (isSep)
                                 nextSpan = true;
                             break;
+
                         case SpanType.Number:
                             bool isHex = spanText.Length >= 2 && spanText[0] == '0' && (spanText[1] == 'x' || spanText[1] == 'X');
                             if (isHex)
@@ -561,7 +565,7 @@ namespace ArcadeMaker.IDE
                                 isSep = (c < '0' || c > '9') && !(c == '.' && spanText.CountOf('.') == 1 && i < length - 1 && text[i + 1] >= '0' && text[i + 1] <= '9');
                             if (isSep)
                             {
-                                nextSpan = !( c == 'F' || c == 'f'
+                                nextSpan = !(c == 'F' || c == 'f'
                                            || c == 'D' || c == 'd'
                                            || c == 'M' || c == 'm'
                                            || (!spanText.Contains('.') && (c == 'u' || c == 'U' || c == 'L' || c == 'l')));
@@ -577,6 +581,7 @@ namespace ArcadeMaker.IDE
                                 }
                             }
                             break;
+
                         case SpanType.Symbol:
                             //isSep = !CSharpFilter.Operators.Contains(spanText + c);
                             isSep = Exp.Spans.Filter.Operators.Find(op => op.StartsWith(spanText + c)) == null;
@@ -585,10 +590,12 @@ namespace ArcadeMaker.IDE
                                 nextSpan = true;
                             }
                             break;
+
                         case SpanType.Brace:
                             isSep = true;
                             nextSpan = true;
                             break;
+
                         case SpanType.String:
                         case SpanType.Char:
                         case SpanType.FormattedString:
@@ -644,13 +651,16 @@ namespace ArcadeMaker.IDE
                                 */
                             }
                             break;
+
                         case SpanType.EscapedString:
                             isSep = c == '\"';
                             break;
+
                         case SpanType.Comment:
                             isSep = c == '\n';
                             nextSpan = true;
                             break;
+
                         case SpanType.MultiLineComment:
                             isSep = c == '/' && i > 0 && text[i - 1] == '*';
                             break;
@@ -745,16 +755,20 @@ namespace ArcadeMaker.IDE
                         else
                             sp.color = Color.White;
                         break;
+
                     case SpanType.Number:
                         sp.color = Color.Violet;
                         break;
+
                     case SpanType.Symbol:
                         sp.color = Color.OrangeRed;
                         break;
+
                     case SpanType.Brace:
                     case SpanType.Dot:
                         sp.color = Color.White;
                         break;
+
                     case SpanType.String:
                     case SpanType.EscapedString:
                     case SpanType.FormattedString:
@@ -762,6 +776,7 @@ namespace ArcadeMaker.IDE
                         sp.color = Color.Red;
                         checkLink = true; // even for char
                         break;
+
                     case SpanType.Comment:
                     case SpanType.MultiLineComment:
                         checkLink = true;
@@ -1063,6 +1078,7 @@ namespace ArcadeMaker.IDE
         {
             return new Point((relative ? point.X : 0) + value, point.Y);
         }
+
         public static Point WithY(this Point point, int value, bool relative = false)
         {
             return new Point(point.X, (relative ? point.Y : 0) + value);
@@ -1073,7 +1089,6 @@ namespace ArcadeMaker.IDE
             rectangle.Inflate(size);
             return rectangle;
         }
-
 
         public static Point ToPoint(this PointF point)
         {

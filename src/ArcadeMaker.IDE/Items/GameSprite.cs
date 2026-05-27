@@ -1,20 +1,12 @@
 ﻿using ArcadeMaker.IDE;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE.Items
 {
     public class GameSprite : GameItem
     {
-        /* do not change property name!!! */ public static Bitmap icon { get; } = Properties.Resources.sprite;
+        /* do not change property name!!! */
+        public static Bitmap icon { get; } = Properties.Resources.sprite;
 
         public readonly HandlerList<Bitmap> images = new HandlerList<Bitmap>();
 
@@ -26,7 +18,7 @@ namespace ArcadeMaker.IDE.Items
                 Bitmap spriteSheet;
                 using (Stream reader = new FileStream(path, FileMode.Open, FileAccess.Read))
                     spriteSheet = (Bitmap)Bitmap.FromStream(reader);
-                
+
                 if (Global.ImageFileIsSpriteStrip(path, out int count))
                 {
                     int width = spriteSheet.Width / count;
@@ -73,6 +65,7 @@ namespace ArcadeMaker.IDE.Items
         }
 
         public int originX = 0, originY = 0;
+
         public Bitmap image
         {
             get
@@ -110,6 +103,7 @@ namespace ArcadeMaker.IDE.Items
                 base.editor = value;
             }
         }
+
         public GameSprite(string name) : base(name)
         {
             getEditor += (s, e) =>
@@ -139,6 +133,7 @@ namespace ArcadeMaker.IDE.Items
     public class HandlerList<T> : List<T>
     {
         public event EventHandler<T[]> ItemsAdded;
+
         public event EventHandler<EventArgs> CollectionChanged;
 
         public new T this[int index]

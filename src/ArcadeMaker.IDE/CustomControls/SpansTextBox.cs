@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Diagnostics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ArcadeMaker.IDE
@@ -46,7 +37,6 @@ namespace ArcadeMaker.IDE
 
         private void SpansTextBox_MouseClick(object sender, MouseEventArgs e)
         {
-
         }
 
         private int GetCharIndexFromLocation(Point location)
@@ -154,6 +144,7 @@ namespace ArcadeMaker.IDE
 
         private readonly Keys[] ControlKeys = { Keys.Tab, Keys.Right, Keys.Left, Keys.Up, Keys.Down };
         private bool InterceptKeyDown = false;
+
         private void SpansTextBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // prevent lose of focus on Tab and side keys press
@@ -249,6 +240,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int MouseLeftDown = -1;
+
         private void SpansTextBox_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)

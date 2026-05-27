@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Exp.Spans;
-using System.Collections;
+﻿using Exp.Spans;
+
 //using Exp.Compiler;
 
 namespace Exp;
@@ -12,6 +9,7 @@ public partial class Interpreter
     private bool allowThrow = false;
 
     private List<Span> readValue_codeRecord = null;
+
     private object ReadValue(out Span[] src, Span firstSpan = null, bool allowUnknownVars = false, bool oconst = false)
     {
         bool deleteRecord = readValue_codeRecord == null;
@@ -651,7 +649,6 @@ public partial class Interpreter
 
         return val;
     }
-
 
     internal static Instance StringToExpString(string s)
     {

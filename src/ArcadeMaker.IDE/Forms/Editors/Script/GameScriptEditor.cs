@@ -1,13 +1,4 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ArcadeMaker.IDE
@@ -15,6 +6,7 @@ namespace ArcadeMaker.IDE
     public partial class GameScriptEditor : Form
     {
         public GameScript script;
+
         public GameScriptEditor(GameScript script)
         {
             InitializeComponent();
@@ -36,6 +28,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool renaming = false;
+
         private void nameBox_TextChanged(object sender, EventArgs e)
         {
             renaming = true;
@@ -61,9 +54,9 @@ namespace ArcadeMaker.IDE
         }
 
         private Timer compileTimer = new Timer { Interval = 5000 };
+
         private void compileTimer_Tick(object sender, EventArgs e)
         {
-            
         }
 
         private void okBtn_Click(object sender, EventArgs e)

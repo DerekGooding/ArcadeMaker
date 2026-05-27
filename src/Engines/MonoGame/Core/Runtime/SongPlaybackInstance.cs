@@ -1,9 +1,6 @@
 ﻿using ArcadeMaker.Core.Resources;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.Engines.MonoGame.Core.Runtime;
 
@@ -33,9 +30,7 @@ internal class SongPlaybackInstance : ArcadeMaker.Core.Runtime.SoundPlaybackInst
         set => throw new NotImplementedException("Cannot set pitch for background music.");
     }
 
-
     internal SongPlaybackInstance(Sound sound, Song instance) : base(sound, instance)
     {
-
     }
 }

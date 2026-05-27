@@ -1,18 +1,15 @@
-﻿using ArcadeMaker.Core;
-using ArcadeMaker.Core.ExpSrc;
+﻿using ArcadeMaker.Core.ExpSrc;
 using ArcadeMaker.Core.Models;
 using ArcadeMaker.Core.Runtime;
 using ArcadeMaker.IDE.Items;
 using Exp;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.IDE.Debugging;
 
 internal static class Debug
 {
     internal static GameRunner? GameRunner { get; private set; }
+
     internal static bool TryBuild(out HashSet<ExpError> errors)
     {
         HashSet<ExpError> _errors = [];

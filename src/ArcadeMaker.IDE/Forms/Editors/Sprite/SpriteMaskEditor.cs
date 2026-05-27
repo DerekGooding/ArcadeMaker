@@ -1,14 +1,11 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
     public partial class SpriteMaskEditor : Form
     {
         private SpriteMask[] masks;
+
         private SpriteMask Mask
         {
             get => masks[Sprite.separateMask ? PreviewImageIndex : 0];
@@ -16,6 +13,7 @@ namespace ArcadeMaker.IDE
 
         private readonly GameSprite Sprite = null;
         private int top, left, right, bottom;
+
         private new int Top
         {
             get => top;
@@ -29,6 +27,7 @@ namespace ArcadeMaker.IDE
                 }
             }
         }
+
         private new int Left
         {
             get => left;
@@ -42,6 +41,7 @@ namespace ArcadeMaker.IDE
                 }
             }
         }
+
         private new int Right
         {
             get => right;
@@ -55,6 +55,7 @@ namespace ArcadeMaker.IDE
                 }
             }
         }
+
         private new int Bottom
         {
             get => bottom;
@@ -81,6 +82,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool manualMode = false;
+
         private bool ManualMode
         {
             get => manualMode;
@@ -101,6 +103,7 @@ namespace ArcadeMaker.IDE
 
         private bool mouseDown = false;
         private Point mouseDownPos = new Point(0, 0);
+
         private void previewBox_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -128,6 +131,7 @@ namespace ArcadeMaker.IDE
         }
 
         private readonly Pen HighlightPen = new Pen(Color.FromArgb(70, 0, 0, 0));
+
         private void previewBox_Paint(object sender, PaintEventArgs e)
         {
             if (!ShowMaskPreview)
@@ -148,6 +152,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool OKClose = false;
+
         private void okBtn_Click(object sender, EventArgs e)
         {
             SaveChanges(true);
@@ -178,6 +183,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int PreviewImageIndex = 0;
+
         private void indexNextBtn_Click(object sender, EventArgs e)
         {
             if (++PreviewImageIndex >= Sprite.images.Count)
@@ -201,6 +207,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool ShowMaskPreview = true;
+
         private void showCollisionMaskBox_CheckedChanged(object sender, EventArgs e)
         {
             ShowMaskPreview = showCollisionMaskBox.Checked;
@@ -208,6 +215,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool SkipBoundingBoxValueChangedEvent = false;
+
         private void boundingLeftBox_ValueChanged(object sender, EventArgs e)
         {
             if (!SkipBoundingBoxValueChangedEvent)
@@ -249,6 +257,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int alphaTolerance = 0;
+
         private int AlphaTolerance
         {
             get => alphaTolerance;
@@ -263,6 +272,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool SkipAlphaToleranceEditorSet = false;
+
         private void alphaToleranceBar_Scroll(object sender, EventArgs e)
         {
             if (!SkipAlphaToleranceEditorSet)
@@ -353,6 +363,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool SkipSeparateMasksBoxCheckedChangedEvent = false;
+
         private void separateMasksBox_CheckedChanged(object sender, EventArgs e)
         {
             if (!SkipSeparateMasksBoxCheckedChangedEvent)
@@ -365,7 +376,6 @@ namespace ArcadeMaker.IDE
 
         private void SpriteMaskEditor_Load(object sender, EventArgs e)
         {
-
         }
 
         private void SetMasks()
@@ -411,6 +421,7 @@ namespace ArcadeMaker.IDE
     {
         public readonly int width, height;
         private readonly List<bool> points = new List<bool>();
+
         public int length
         {
             get => points.Count;
@@ -494,6 +505,7 @@ namespace ArcadeMaker.IDE
         }
 
         public bool IsDisposed { get; private set; } = false;
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

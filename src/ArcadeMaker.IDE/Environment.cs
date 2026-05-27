@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Microsoft.CSharp;
-using System.Diagnostics;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Resources;
-using ArcadeMaker.IDE.Items;
+﻿using ArcadeMaker.IDE.Items;
 
 namespace ArcadeMaker.IDE
 {
@@ -22,6 +10,7 @@ namespace ArcadeMaker.IDE
         private static bool readBasecodeAgain = false;
 
         private static string[] _assembliesLocations = null;
+
         public static string[] AssembliesLocations
         {
             get
@@ -74,7 +63,9 @@ namespace ArcadeMaker.IDE
         }
 
         public static event EventHandler<int> ProgressUpdated;
+
         private static int progress = 0;
+
         public static int Progress
         {
             get
@@ -91,6 +82,7 @@ namespace ArcadeMaker.IDE
 
         private const string EngineDllResName = "engine.dll";
         internal static bool isGameRunning = false;
+
         public static void GenerateExe(string savePath = null, bool run = false, bool console = true)
         {
             IEnumerable<GameRoom> rooms = project.items.OfType<GameRoom>();

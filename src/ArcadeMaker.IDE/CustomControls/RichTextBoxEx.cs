@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Drawing;
+﻿using Ionic;
 using System.Drawing.Drawing2D;
-using Ionic;
+using System.Runtime.InteropServices;
 
 namespace ArcadeMaker.IDE.CustomControls
 {
@@ -67,7 +62,6 @@ namespace ArcadeMaker.IDE.CustomControls
             };
         }
 
-
         protected override void OnTextChanged(EventArgs e)
         {
             NeedRecomputeOfLineNumbers();
@@ -83,7 +77,6 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             User32.SendMessage(this.Handle, (int)User32.Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
         }
-
 
         public IntPtr BeginUpdateAndSuspendEvents()
         {
@@ -104,8 +97,6 @@ namespace ArcadeMaker.IDE.CustomControls
             NeedRecomputeOfLineNumbers();
             this.Invalidate();
         }
-
-
 
         public void GetSelection(out int start, out int end)
         {
@@ -146,6 +137,7 @@ namespace ArcadeMaker.IDE.CustomControls
         private String _sformat;
         private int _ndigits;
         private int _lnw = -1;
+
         private int LineNumberWidth
         {
             get
@@ -175,8 +167,8 @@ namespace ArcadeMaker.IDE.CustomControls
             }
         }
 
-
         public bool _lineNumbers;
+
         public bool ShowLineNumbers
         {
             get
@@ -205,6 +197,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private Font _NumberFont;
+
         public Font NumberFont
         {
             get { return _NumberFont; }
@@ -218,6 +211,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private LineCounting _NumberLineCounting;
+
         public LineCounting NumberLineCounting
         {
             get { return _NumberLineCounting; }
@@ -231,6 +225,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private StringAlignment _NumberAlignment;
+
         public StringAlignment NumberAlignment
         {
             get { return _NumberAlignment; }
@@ -244,6 +239,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private Color _NumberColor;
+
         public Color NumberColor
         {
             get { return _NumberColor; }
@@ -256,6 +252,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private bool _NumberLeadingZeroes;
+
         public bool NumberLeadingZeroes
         {
             get { return _NumberLeadingZeroes; }
@@ -268,6 +265,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private Color _NumberBorder;
+
         public Color NumberBorder
         {
             get { return _NumberBorder; }
@@ -281,6 +279,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private int _NumberPadding;
+
         public int NumberPadding
         {
             get { return _NumberPadding; }
@@ -294,6 +293,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         public Single _NumberBorderThickness;
+
         public Single NumberBorderThickness
         {
             get { return _NumberBorderThickness; }
@@ -308,6 +308,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private Color _NumberBackground1;
+
         public Color NumberBackground1
         {
             get { return _NumberBackground1; }
@@ -320,6 +321,7 @@ namespace ArcadeMaker.IDE.CustomControls
         }
 
         private Color _NumberBackground2;
+
         public Color NumberBackground2
         {
             get { return _NumberBackground2; }
@@ -331,17 +333,17 @@ namespace ArcadeMaker.IDE.CustomControls
             }
         }
 
-
         private bool _paintingDisabled;
+
         public void SuspendLineNumberPainting()
         {
             _paintingDisabled = true;
         }
+
         public void ResumeLineNumberPainting()
         {
             _paintingDisabled = false;
         }
-
 
         private void NewBorderPen()
         {
@@ -349,8 +351,6 @@ namespace ArcadeMaker.IDE.CustomControls
             _borderPen.Width = NumberBorderThickness;
             _borderPen.SetLineCap(LineCap.Round, LineCap.Round, DashCap.Round);
         }
-
-
 
         private DateTime _lastMsgRecd = new DateTime(1901, 1, 1);
 
@@ -410,8 +410,8 @@ namespace ArcadeMaker.IDE.CustomControls
                 base.WndProc(ref m);
         }
 
+        private int _lastWidth = 0;
 
-        int _lastWidth = 0;
         private void PaintLineNumbers()
         {
             //System.Console.WriteLine(">> PaintLineNumbers");
@@ -519,8 +519,6 @@ namespace ArcadeMaker.IDE.CustomControls
             g.Dispose();
         }
 
-
-
         private int GetCharIndexFromPos(int x, int y)
         {
             var p = new User32.POINTL { X = x, Y = y };
@@ -531,7 +529,6 @@ namespace ArcadeMaker.IDE.CustomControls
             Marshal.FreeHGlobal(lParam);
             return r;
         }
-
 
         private Point GetPosFromCharIndex(int ix)
         {
@@ -545,7 +542,6 @@ namespace ArcadeMaker.IDE.CustomControls
             var p = new Point { X = p1.X, Y = p1.Y };
             return p;
         }
-
 
         private int GetLengthOfLineContainingChar(int charIndex)
         {
@@ -567,7 +563,6 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             return User32.SendMessage(this.Handle, (int)User32.Msgs.EM_GETLINECOUNT, 0, 0);
         }
-
 
         /// <summary>
         ///   Sets the color of the characters in the given range.
@@ -594,7 +589,6 @@ namespace ArcadeMaker.IDE.CustomControls
             User32.SendMessage(this.Handle, (int)User32.Msgs.EM_SETCHARFORMAT, User32.SCF_SELECTION, lParam1);
         }
 
-
         private void SetLeftMargin(int widthInPixels)
         {
             User32.SendMessage(this.Handle, (int)User32.Msgs.EM_SETMARGINS, User32.EC_LEFTMARGIN,
@@ -611,7 +605,6 @@ namespace ArcadeMaker.IDE.CustomControls
         {
             User32.SendMessage(this.Handle, (int)User32.Msgs.EM_LINESCROLL, 0, delta);
         }
-
 
         private int FirstVisibleDisplayLine
         {
@@ -675,7 +668,6 @@ namespace ArcadeMaker.IDE.CustomControls
             }
         }
 
-
         public int FirstVisibleLine
         {
             get
@@ -705,11 +697,10 @@ namespace ArcadeMaker.IDE.CustomControls
             return CharIndexForTextLine[ix];
         }
 
-
-
         // The char index is expensive to compute.
 
         private int[] _CharIndexForTextLine;
+
         private int[] CharIndexForTextLine
         {
             get
@@ -727,11 +718,10 @@ namespace ArcadeMaker.IDE.CustomControls
                 }
                 return _CharIndexForTextLine;
             }
-
         }
 
-
         private String _Text2;
+
         private String Text2
         {
             get
@@ -752,17 +742,12 @@ namespace ArcadeMaker.IDE.CustomControls
             return true;  // they are equal
         }
 
-
-
         public enum LineCounting
         {
             CRLF,
             AsDisplayed
         }
-
     }
-
-
 
     public static class Tuple
     {
@@ -830,6 +815,7 @@ namespace Ionic
         {
             // GetWindow
             GW_HWNDFIRST = 0,
+
             GW_HWNDLAST = 1,
             GW_HWNDNEXT = 2,
             GW_HWNDPREV = 3,
@@ -838,6 +824,7 @@ namespace Ionic
 
             // Window messages - WinUser.h
             WM_NULL = 0x0000,
+
             WM_CREATE = 0x0001,
             WM_DESTROY = 0x0002,
             WM_MOVE = 0x0003,
@@ -881,14 +868,17 @@ namespace Ionic
 
             // from WinUser.h and RichEdit.h
             EM_GETSEL = 0x00B0,
+
             EM_SETSEL = 0x00B1,
             EM_GETRECT = 0x00B2,
             EM_SETRECT = 0x00B3,
             EM_SETRECTNP = 0x00B4,
             EM_SCROLL = 0x00B5,
             EM_LINESCROLL = 0x00B6,
+
             //EM_SCROLLCARET       = 0x00B7,
             EM_GETMODIFY = 0x00B8,
+
             EM_SETMODIFY = 0x00B9,
             EM_GETLINECOUNT = 0x00BA,
             EM_LINEINDEX = 0x00BB,
@@ -1001,6 +991,7 @@ namespace Ionic
 
             // Tab Control Messages - CommCtrl.h
             TCM_DELETEITEM = 0x1308,
+
             TCM_INSERTITEM = 0x133E,
             TCM_GETITEMRECT = 0x130A,
             TCM_GETCURSEL = 0x130B,
@@ -1011,6 +1002,7 @@ namespace Ionic
 
             // olectl.h
             OCM__BASE = (WM_USER + 0x1c00),
+
             OCM_COMMAND = (OCM__BASE + WM_COMMAND),
             OCM_DRAWITEM = (OCM__BASE + WM_DRAWITEM),
             OCM_MEASUREITEM = (OCM__BASE + WM_MEASUREITEM),
@@ -1022,7 +1014,6 @@ namespace Ionic
             OCM_VSCROLL = (OCM__BASE + WM_VSCROLL),
             OCM_PARENTNOTIFY = (OCM__BASE + WM_PARENTNOTIFY),
             OCM_NOTIFY = (OCM__BASE + WM_NOTIFY),
-
         }
 
         public const int SCF_SELECTION = 0x0001;
@@ -1036,6 +1027,7 @@ namespace Ionic
         {
             // SetWindowPos Flags - WinUser.h
             SWP_NOSIZE = 0x0001,
+
             SWP_NOMOVE = 0x0002,
             SWP_NOZORDER = 0x0004,
             SWP_NOREDRAW = 0x0008,
@@ -1048,10 +1040,7 @@ namespace Ionic
             SWP_NOSENDCHANGING = 0x0400,
         };
 
-
-
         private static Type tmsgs = typeof(Msgs);
-
 
         public static string Mnemonic(int z)
         {
@@ -1106,6 +1095,7 @@ namespace Ionic
             public Int32 crTextColor;
             public byte bCharSet;
             public byte bPitchAndFamily;
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public char[] szFaceName;
         }
@@ -1117,7 +1107,6 @@ namespace Ionic
             public Int32 Y;
         }
 
-
         public static void BeginUpdate(IntPtr hWnd)
         {
             SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 0, IntPtr.Zero);
@@ -1128,7 +1117,6 @@ namespace Ionic
             SendMessage(hWnd, (int)Msgs.WM_SETREDRAW, 1, IntPtr.Zero);
         }
 
-
         [DllImport("User32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
@@ -1138,13 +1126,11 @@ namespace Ionic
                                                 int wParam,
                                                 IntPtr lParam);
 
-
         [DllImport("User32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd,
                                                 [MarshalAs(UnmanagedType.I4)] Msgs msg,
                                                 int wParam,
                                                 int lParam);
-
 
         [DllImport("User32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
         public static extern int SendMessage(IntPtr hWnd, int msg, int wparam, IntPtr lparam);
@@ -1162,7 +1148,6 @@ namespace Ionic
         public static extern int GetClassName(IntPtr hWnd, char[] className, int maxCount);
 
         [DllImport("user32.dll")]
-        //[return: MarshalAs(UnmanagedType.Bool)]
         public static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
                                               int X, int Y, int cx, int cy, uint uFlags);
 

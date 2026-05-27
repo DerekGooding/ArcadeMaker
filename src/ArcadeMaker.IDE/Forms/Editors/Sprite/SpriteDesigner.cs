@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Drawing.Drawing2D;
 
 namespace ArcadeMaker.IDE
 {
@@ -45,6 +33,7 @@ namespace ArcadeMaker.IDE
                 pen1.Color = value;
             }
         }
+
         private Color color2
         {
             get
@@ -114,10 +103,10 @@ namespace ArcadeMaker.IDE
 
         private void imageBox_Click(object sender, EventArgs e)
         {
-
         }
 
         private Shape _shape = Shape.Pen;
+
         private Shape shape
         {
             get
@@ -140,18 +129,23 @@ namespace ArcadeMaker.IDE
                     case Shape.Pen:
                         btn = penBtn;
                         break;
+
                     case Shape.Line:
                         btn = lineBtn;
                         break;
+
                     case Shape.ColorPicker:
                         btn = pickColBtn;
                         break;
+
                     case Shape.Ellipse:
                         btn = ellipseBtn;
                         break;
+
                     case Shape.Rect:
                         btn = rectBtn;
                         break;
+
                     case Shape.Fill:
                         btn = fillBtn;
                         break;
@@ -167,6 +161,7 @@ namespace ArcadeMaker.IDE
         }
 
         private DrawStyle _drawStyle = DrawStyle.Draw;
+
         private DrawStyle drawStyle
         {
             get
@@ -184,9 +179,11 @@ namespace ArcadeMaker.IDE
                     case DrawStyle.Draw:
                         btn = shapeDrawBtn;
                         break;
+
                     case DrawStyle.Fill:
                         btn = shapeFillBtn;
                         break;
+
                     case DrawStyle.DrawAndFill:
                         btn = shapeDrawFillBtn;
                         break;
@@ -248,6 +245,7 @@ namespace ArcadeMaker.IDE
         }
 
         private static readonly int zoomRatio = 32;
+
         private void Zoom(bool inOut)
         {
             // set the zoomed width and height
@@ -277,6 +275,7 @@ namespace ArcadeMaker.IDE
 
         private bool showPixelBorder = true;
         private int zoomWidth, zoomHeight;
+
         private Bitmap DisplayImage(Bitmap image = null)
         {
             if (image == null)
@@ -313,6 +312,7 @@ namespace ArcadeMaker.IDE
         }
 
         private PointF previewLastEndLoc = Point.Empty;
+
         private void imageBox_MouseMove(object sender, MouseEventArgs e)
         {
             Pen pen = null;
@@ -407,6 +407,7 @@ namespace ArcadeMaker.IDE
         }
 
         private readonly bool ver2 = false;
+
         private PointF ImageLocation(Point loc)
         {
             if (ver2)
@@ -425,6 +426,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int fillTolerance = 30;
+
         private void Fill(Pen pen, Point loc)
         {
             try
@@ -440,7 +442,6 @@ namespace ArcadeMaker.IDE
                 MessageBox.Show(err);
             }
         }
-
 
         private void shapeDrawBtn_Click(object sender, EventArgs e)
         {
@@ -506,6 +507,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipToleranceBoxSync = false;
+
         private void toleranceNumericBox_ValueChanged(object sender, EventArgs e)
         {
             if (!skipToleranceBoxSync)
@@ -538,7 +540,7 @@ namespace ArcadeMaker.IDE
         }
     }
 
-    enum Shape
+    internal enum Shape
     {
         Line,
         Rect,
@@ -548,7 +550,7 @@ namespace ArcadeMaker.IDE
         ColorPicker
     }
 
-    enum DrawStyle
+    internal enum DrawStyle
     {
         Draw,
         Fill,
@@ -742,7 +744,6 @@ namespace ArcadeMaker.IDE
         }
         // good code end --------------------------------------------------------------------------------------------------------------------------------------------
         */
-
 
         /*
         public static Bitmap ImageSegment(Bitmap image, int x, int y)

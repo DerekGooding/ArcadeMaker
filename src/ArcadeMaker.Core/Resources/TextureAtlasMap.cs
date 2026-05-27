@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ArcadeMaker.Core.Resources;
+﻿namespace ArcadeMaker.Core.Resources;
 
 public class TextureAtlasMap
 {

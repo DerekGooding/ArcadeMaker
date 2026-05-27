@@ -1,9 +1,5 @@
 ﻿using ArcadeMaker.Core.Resources;
 using Exp;
-using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ArcadeMaker.Core.Runtime;
 
@@ -16,7 +12,7 @@ internal class PathDrive(Instance inst, Resources.Path path, double speed, PathE
     internal PathEndAction EndAction => endAction;
     internal double Speed => speed;
 
-    private double currentHspeed; 
+    private double currentHspeed;
     private double currentVspeed;
 
     /// <summary>

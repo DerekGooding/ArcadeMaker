@@ -1,14 +1,4 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
@@ -17,6 +7,7 @@ namespace ArcadeMaker.IDE
         private GameRoom room = null;
         private GameObject selectedObj = null;
         private static Bitmap noSpriteIcon = null;
+
         public RoomEditor(GameRoom room)
         {
             InitializeComponent();
@@ -77,7 +68,9 @@ namespace ArcadeMaker.IDE
 
             objDetailsLbl.Text = "";
         }
+
         private bool renaming = false;
+
         private void nameBox_TextChanged(object sender, EventArgs e)
         {
             renaming = true;
@@ -95,6 +88,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipSetSettings = false;
+
         private void widthBox_ValueChanged(object sender, EventArgs e)
         {
             if (!skipSetSettings)
@@ -114,6 +108,7 @@ namespace ArcadeMaker.IDE
         }
 
         private int objId = 1000;
+
         private void boardPanel_MouseClick(object sender, MouseEventArgs e)
         {
             Point position = GetSnappedPosition(e.Location);
@@ -182,10 +177,12 @@ namespace ArcadeMaker.IDE
         }
 
         private RoomObject previewObj = null;
+
         public void boardPanel_Paint(object sender, PaintEventArgs e)
         {
             boardPanel_Paint(sender, e, null);
         }
+
         public void boardPanel_Paint(object sender, PaintEventArgs e, Size? panelSize)
         {
             if (panelSize == null || !panelSize.HasValue)
@@ -373,6 +370,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipSetView = false;
+
         private void LoadView(RoomView view)
         {
             skipSetView = true;
@@ -502,6 +500,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipSetBackground = false;
+
         private void drawBgColorBox_CheckedChanged(object sender, EventArgs e)
         {
             if (!skipSetBackground)
@@ -630,6 +629,7 @@ namespace ArcadeMaker.IDE
         }
 
         private RoomObject movingObj = null;
+
         private void boardPanel_MouseMove(object sender, MouseEventArgs e)
         {
             Point position = GetSnappedPosition(e.Location);

@@ -1,16 +1,11 @@
 ﻿using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Exp
 {
     public partial class Interpreter
     {
         internal HashSet<ExpError> Errors { get; } = [];
+
         internal void Error(string msg, Span throwing = null, bool beforeCurrentSpan = true)
         {
             GetLocLine(beforeCurrentSpan, out int line, out int col, out string sourceName, throwing);

@@ -1,19 +1,11 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
     public partial class RoomInstanceCreationCodeEditor : Form
     {
         private RoomObject obj = null;
+
         public RoomInstanceCreationCodeEditor(RoomObject obj)
         {
             InitializeComponent();
@@ -32,6 +24,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool closedWithOkBtn = false;
+
         private void okBtn_Click(object sender, EventArgs e)
         {
             SaveChanges();

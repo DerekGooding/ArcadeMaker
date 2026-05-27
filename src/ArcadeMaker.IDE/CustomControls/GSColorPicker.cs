@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace ArcadeMaker.IDE
+﻿namespace ArcadeMaker.IDE
 {
     public partial class GSColorPicker : UserControl
     {
         private ColorDialog dlg1 = new ColorDialog(), dlg2 = new ColorDialog();
+
         public Color Color1
         {
             get
@@ -27,6 +18,7 @@ namespace ArcadeMaker.IDE
                     Color1Changed?.Invoke(this, value);
             }
         }
+
         public Color Color2
         {
             get
@@ -41,9 +33,13 @@ namespace ArcadeMaker.IDE
                     Color2Changed?.Invoke(this, value);
             }
         }
+
         public event EventHandler<Color> Color1Changed;
+
         public event EventHandler<Color> Color2Changed;
+
         private bool skipHandle = false;
+
         public GSColorPicker()
         {
             InitializeComponent();

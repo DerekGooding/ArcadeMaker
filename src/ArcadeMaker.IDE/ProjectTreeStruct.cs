@@ -1,20 +1,15 @@
 ﻿using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArcadeMaker.IDE
 {
     public class ProjectTreeStruct<T> where T : GameItem
     {
-        
     }
 
     public class ProjectItemTreeStruct<T> : ProjectTreeStruct<T> where T : GameItem
     {
         public GameItem Item;
+
         public ProjectItemTreeStruct(GameItem item)
         {
             this.Item = item;
@@ -27,6 +22,7 @@ namespace ArcadeMaker.IDE
 
         public string Name = null;
         public bool IsBaseFolder = false;
+
         public ProjectFolderTreeStruct(string name, bool isBaseFolder)
         {
             this.Name = name;

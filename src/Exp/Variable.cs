@@ -1,8 +1,5 @@
 ﻿using Exp.Spans;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Exp;
 
@@ -15,11 +12,13 @@ public class Variable : IExpItem, INamedValue
     /// This variable is returned by <see cref="Operations.PointingOrFuncCall.Read()"/> when the experssion is in format <c>x?.y = z</c> and <c>x</c> is <c>null</c>. The <see cref="Assignment"/> operation is cancelling itself if it gets that var.
     /// </summary>
     internal static Variable Futile { get; } = new("<<futile_variable>>", null, null);
+
     public static string ItemName { get; } = "variable";
     public string Name { get; }
     internal bool firstSet = true;
 
     public bool IsVar => true;
+
     public virtual IValue? Value
     {
         get;
@@ -34,6 +33,7 @@ public class Variable : IExpItem, INamedValue
             firstSet = false;
         }
     }
+
     public void SetSkippingConstant(IValue value)
     {
         firstSet = true;
@@ -54,11 +54,12 @@ public class Variable : IExpItem, INamedValue
     }
 }
 
-class ExternPropertyVar : Variable
+internal class ExternPropertyVar : Variable
 {
     private readonly PropertyInfo pinfo;
     private bool initSetComplete;
     private readonly object inst;
+
     internal ExternPropertyVar(object inst, PropertyInfo pinfo) : base(pinfo.Name.StartWithLowerCase(), null, null)
     {
         ArgumentNullException.ThrowIfNull(inst);
@@ -96,15 +97,18 @@ class ExternPropertyVar : Variable
     }
 }
 
-class ClassStaticVar : Variable, IClassMember, IExpItem
+internal class ClassStaticVar : Variable, IClassMember, IExpItem
 {
-    public static new string ItemName { get; } = "class static variable";
+    public new static string ItemName { get; } = "class static variable";
     public List<Span[]> TagsCode { get; set; }
     public Instance[] AttrInfo { get; set; }
     public ClassDefSpan Def { get; set; }
     internal Span[] InitValueCode { get; set; }
 
-    internal ClassStaticVar(string name, IValue value, ClassDefSpan def, Span settingSpan, bool prvt = false, bool cons = false) : base(name, value, settingSpan, prvt, cons) { this.Def = def; }
+    internal ClassStaticVar(string name, IValue value, ClassDefSpan def, Span settingSpan, bool prvt = false, bool cons = false) : base(name, value, settingSpan, prvt, cons)
+    {
+        this.Def = def;
+    }
 }
 
 public class TypeVariable(string varName, IValue? initVal, Func<IValue?, bool> checker, string typeName, bool prvt = false, bool constant = false, bool skipCheckOnInit = false) : Variable(varName, initVal, null, prvt, constant)

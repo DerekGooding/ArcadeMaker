@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Exp;
+﻿using ArcadeMaker.Core.ExpSrc;
 using ArcadeMaker.Core.Math;
 using ArcadeMaker.Core.Math.Shapes;
 using ArcadeMaker.Core.Models;
-using Exp.Spans;
-using ArcadeMaker.Core.ExpSrc;
-using ArcadeMaker.Core.Runtime;
 using ArcadeMaker.Core.Resources;
-using System.Drawing;
+using Exp;
 
 namespace ArcadeMaker.Core;
 
@@ -94,7 +88,7 @@ public partial interface IGame
             bool result = SeperatingAxisTheorem.AreRectanglesIntersecting(instRect, otherRect);
 
             if (result)
-                _=0;
+                _ = 0;
 
             return result;
         }

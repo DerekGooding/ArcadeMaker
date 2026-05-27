@@ -1,8 +1,4 @@
 ﻿using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System.Globalization;
 
 namespace Exp;
@@ -12,6 +8,7 @@ public partial class Interpreter
     private bool ignoreCanSetTag = false;
     private Span lastSpan;
     internal IVarSystem ParentVs { get; private set; }
+
     private Span ReadSpan(bool spoiler = false, bool spaces = false, ClassDefSpan def = null, bool singleWord = false, bool @throw = false)
     {
         if (CodeSpans != null)
@@ -624,7 +621,7 @@ public partial class Interpreter
                     if (ev.CustomValue)
                         continue;
                     else while (evalues.FirstOrDefault(ev1 => ev1 != ev && ev1.Value == ev.Value) != null)
-                            ev.Value++;
+                        ev.Value++;
                 }
 
                 span = new EnumDefSpan(ename, evalues.ToArray());

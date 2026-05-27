@@ -1,25 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using Exp.Operations;
 using Exp.Spans;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using Exp.Operations;
-using System.Threading.Tasks;
+
 //using Exp.Compiler;
-using System.Threading;
 
 namespace Exp;
 
 public partial class Interpreter
 {
-    IContext currentContext => stack?.context;
-    readonly IVarSystem _currentVarSystem_; // set to this at constructor
-    IVarSystem CurrentVarSystem
+    private IContext currentContext => stack?.context;
+    private readonly IVarSystem _currentVarSystem_; // set to this at constructor
+
+    private IVarSystem CurrentVarSystem
     {
         get => currentContext ?? _currentVarSystem_;
     }
-    string currNs;
+
+    private string currNs;
 
     public void Run()
     {
@@ -67,6 +64,7 @@ public partial class Interpreter
             this.parent = parent;
         }
     }
+
     private class VsStackIndex
     {
         internal readonly IVarSystem vs;
@@ -84,10 +82,10 @@ public partial class Interpreter
 
     private StackIndex stack;
     private VsStackIndex vsStack;
+
     internal void Run(IContext context = null, bool single = false, bool neutral = false, bool clearVars = true)
     {
         throw new NotImplementedException();
-
 
         //Variable[] contextVarsBefore = null;
         //if (context != null)
@@ -564,7 +562,6 @@ public partial class Interpreter
         }
         finally
         {
-
             //Throw(ExpStringToString(throwing.Vars[0].Value as Instance));
 
             this.stack = stack;
@@ -615,6 +612,7 @@ public partial class Interpreter
     }
 
     private ScriptDocument ShellDoc { get; } = ScriptDocument.FromString("", "shell.exp");
+
     public void Run(string src)
     {
         ShellDoc.Script = src;
@@ -792,7 +790,6 @@ public partial class Interpreter
             currNs = null;
         }
     }
-
 
     internal Span[] GetCodeSpans(TextSpan[] code)
     {
@@ -1041,7 +1038,6 @@ public partial class Interpreter
         object result;
         if (val is null)
             return null;
-
         else if (val.IsInst)
         {
             if (val.Inst.IsArray)
@@ -1102,6 +1098,7 @@ public partial class Interpreter
     }
 
     private List<Task> Tasks { get; } = [];
+
     internal async void RunAsync(Task action)
     {
         Tasks.Add(action);
@@ -1110,6 +1107,7 @@ public partial class Interpreter
     }
 
     public bool RunOpsRunning { get; internal set; } = false;
+
     public void RunOps()
     {
         "--- RunOps START---\n".Println();
@@ -1121,6 +1119,7 @@ public partial class Interpreter
     }
 
     internal bool toReturn;
+
     internal void RunOps(IOperation[] ops)
     {
         if (ops == null)
@@ -1138,6 +1137,7 @@ public partial class Interpreter
     }
 
     public IOperation lastOp = null;
+
     internal void RunOp(IOperation op)
     {
         lastOp = op;
@@ -1157,6 +1157,9 @@ public sealed class Void : IValue
 {
     public string TypeName => "void";
     public static Void Return { get; } = new();
-    private Void() { }
+
+    private Void()
+    { }
+
     public override string ToString() => TypeName;
 }

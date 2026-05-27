@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace ArcadeMaker.IDE
+﻿namespace ArcadeMaker.IDE
 {
     public partial class SpansTextBox2SearchForm : Form
     {
         public SpansTextBox2 scriptBox = null;
+
         public SpansTextBox2SearchForm(SpansTextBox2 scriptBox)
         {
             InitializeComponent();
@@ -105,7 +96,6 @@ namespace ArcadeMaker.IDE
 
         private void SpansTextBox2SearchForm_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using Exp.Operations;
 using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Exp;
 
@@ -10,7 +7,7 @@ public partial class Interpreter
 {
     private Dictionary<IOperation, Span> OperationsSpanPair = [];
     private List<Span> readOps_codeRecord = null;
-    
+
     internal IOperation[] ReadOperations(Span[] spans, IVarSystem vs, out Span[] src, bool @throw = false, bool breakAfter1 = false)
     {
         bool deleteRecord = readOps_codeRecord == null;
@@ -104,7 +101,6 @@ public partial class Interpreter
                         }
                         span = span.Container;
                     }
-
 
                     if (chosenLoop == null)
                         Error("No enclosing loop out of which to break or continue (or given loop's ID was not found).");
@@ -272,13 +268,12 @@ public partial class Interpreter
             }
         }
 
-
         if (spans != null)
             SwitchSpans(spans, action);
         else
             action();
 
-        src = [..readOps_codeRecord];
+        src = [.. readOps_codeRecord];
         if (deleteRecord)
             readOps_codeRecord = null;
 
@@ -290,7 +285,7 @@ public partial class Interpreter
     private IOperation ReadOperation(Span[] spans, IVarSystem vs, out Span[] src)
     {
         var ops = ReadOperations(spans, vs, out src, breakAfter1: true);
-        
+
         if (ops == null || ops.Length == 0 || ops.Length >= 2)
             Error($"1 Operation was expected, but {ops.Length} read.");
         return ops[0];

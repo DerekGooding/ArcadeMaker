@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using RectpackSharp;
+﻿using ArcadeMaker.IDE.Items;
 using Exp;
-using ArcadeMaker.IDE.Items;
+using RectpackSharp;
 
 namespace ArcadeMaker.IDE.Textures;
 
@@ -53,6 +49,7 @@ internal class ImageRect
 {
     internal Bitmap Image { get; }
     internal PackingRectangle Rect { get; set; }
+
     internal ImageRect(Bitmap image)
     {
         this.Image = image;
@@ -68,6 +65,7 @@ internal class SpriteImageRect : ImageRect
 {
     internal GameSprite Sprite { get; }
     internal int Index { get; }
+
     internal SpriteImageRect(GameSprite sprite, int index) : base(sprite.images[index])
     {
         this.Sprite = sprite;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ArcadeMaker.IDE.IntelliSense
 {
@@ -136,7 +131,6 @@ namespace ArcadeMaker.IDE.IntelliSense
                             }
                             else if (contextType == typeof(Property))
                             {
-
                             }
 
                             if (item == null)
@@ -276,7 +270,6 @@ namespace ArcadeMaker.IDE.IntelliSense
                     if (argDefVal != null)
                     {
                         argDefVal = word;
-                        
                     }
                     if (word == "out" || word == "ref" || word == "param")
                         continue;
@@ -314,6 +307,7 @@ namespace ArcadeMaker.IDE.IntelliSense
     public class Namespace : TranslatorItem
     {
         public List<NamespaceItem> Items { get; private set; }
+
         public Namespace(string name, NamespaceItem[] items) : base(name, AccessModifier.None)
         {
             if (items == null)
@@ -337,6 +331,7 @@ namespace ArcadeMaker.IDE.IntelliSense
     {
         public List<ClassItem> Items { get; private set; }
         public bool IsStatic { get; private set; }
+
         public Class(string name, AccessModifier accessModifier, ClassItem[] items, bool isStatic = false) : base(name, accessModifier)
         {
             if (items == null)
@@ -350,6 +345,7 @@ namespace ArcadeMaker.IDE.IntelliSense
     {
         public string Type { get; private set; }
         public bool IsStatic { get; private set; }
+
         public ClassItem(string name, AccessModifier accessModifier, string type, bool isStatic = false) : base(name, accessModifier)
         {
             if (!Actions.IsLegallName(type))
@@ -402,7 +398,6 @@ namespace ArcadeMaker.IDE.IntelliSense
         }
     }
 
-
     public enum AccessModifier
     {
         Private,
@@ -415,7 +410,7 @@ namespace ArcadeMaker.IDE.IntelliSense
         None
     }
 
-    static class Actions
+    internal static class Actions
     {
         public static bool IsLegallName(this string name)
         {

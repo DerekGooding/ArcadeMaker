@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using ArcadeMaker.Core.Runtime;
-using ArcadeMaker.Core.Math.Shapes;
+﻿using ArcadeMaker.Core.Math.Shapes;
 
 namespace ArcadeMaker.Core.Math;
 
@@ -101,7 +97,6 @@ public static class SeperatingAxisTheorem
         return (min, max);
     }
 }
-
 
 // much earlier code:
 

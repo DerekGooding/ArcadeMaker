@@ -1,14 +1,5 @@
 ﻿using ArcadeMaker.IDE;
 using ArcadeMaker.IDE.Items;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ArcadeMaker.IDE
 {
@@ -17,6 +8,7 @@ namespace ArcadeMaker.IDE
         private GamePath path = null;
         private GameRoom roomView = null;
         private int scrollX = 0, scrollY = 0;
+
         public PathEditor(GamePath path)
         {
             InitializeComponent();
@@ -48,8 +40,8 @@ namespace ArcadeMaker.IDE
             titleBarHeight = screenRectangle.Top - Top;
         }
 
-
         private bool renaming = false;
+
         private void nameBox_TextChanged(object sender, EventArgs e)
         {
             renaming = true;
@@ -84,6 +76,7 @@ namespace ArcadeMaker.IDE
         }
 
         private Pen pen = new Pen(Color.Red, 2);
+
         private void panel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.TranslateTransform(scrollX, scrollY);
@@ -196,7 +189,8 @@ namespace ArcadeMaker.IDE
 
         private void deleteBtn_Click(object sender, EventArgs e)
         {
-            if (pointsListBox.SelectedIndex >= 0) {
+            if (pointsListBox.SelectedIndex >= 0)
+            {
                 PathPoint point = pointsListBox.SelectedItem as PathPoint;
                 Button btn = null;
                 foreach (var ctrl in panel.Controls.OfType<Button>())
@@ -218,6 +212,7 @@ namespace ArcadeMaker.IDE
         }
 
         private bool skipPointBoxesValueChanged = false;
+
         private void pointXBox_ValueChanged(object sender, EventArgs e)
         {
             if (!skipPointBoxesValueChanged && pointsListBox.SelectedItem is PathPoint point)
@@ -249,6 +244,7 @@ namespace ArcadeMaker.IDE
         }
 
         private const int scrollBtnPower = 170;
+
         private void scrollLeftBtn_Click(object sender, EventArgs e)
         {
             scrollX += scrollBtnPower;
@@ -287,6 +283,7 @@ namespace ArcadeMaker.IDE
         }
 
         private Point lastPanelDataMouseLoc = Point.Empty;
+
         private void UpdatePanelDataText(Point? mouseLoc = null)
         {
             if (!mouseLoc.HasValue)
@@ -333,7 +330,7 @@ namespace ArcadeMaker.IDE
                 if (point.y > highestY)
                     highestY = point.y;
             }
-            
+
             // find center point
             Point center = new Point((lowestX + highestX) / 2, (lowestY + highestY) / 2);
 
@@ -346,7 +343,6 @@ namespace ArcadeMaker.IDE
 
         private void addBtn_Click(object sender, EventArgs e)
         {
-            
         }
     }
 }

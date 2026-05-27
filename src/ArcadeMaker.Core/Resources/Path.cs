@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ArcadeMaker.Core.ExpSrc;
+﻿using ArcadeMaker.Core.ExpSrc;
 
 namespace ArcadeMaker.Core.Resources;
 

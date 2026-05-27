@@ -31,7 +31,8 @@ public class TextureRegion
     /// <summary>
     /// Creates a new texture region.
     /// </summary>
-    public TextureRegion() { }
+    public TextureRegion()
+    { }
 
     /// <summary>
     /// Creates a new texture region using the specified source texture.

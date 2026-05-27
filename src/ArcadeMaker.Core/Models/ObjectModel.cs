@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ArcadeMaker.Core.Resources;
+﻿using ArcadeMaker.Core.Resources;
 using ArcadeMaker.Core.Resources.Serializeables;
-using ArcadeMaker.Core.Runtime;
 using Exp;
 using Exp.Spans;
 
@@ -31,7 +27,7 @@ namespace ArcadeMaker.Core.Models
                 props.Add(new(def: null /*(assigned at ClassDefSpan's ctor)*/, property.Constant, property.Name, property.Private, false));
             }
 
-            return new ClassDefSpan(name, [..props], []);
+            return new ClassDefSpan(name, [.. props], []);
         }
     }
 

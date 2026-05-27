@@ -1,8 +1,4 @@
 ﻿using Exp.Spans;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace Exp.Operations;
 
@@ -11,19 +7,21 @@ public interface IOperation
     void Make();
 }
 
-interface IReadingOperation
+internal interface IReadingOperation
 {
     IValue Read();
 }
 
-class Operation(Action action) : IOperation
+internal class Operation(Action action) : IOperation
 {
     public void Make() => action();
+
     internal static IOperation Custom(Action action) => new Operation(action);
+
     internal static IOperation Error => new Operation(() => Interpreter.Activated.ThrowRuntime("Execution reached a build error.", "EXE_REACHED_BUILD_ERR"));
 }
 
-class OperatorResultOperation(OperatorSpan opertor, IReadingOperation left, IReadingOperation right) : IReadingOperation
+internal class OperatorResultOperation(OperatorSpan opertor, IReadingOperation left, IReadingOperation right) : IReadingOperation
 {
     public IValue Read()
     {
@@ -31,7 +29,7 @@ class OperatorResultOperation(OperatorSpan opertor, IReadingOperation left, IRea
     }
 }
 
-class Assignment(PointingOrFuncCall pointing, OperatorSpan opertor, IReadingOperation? readingOperation) : IOperation
+internal class Assignment(PointingOrFuncCall pointing, OperatorSpan opertor, IReadingOperation? readingOperation) : IOperation
 {
     public void Make()
     {
@@ -52,7 +50,7 @@ class Assignment(PointingOrFuncCall pointing, OperatorSpan opertor, IReadingOper
     }
 }
 
-class VariablesDeclaration(Dictionary<Variable, IReadingOperation> decs) : IOperation
+internal class VariablesDeclaration(Dictionary<Variable, IReadingOperation> decs) : IOperation
 {
     public void Make()
     {
@@ -61,11 +59,12 @@ class VariablesDeclaration(Dictionary<Variable, IReadingOperation> decs) : IOper
     }
 }
 
-interface IOperationWithInnerSource : IOperation
+internal interface IOperationWithInnerSource : IOperation
 {
     IOperation[] InnerOperations { get; }
     IContext Context { get; }
     bool IsRunning { get; set; }
+
     void Run();
 
     void IOperation.Make()
@@ -89,18 +88,18 @@ interface IOperationWithInnerSource : IOperation
     }
 }
 
-interface IConditionalStatement : IOperationWithInnerSource
+internal interface IConditionalStatement : IOperationWithInnerSource
 {
     ConditionSpan ConditionSpan { get; }
     IReadingOperation ConditionReading { get; }
 }
 
-interface ILoopStatement : IOperationWithInnerSource
+internal interface ILoopStatement : IOperationWithInnerSource
 {
     ILoopContext LoopContext { get; }
 }
 
-class IfStatement(IfConditionSpan ctx, IReadingOperation cond, IOperation[] innerOps) : IConditionalStatement
+internal class IfStatement(IfConditionSpan ctx, IReadingOperation cond, IOperation[] innerOps) : IConditionalStatement
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -108,6 +107,7 @@ class IfStatement(IfConditionSpan ctx, IReadingOperation cond, IOperation[] inne
     public IReadingOperation ConditionReading => cond ?? throw new ArgumentNullException();
     public IOperation[] InnerOperations { get => innerOps; set => innerOps = value; }
     public ElseStatement Else { get; set; }
+
     public void Run()
     {
         if (cond.Read().Bool)
@@ -117,18 +117,19 @@ class IfStatement(IfConditionSpan ctx, IReadingOperation cond, IOperation[] inne
     }
 }
 
-class ElseStatement(ElseConditionSpan ctx, IOperation[] innerOps) : IOperationWithInnerSource
+internal class ElseStatement(ElseConditionSpan ctx, IOperation[] innerOps) : IOperationWithInnerSource
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
     public IOperation[] InnerOperations => innerOps;
+
     public void Run()
     {
         foreach (var op in InnerOperations) op.Make();
     }
 }
 
-class WhileStatement(WhileConditionSpan ctx, IReadingOperation cond, IOperation[] innerOps, Variable counter) : ILoopStatement, IConditionalStatement
+internal class WhileStatement(WhileConditionSpan ctx, IReadingOperation cond, IOperation[] innerOps, Variable counter) : ILoopStatement, IConditionalStatement
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -136,6 +137,7 @@ class WhileStatement(WhileConditionSpan ctx, IReadingOperation cond, IOperation[
     public ILoopContext LoopContext => ctx ?? throw new ArgumentNullException();
     public IReadingOperation ConditionReading => cond ?? throw new ArgumentNullException();
     public IOperation[] InnerOperations => innerOps;
+
     public void Run()
     {
         IValue counterNum = 0d.ToExp();
@@ -158,7 +160,7 @@ class WhileStatement(WhileConditionSpan ctx, IReadingOperation cond, IOperation[
                 }
             }
 
-            continue_while:
+        continue_while:
             if (counter != null)
             {
                 counterNum = (counterNum.Number + 1).ToExp();
@@ -169,7 +171,7 @@ class WhileStatement(WhileConditionSpan ctx, IReadingOperation cond, IOperation[
     }
 }
 
-class ForStatement(ForLoopSpan ctx, IOperation init, IReadingOperation cond, IOperation step, IOperation[] innerOps, Variable counter) : ILoopStatement, IConditionalStatement
+internal class ForStatement(ForLoopSpan ctx, IOperation init, IReadingOperation cond, IOperation step, IOperation[] innerOps, Variable counter) : ILoopStatement, IConditionalStatement
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -209,14 +211,13 @@ class ForStatement(ForLoopSpan ctx, IOperation init, IReadingOperation cond, IOp
                 counterNum = (counterNum.Number + 1).ToExp();
                 counter.SetSkippingConstant(counterNum);
             }
-            continue_for:;
+        continue_for:;
         }
     break_for:;
     }
 }
 
-
-class ForeachStatement(ForEachLoopSpan ctx, Variable var, IReadingOperation readingOperation, IOperation[] innerOps, Variable counter) : ILoopStatement
+internal class ForeachStatement(ForEachLoopSpan ctx, Variable var, IReadingOperation readingOperation, IOperation[] innerOps, Variable counter) : ILoopStatement
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -224,6 +225,7 @@ class ForeachStatement(ForEachLoopSpan ctx, Variable var, IReadingOperation read
     internal IReadingOperation ReadingOperation => readingOperation ?? throw new ArgumentNullException();
     public IOperation[] InnerOperations => innerOps;
     public ILoopContext LoopContext => ctx ?? throw new ArgumentNullException();
+
     public void Run()
     {
         IValue counterNum = 0d.ToExp();
@@ -282,7 +284,7 @@ class ForeachStatement(ForEachLoopSpan ctx, Variable var, IReadingOperation read
                         goto continue_fe;
                     }
                 }
-            
+
             continue_fe:
                 if (counter != null)
                 {
@@ -300,7 +302,7 @@ class ForeachStatement(ForEachLoopSpan ctx, Variable var, IReadingOperation read
     }
 }
 
-class RangeLoopStatement(RangeLoopSpan ctx, Variable var, IReadingOperation fromReadingOperation, IReadingOperation toReadingOperation, IOperation[] innerOps, Variable counter) : ILoopStatement
+internal class RangeLoopStatement(RangeLoopSpan ctx, Variable var, IReadingOperation fromReadingOperation, IReadingOperation toReadingOperation, IOperation[] innerOps, Variable counter) : ILoopStatement
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -308,6 +310,7 @@ class RangeLoopStatement(RangeLoopSpan ctx, Variable var, IReadingOperation from
     internal IReadingOperation ToReadingOperation => toReadingOperation ?? throw new ArgumentNullException();
     public IOperation[] InnerOperations => innerOps;
     public ILoopContext LoopContext => ctx ?? throw new ArgumentNullException();
+
     public void Run()
     {
         var from = fromReadingOperation?.Read().Number ?? 0d;
@@ -347,9 +350,10 @@ class RangeLoopStatement(RangeLoopSpan ctx, Variable var, IReadingOperation from
     }
 }
 
-class BreakStatement(BreakWordSpan bword, ILoopContext loop) : IOperation
+internal class BreakStatement(BreakWordSpan bword, ILoopContext loop) : IOperation
 {
     internal ILoopContext Loop => loop ?? throw new ArgumentNullException();
+
     public void Make()
     {
         // break any loop until the given one
@@ -370,9 +374,10 @@ class BreakStatement(BreakWordSpan bword, ILoopContext loop) : IOperation
     }
 }
 
-class ContinueStatement(ContinueWordSpan cword, ILoopContext loop) : IOperation
+internal class ContinueStatement(ContinueWordSpan cword, ILoopContext loop) : IOperation
 {
     internal ILoopContext Loop => loop ?? throw new ArgumentNullException();
+
     public void Make()
     {
         // break any loop until the given one, and continue the given one
@@ -395,9 +400,10 @@ class ContinueStatement(ContinueWordSpan cword, ILoopContext loop) : IOperation
     }
 }
 
-class ReturnStatement(FuncDefSpan func, IReadingOperation readingOperation, ReturnWordSpan rword) : IOperation
+internal class ReturnStatement(FuncDefSpan func, IReadingOperation readingOperation, ReturnWordSpan rword) : IOperation
 {
     internal FuncDefSpan Func => func ?? throw new ArgumentNullException();
+
     public void Make()
     {
         // break any loop until getting to the function, and return
@@ -416,7 +422,7 @@ class ReturnStatement(FuncDefSpan func, IReadingOperation readingOperation, Retu
     }
 }
 
-class ReadingOperation(IValue value) : IReadingOperation
+internal class ReadingOperation(IValue value) : IReadingOperation
 {
     internal IValue Value => value;
 
@@ -426,7 +432,7 @@ class ReadingOperation(IValue value) : IReadingOperation
     }
 }
 
-class ConstValueReadingOperation(IValue value) : IReadingOperation
+internal class ConstValueReadingOperation(IValue value) : IReadingOperation
 {
     public IValue Read()
     {
@@ -436,20 +442,22 @@ class ConstValueReadingOperation(IValue value) : IReadingOperation
     internal static IReadingOperation For(IValue value) => new ConstValueReadingOperation(value);
 }
 
-class ArrayReadingOperation(IReadingOperation[] readings) : IReadingOperation
+internal class ArrayReadingOperation(IReadingOperation[] readings) : IReadingOperation
 {
     internal IReadingOperation[] Readings => readings ?? throw new ArgumentNullException();
+
     public IValue Read()
     {
         return new Instance(ClassDefSpan.ExpArrayDef, readings.Select(r => r.Read()).ToArray());
     }
 }
 
-class ConstArrayReadingOperation(ConstValueReadingOperation[] readings) : ConstValueReadingOperation(new Instance(ClassDefSpan.ExpArrayDef, readings.Select(r => r.Read()).ToArray()));
+internal class ConstArrayReadingOperation(ConstValueReadingOperation[] readings) : ConstValueReadingOperation(new Instance(ClassDefSpan.ExpArrayDef, readings.Select(r => r.Read()).ToArray()));
 
-class LenofReadingOperation(IReadingOperation arrayReading, LenofWordSpan word) : IReadingOperation
+internal class LenofReadingOperation(IReadingOperation arrayReading, LenofWordSpan word) : IReadingOperation
 {
     internal IReadingOperation ArrayReading => arrayReading ?? throw new ArgumentNullException();
+
     public IValue Read()
     {
         var array = ArrayReading.Read().Inst;
@@ -466,20 +474,22 @@ class LenofReadingOperation(IReadingOperation arrayReading, LenofWordSpan word) 
     }
 }
 
-class NotOperation(IReadingOperation readingOperation) : IReadingOperation
+internal class NotOperation(IReadingOperation readingOperation) : IReadingOperation
 {
     internal IReadingOperation ReadingOperation => readingOperation ?? throw new ArgumentNullException();
+
     public IValue Read()
     {
         return new BoolValue(!ReadingOperation.Read().Bool);
     }
 }
 
-class InitOperation : IReadingOperation
+internal class InitOperation : IReadingOperation
 {
     internal ClassDefSpan Def;
     internal IReadingOperation[] Args;
     internal ConstructorDefSpan Constructor { get; }
+
     internal InitOperation(ClassDefSpan def, IReadingOperation[] args)
     {
         this.Def = def ?? throw new ArgumentNullException(nameof(def));
@@ -515,7 +525,7 @@ class InitOperation : IReadingOperation
     }
 }
 
-class ExternTypeInitOperation : IReadingOperation
+internal class ExternTypeInitOperation : IReadingOperation
 {
     internal ExternClassDefSpan Extern { get; }
     internal IReadingOperation[] Args { get; }
@@ -538,11 +548,12 @@ class ExternTypeInitOperation : IReadingOperation
     }
 }
 
-class ExternInvocationOperation(ExternClassDefSpan extrn, object inst, string method, IReadingOperation[] args) : IReadingOperation
+internal class ExternInvocationOperation(ExternClassDefSpan extrn, object inst, string method, IReadingOperation[] args) : IReadingOperation
 {
     internal ExternClassDefSpan Extern => extrn ?? throw new ArgumentNullException();
     internal IReadingOperation[] Args => args ?? throw new ArgumentNullException();
     internal string Method => method ?? throw new ArgumentNullException();
+
     public IValue Read()
     {
         bool statc = false ? false : throw new NotImplementedException();
@@ -550,12 +561,12 @@ class ExternInvocationOperation(ExternClassDefSpan extrn, object inst, string me
     }
 }
 
-class ExternFuncInvocationOperation(FuncDefSpan invoker, ExternFunc externFunc) : IReadingOperation
+internal class ExternFuncInvocationOperation(FuncDefSpan invoker, ExternFunc externFunc) : IReadingOperation
 {
     public IValue Read() => externFunc.Func.Invoke(invoker.Parent as Instance, invoker.ParamVariables.Map(v => v.Value).ToArray());
 }
 
-class TryStatement(TryWordSpan ctx, IOperation[] body, CatchStatement catc, FinallyStatement finaly) : IOperationWithInnerSource
+internal class TryStatement(TryWordSpan ctx, IOperation[] body, CatchStatement catc, FinallyStatement finaly) : IOperationWithInnerSource
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
@@ -591,13 +602,14 @@ class TryStatement(TryWordSpan ctx, IOperation[] body, CatchStatement catc, Fina
     }
 }
 
-class CatchStatement(IOperation[] body, IReadingOperation when, CatchWordSpan word) : IOperationWithInnerSource
+internal class CatchStatement(IOperation[] body, IReadingOperation when, CatchWordSpan word) : IOperationWithInnerSource
 {
     public IContext Context => word;
     public bool IsRunning { get; set; }
     public IOperation[] InnerOperations => body;
     internal IReadingOperation When => when;
     internal CatchWordSpan Word => word;
+
     public void Run()
     {
         foreach (var op in InnerOperations)
@@ -605,18 +617,19 @@ class CatchStatement(IOperation[] body, IReadingOperation when, CatchWordSpan wo
     }
 }
 
-class FinallyStatement(IOperation[] innerOps, FinallyWordSpan ctx) : IOperationWithInnerSource
+internal class FinallyStatement(IOperation[] innerOps, FinallyWordSpan ctx) : IOperationWithInnerSource
 {
     public IContext Context => ctx;
     public bool IsRunning { get; set; }
     public IOperation[] InnerOperations => innerOps;
+
     public void Run()
     {
         foreach (var op in InnerOperations) op.Make();
     }
 }
 
-class Throwing(IReadingOperation exread) : IOperation, IReadingOperation
+internal class Throwing(IReadingOperation exread) : IOperation, IReadingOperation
 {
     public void Make()
     {
@@ -637,13 +650,14 @@ class Throwing(IReadingOperation exread) : IOperation, IReadingOperation
     }
 }
 
-class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOperation[]> argLists, int? paramsCounter, IVarSystem vs, Span span, bool readValue, bool first) : IReadingOperation
+internal class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOperation[]> argLists, int? paramsCounter, IVarSystem vs, Span span, bool readValue, bool first) : IReadingOperation
 {
     internal IVarSystem VS { get => vs; set => vs = value; }
     internal PointingOrFuncCall Next { get; set; }
     internal bool NextOrNull { get; set; }
     internal Variable KnownPointer { get; set; }
     internal FuncDefSpan KnownFunc { get; set; }
+
     internal INamedValue Known
     {
         get => KnownPointer ?? (INamedValue)KnownFunc;
@@ -662,8 +676,10 @@ class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOperation[]
                 throw new ArgumentException($"Unknown named value type: {value.GetType().Name}");
         }
     }
+
     internal string Name => name;
     internal IEnumerable<IReadingOperation[]> ArgLists => argLists;
+
     public IValue Read()
     {
         //ArgumentNullException.ThrowIfNull(VS);
@@ -827,7 +843,7 @@ class PointingOrFuncCall(bool isOp, string name, IEnumerable<IReadingOperation[]
     }
 }
 
-class CustomReadingOperation<T>(Func<T> func) : IReadingOperation where T : IValue
+internal class CustomReadingOperation<T>(Func<T> func) : IReadingOperation where T : IValue
 {
     public IValue Read() => func();
 }
