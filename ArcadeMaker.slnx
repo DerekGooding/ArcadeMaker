@@ -1,5 +1,19 @@
 <Solution>
-  <Folder Name="/doc/" />
+  <Folder Name="/doc/">
+	<File Path="Basic Tutorial.md"/>
+	<File Path="Engine Architecture.md"/>
+
+  </Folder>
+	<Folder Name="/doc/Exp Language/">
+		<File Path="exp overview.pdf"/>
+		<File Path="Extern Classes overview.md"/>
+		<File Path="foreach loops and iterable objects.md"/>
+		<File Path="std library overview.md"/>
+	</Folder>
+	<Folder Name="/doc/Engine functions and variables/">
+		<File Path="Global functions.txt"/>
+		<File Path="Objects non-static funcs and properties.txt"/>
+	</Folder>
   <Folder Name="/src/">
     <Project Path="src/ArcadeMaker.Core/ArcadeMaker.Core.csproj" />
     <Project Path="src/ArcadeMaker.IDE/ArcadeMaker.IDE.csproj" />
@@ -12,4 +26,23 @@
   <Folder Name="/src/Engines/MonoGame/Platforms/">
     <Project Path="src/Engines/MonoGame/Platforms/WindowsDX/ArcadeMaker.Engines.MonoGame.Platforms.WindowsDX.csproj" />
   </Folder>
+<Folder Name="/tests/Example Projects/testgp1/" >
+	<File Path="Global.cs"/>
+	<File Path="ObjPlayer.Create0.cs"/>
+	<File Path="ObjPlayer.Create1.cs"/>
+	<File Path="ObjPlayer.Step0.cs"/>
+	<File Path="RmEnd.cs"/>
+	<File Path="Room0.cs"/>
+	<File Path="Room1.cs"/>
+	<File Path="testgp1.gsp"/>
+</Folder>
+<Folder Name="/tests/Example Projects/testgp1/res/" >
+	<File Path="BgMusic.mp3"/>
+	<File Path="SomeSnd.wav"/>
+	<File Path="SprKey.png"/>
+	<File Path="SprPlayer_strip2.png"/>
+	<File Path="SprPortal.png"/>
+	<File Path="SprSpikes.png"/>
+	<File Path="SprWall.png"/>
+</Folder>
 </Solution>
