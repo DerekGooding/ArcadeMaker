@@ -41,8 +41,7 @@ namespace ArcadeMaker.IDE.Scripting
 
     public class Description : IXmlSerializable
     {
-        public interface IInnerElement
-        { }
+        public interface IInnerElement;
 
         public List<string> TextSpans { get; set; } = new List<string>();
         public List<IInnerElement> InnerElements { get; set; } = new List<IInnerElement>();
@@ -257,14 +256,10 @@ namespace ArcadeMaker.IDE.Scripting
     }
 
     [XmlRoot(Roots.SeeAlsoRelation)]
-    public class SeeAlsoRelation : Relation
-    {
-    }
+    public class SeeAlsoRelation : Relation;
 
     [XmlRoot(Roots.TypeParamRef)]
-    public class TypeParamRef : ParamRef
-    {
-    }
+    public class TypeParamRef : ParamRef;
 
     [XmlRoot(Roots.ParamRef)]
     public class ParamRef : Description.IInnerElement
@@ -298,12 +293,10 @@ namespace ArcadeMaker.IDE.Scripting
     }
 
     [XmlRoot(Roots.SingleLineCodeSpan)]
-    public class SingleLineCodeSpan : CodeSpan
-    { }
+    public class SingleLineCodeSpan : CodeSpan;
 
     [XmlRoot(Roots.Example)]
-    public class Example : Description, Description.IInnerElement
-    { }
+    public class Example : Description, Description.IInnerElement;
 
     [XmlRoot(Roots.InheritDoc)]
     public class InheritDoc : Description.IInnerElement

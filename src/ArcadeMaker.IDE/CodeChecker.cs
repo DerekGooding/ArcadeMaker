@@ -482,8 +482,7 @@ namespace IntelliSense
 
     namespace CSharp
     {
-        public class CSItem
-        { }
+        public class CSItem;
 
         public enum AccessModifier
         {
@@ -562,9 +561,7 @@ namespace IntelliSense
             public Value Value = null;
         }
 
-        public class Operation : CSItem
-        {
-        }
+        public class Operation : CSItem;
 
         public class LocalVariableDeclarationOperation : Operation
         {
@@ -598,13 +595,9 @@ namespace IntelliSense
             public Value Value = null;
         }
 
-        public class BreakOperation : Operation
-        {
-        }
+        public class BreakOperation : Operation;
 
-        public class ContinueOperation : Operation
-        {
-        }
+        public class ContinueOperation : Operation;
 
         public class ControlStructure : Operation
         {
@@ -660,9 +653,7 @@ namespace IntelliSense
             }
         }
 
-        public class Finally : ControlStructure
-        {
-        }
+        public class Finally : ControlStructure;
 
         public class Using : ControlStructure
         {

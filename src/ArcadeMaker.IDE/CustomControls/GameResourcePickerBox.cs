@@ -1,170 +1,166 @@
 ﻿using ArcadeMaker.IDE.Items;
 using System.ComponentModel;
 
-namespace ArcadeMaker.IDE
+namespace ArcadeMaker.IDE;
+
+public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
 {
-    public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
+    public readonly ContextMenuStrip Menu = new ContextMenuStrip();
+    private T resource = null;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public T Resource
     {
-        public readonly ContextMenuStrip Menu = new ContextMenuStrip();
-        private T resource = null;
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public T Resource
+        get
         {
-            get
-            {
-                return resource;
-            }
-            set
-            {
-                resource = value;
-                if (resource != null)
-                    nameBox.Text = resource.name;
-                else
-                    nameBox.Text = defaultItemTitle;
-            }
+            return resource;
         }
-
-        public event EventHandler<T> SelectionChanged;
-
-        private string defaultItemTitle;
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string DefaultItemTitle
+        set
         {
-            get
-            {
-                return defaultItemTitle;
-            }
-            set
-            {
-                defaultItemTitle = value;
-                if (noResItem != null)
-                    noResItem.Text = value;
-                if (resource == null)
-                    nameBox.Text = value;
-            }
-        }
-
-        public GameResourcePickerBox(string defaultItemTitle = "<None>", T defaultRes = null)
-        {
-            InitializeComponent();
-            this.defaultItemTitle = defaultItemTitle;
-            nameBox.Text = defaultItemTitle;
-            Resource = defaultRes;
-        }
-
-        private ToolStripMenuItem noResItem = null;
-
-        private void LoadMenu()
-        {
-            try
-            {
-                Menu.Items.Clear();
-
-                noResItem = new ToolStripMenuItem(defaultItemTitle);
-                noResItem.Click += (s, e) =>
-                {
-                    SelectResource(null);
-                };
-                Menu.Items.Add(noResItem);
-
-                LoadFolderMenu(Global.form1.GetProjectStruct<T>(), null);
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-
-        private void LoadFolderMenu(ProjectFolderTreeStruct<T> folder, ToolStripMenuItem menuItem)
-        {
-            foreach (ProjectTreeStruct<T> str in folder.Structs)
-            {
-                if (str is ProjectItemTreeStruct<T> resStr)
-                {
-                    T res = resStr.Item as T;
-
-                    ToolStripMenuItem item = new ToolStripMenuItem(res.name);
-                    res.NameChanged += (s, e) => item.Text = res.name;
-
-                    if (typeof(T) == typeof(GameSprite) && (res as GameSprite).image != null)
-                        item.Image = (res as GameSprite).image;
-                    else if (typeof(T) == typeof(GameObject) && (res as GameObject).sprite?.image != null)
-                        item.Image = (res as GameObject).sprite?.image;
-                    if (typeof(T) == typeof(GameBackground) && (res as GameBackground).image != null)
-                        item.Image = (res as GameBackground).image;
-
-                    item.Click += (s, e) =>
-                    {
-                        SelectResource(res);
-                    };
-
-                    if (menuItem != null)
-                        menuItem.DropDownItems.Add(item);
-                    else
-                        Menu.Items.Add(item);
-                }
-                else if (str is ProjectFolderTreeStruct<T> folderStr)
-                {
-                    ToolStripMenuItem newFolder = new ToolStripMenuItem(folderStr.Name);
-                    newFolder.Image = null;// Properties.Resources.folder;
-                    LoadFolderMenu(folderStr, newFolder);
-
-                    if (menuItem != null)
-                        menuItem.DropDownItems.Add(newFolder);
-                    else
-                        Menu.Items.Add(newFolder);
-                }
-            }
-        }
-
-        private void ShowMenu(Control ctrl, Point position)
-        {
-            Menu.Show(this, position);
-        }
-
-        private void nameBox_MouseClick(object sender, MouseEventArgs e)
-        {
-            ShowMenu(nameBox, e.Location);
-        }
-
-        private void SelectResource(T res)
-        {
-            Resource = res;
-            SelectionChanged?.Invoke(this, Resource);
+            resource = value;
             if (resource != null)
                 nameBox.Text = resource.name;
             else
                 nameBox.Text = defaultItemTitle;
         }
+    }
 
-        private void menuBtn_Click(object sender, EventArgs e)
+    public event EventHandler<T> SelectionChanged;
+
+    private string defaultItemTitle;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string DefaultItemTitle
+    {
+        get
         {
-            ShowMenu(toolStrip1, toolStrip1.Location);
+            return defaultItemTitle;
         }
+        set
+        {
+            defaultItemTitle = value;
+            if (noResItem != null)
+                noResItem.Text = value;
+            if (resource == null)
+                nameBox.Text = value;
+        }
+    }
 
-        private void GameResourcePickerBox_Load(object sender, EventArgs e)
+    public GameResourcePickerBox(string defaultItemTitle = "<None>", T defaultRes = null)
+    {
+        InitializeComponent();
+        this.defaultItemTitle = defaultItemTitle;
+        nameBox.Text = defaultItemTitle;
+        Resource = defaultRes;
+    }
+
+    private ToolStripMenuItem noResItem = null;
+
+    private void LoadMenu()
+    {
+        try
         {
             Menu.Items.Clear();
-            LoadMenu();
-            if (Environment.project != null)
+
+            noResItem = new ToolStripMenuItem(defaultItemTitle);
+            noResItem.Click += (s, e) =>
             {
-                Environment.project.items.CollectionChanged += (s, ea) =>
+                SelectResource(null);
+            };
+            Menu.Items.Add(noResItem);
+
+            LoadFolderMenu(Global.form1.GetProjectStruct<T>(), null);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private void LoadFolderMenu(ProjectFolderTreeStruct<T> folder, ToolStripMenuItem menuItem)
+    {
+        foreach (ProjectTreeStruct<T> str in folder.Structs)
+        {
+            if (str is ProjectItemTreeStruct<T> resStr)
+            {
+                T res = resStr.Item as T;
+
+                ToolStripMenuItem item = new ToolStripMenuItem(res.name);
+                res.NameChanged += (s, e) => item.Text = res.name;
+
+                if (typeof(T) == typeof(GameSprite) && (res as GameSprite).image != null)
+                    item.Image = (res as GameSprite).image;
+                else if (typeof(T) == typeof(GameObject) && (res as GameObject).sprite?.image != null)
+                    item.Image = (res as GameObject).sprite?.image;
+                if (typeof(T) == typeof(GameBackground) && (res as GameBackground).image != null)
+                    item.Image = (res as GameBackground).image;
+
+                item.Click += (s, e) =>
                 {
-                    if (Environment.project.items.Contains(Resource))
-                        Resource = null;
-                    LoadMenu();
+                    SelectResource(res);
                 };
+
+                if (menuItem != null)
+                    menuItem.DropDownItems.Add(item);
+                else
+                    Menu.Items.Add(item);
+            }
+            else if (str is ProjectFolderTreeStruct<T> folderStr)
+            {
+                ToolStripMenuItem newFolder = new ToolStripMenuItem(folderStr.Name);
+                newFolder.Image = null;// Properties.Resources.folder;
+                LoadFolderMenu(folderStr, newFolder);
+
+                if (menuItem != null)
+                    menuItem.DropDownItems.Add(newFolder);
+                else
+                    Menu.Items.Add(newFolder);
             }
         }
     }
 
-    public class GameObjectPickerBox : GameResourcePickerBox<GameObject>
-    { }
+    private void ShowMenu(Control ctrl, Point position)
+    {
+        Menu.Show(this, position);
+    }
 
-    public class GameSpritePickerBox : GameResourcePickerBox<GameSprite>
-    { }
+    private void nameBox_MouseClick(object sender, MouseEventArgs e)
+    {
+        ShowMenu(nameBox, e.Location);
+    }
 
-    public class GameBackgroundPickerBox : GameResourcePickerBox<GameBackground>
-    { }
+    private void SelectResource(T res)
+    {
+        Resource = res;
+        SelectionChanged?.Invoke(this, Resource);
+        if (resource != null)
+            nameBox.Text = resource.name;
+        else
+            nameBox.Text = defaultItemTitle;
+    }
+
+    private void menuBtn_Click(object sender, EventArgs e)
+    {
+        ShowMenu(toolStrip1, toolStrip1.Location);
+    }
+
+    private void GameResourcePickerBox_Load(object sender, EventArgs e)
+    {
+        Menu.Items.Clear();
+        LoadMenu();
+        if (Environment.project != null)
+        {
+            Environment.project.items.CollectionChanged += (s, ea) =>
+            {
+                if (Environment.project.items.Contains(Resource))
+                    Resource = null;
+                LoadMenu();
+            };
+        }
+    }
 }
+
+public class GameObjectPickerBox : GameResourcePickerBox<GameObject>;
+
+public class GameSpritePickerBox : GameResourcePickerBox<GameSprite>;
+
+public class GameBackgroundPickerBox : GameResourcePickerBox<GameBackground>;

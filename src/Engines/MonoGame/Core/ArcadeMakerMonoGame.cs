@@ -19,438 +19,437 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace ArcadeMaker.Engines.MonoGame.Core
+namespace ArcadeMaker.Engines.MonoGame.Core;
+
+/// <summary>
+/// The main class for the game, responsible for managing game components, settings,
+/// and platform-specific configurations.
+/// </summary>
+public partial class ArcadeMakerMonoGame : Game, IGame
 {
-    /// <summary>
-    /// The main class for the game, responsible for managing game components, settings,
-    /// and platform-specific configurations.
-    /// </summary>
-    public partial class ArcadeMakerMonoGame : Game, IGame
+    public event EventHandler<RuntimeException> OnExpRuntimeError;
+
+    public event EventHandler<Exception> OnCsError;
+
+    // resources
+    private readonly GraphicsDeviceManager graphicsDeviceManager;
+
+    private SpriteBatch SpriteBatch { get; set; }
+    private List<Sprite> Sprites { get; } = [];
+    private Dictionary<Background, Texture2D> BackgroundTextures { get; } = [];
+    public List<Background> Backgrounds { get; } = [];
+    public List<Sound> Sounds { get; } = [];
+    public List<Path> Paths { get; } = [];
+    public List<ObjectModel> Objects { get; } = [];
+    public List<GameFont> FontsData { get; } = [];
+    public List<ScriptDocument> Scripts { get; } = [];
+    public List<RoomModel> Rooms { get; } = [];
+    private List<(Viewport port, OrthographicCamera camera)> Cameras { get; } = [];
+
+    public RoomInstance? CurrentRoom
     {
-        public event EventHandler<RuntimeException> OnExpRuntimeError;
-
-        public event EventHandler<Exception> OnCsError;
-
-        // resources
-        private readonly GraphicsDeviceManager graphicsDeviceManager;
-
-        private SpriteBatch SpriteBatch { get; set; }
-        private List<Sprite> Sprites { get; } = [];
-        private Dictionary<Background, Texture2D> BackgroundTextures { get; } = [];
-        public List<Background> Backgrounds { get; } = [];
-        public List<Sound> Sounds { get; } = [];
-        public List<Path> Paths { get; } = [];
-        public List<ObjectModel> Objects { get; } = [];
-        public List<GameFont> FontsData { get; } = [];
-        public List<ScriptDocument> Scripts { get; } = [];
-        public List<RoomModel> Rooms { get; } = [];
-        private List<(Viewport port, OrthographicCamera camera)> Cameras { get; } = [];
-
-        public RoomInstance? CurrentRoom
+        get;
+        set
         {
-            get;
-            set
+            field = value;
+
+            // load cameras
+            Cameras.Clear();
+
+            if (value != null)
             {
-                field = value;
-
-                // load cameras
-                Cameras.Clear();
-
-                if (value != null)
+                foreach (var view in value.Model.Views)
                 {
-                    foreach (var view in value.Model.Views)
+                    BoxingViewportAdapter viewportAdapter = new(Window, GraphicsDevice, (int)view.Width, (int)view.Height);
+                    var camera = new OrthographicCamera(viewportAdapter);
+                    view.PositionChanged += (s, e) =>
                     {
-                        BoxingViewportAdapter viewportAdapter = new(Window, GraphicsDevice, (int)view.Width, (int)view.Height);
-                        var camera = new OrthographicCamera(viewportAdapter);
-                        view.PositionChanged += (s, e) =>
-                        {
-                            camera.Position = new Vector2((float)view.X, (float)view.Y);
-                        };
-                        Cameras.Add((new(view.PortX, view.PortY, view.PortWidth, view.PortHeight), camera));
-                    }
+                        camera.Position = new Vector2((float)view.X, (float)view.Y);
+                    };
+                    Cameras.Add((new(view.PortX, view.PortY, view.PortWidth, view.PortHeight), camera));
                 }
             }
         }
+    }
 
-        public TextureAtlasMap MainTextureAtlasMap { get; set; }
-        public TextureAtlas MainTextureAtlas { get; private set; }
+    public TextureAtlasMap MainTextureAtlasMap { get; set; }
+    public TextureAtlas MainTextureAtlas { get; private set; }
 
-        // runtime private data
-        private GameRunner GameRunner { get; set; }
+    // runtime private data
+    private GameRunner GameRunner { get; set; }
 
-        /// <summary>
-        /// Indicates if the game is running on a mobile platform.
-        /// </summary>
-        public static readonly bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
+    /// <summary>
+    /// Indicates if the game is running on a mobile platform.
+    /// </summary>
+    public static readonly bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
 
-        /// <summary>
-        /// Indicates if the game is running on a desktop platform.
-        /// </summary>
-        public static readonly bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
+    /// <summary>
+    /// Indicates if the game is running on a desktop platform.
+    /// </summary>
+    public static readonly bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
 
-        /// <summary>
-        /// Initializes a new instance of the game. Configures platform-specific settings,
-        /// initializes services like settings and leaderboard managers, and sets up the
-        /// screen manager for screen transitions.
-        /// </summary>
-        public ArcadeMakerMonoGame(string projectFile)
+    /// <summary>
+    /// Initializes a new instance of the game. Configures platform-specific settings,
+    /// initializes services like settings and leaderboard managers, and sets up the
+    /// screen manager for screen transitions.
+    /// </summary>
+    public ArcadeMakerMonoGame(string projectFile)
+    {
+        graphicsDeviceManager = new GraphicsDeviceManager(this);
+
+        // share GraphicsDeviceManager as a service.
+        Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);
+
+        Content.RootDirectory = "Content";
+
+        // configure screen orientations.
+        graphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+
+        // load game data
+        ((IGame)this).LoadFromProjectFile(projectFile);
+        foreach (var obj in Objects)
         {
-            graphicsDeviceManager = new GraphicsDeviceManager(this);
+            if (!Sprites.Contains(obj.Sprite))
+                Sprites.Add(obj.Sprite);
+        }
+    }
 
-            // share GraphicsDeviceManager as a service.
-            Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);
+    /// <summary>
+    /// Initializes the game, including setting up localization and adding the
+    /// initial screens to the ScreenManager.
+    /// </summary>
+    protected override void Initialize()
+    {
+        base.Initialize();
+        IsMouseVisible = true;
 
-            Content.RootDirectory = "Content";
-
-            // configure screen orientations.
-            graphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
-
-            // load game data
-            ((IGame)this).LoadFromProjectFile(projectFile);
-            foreach (var obj in Objects)
-            {
-                if (!Sprites.Contains(obj.Sprite))
-                    Sprites.Add(obj.Sprite);
-            }
+        // Load supported languages and set the default language.
+        List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
+        var languages = new List<CultureInfo>();
+        for (int i = 0; i < cultures.Count; i++)
+        {
+            languages.Add(cultures[i]);
         }
 
-        /// <summary>
-        /// Initializes the game, including setting up localization and adding the
-        /// initial screens to the ScreenManager.
-        /// </summary>
-        protected override void Initialize()
+        // TODO You should load this from a settings file or similar,
+        // based on what the user or operating system selected.
+        var selectedLanguage = LocalizationManager.DEFAULT_CULTURE_CODE;
+        LocalizationManager.SetCulture(selectedLanguage);
+
+        SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+        Try(() =>
         {
-            base.Initialize();
-            IsMouseVisible = true;
+            GameRunner = new GameRunner(this);
+            GameRunner.Run(invokeInit: false);
+        });
+    }
 
-            // Load supported languages and set the default language.
-            List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
-            var languages = new List<CultureInfo>();
-            for (int i = 0; i < cultures.Count; i++)
-            {
-                languages.Add(cultures[i]);
-            }
+    public void Init() => Initialize();
 
-            // TODO You should load this from a settings file or similar,
-            // based on what the user or operating system selected.
-            var selectedLanguage = LocalizationManager.DEFAULT_CULTURE_CODE;
-            LocalizationManager.SetCulture(selectedLanguage);
-
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-
-            Try(() =>
-            {
-                GameRunner = new GameRunner(this);
-                GameRunner.Run(invokeInit: false);
-            });
-        }
-
-        public void Init() => Initialize();
-
-        /// <summary>
-        /// Loads game content, such as textures and particle systems.
-        /// </summary>
-        protected override void LoadContent()
+    /// <summary>
+    /// Loads game content, such as textures and particle systems.
+    /// </summary>
+    protected override void LoadContent()
+    {
+        Try(() =>
         {
-            Try(() =>
+            base.LoadContent();
+
+            // load background textures
+            Backgrounds.ForEach(bg => BackgroundTextures.Add(bg, Texture2D.FromFile(GraphicsDevice, bg.FilePath)));
+
+            // load fonts
+            Fonts.All.Clear();
+            Fonts.Current = null;
+            foreach (var fontd in FontsData)
+                Fonts.All.Add(Fonts.FromGameFont(fontd, GraphicsDevice));
+            if (Fonts.All.Count > 0)
+                Fonts.Current = Fonts.All[0];
+
+            // load main texture atlas
+            var mainAtlasTexture = Texture2D.FromFile(GraphicsDevice, MainTextureAtlasMap.AtlasFilePath);
+            MainTextureAtlas = new(mainAtlasTexture);
+            foreach (var item in MainTextureAtlasMap.Items)
+                MainTextureAtlas.AddRegion(Sprites.First(sprite => sprite.Name == item.SpriteName), item.ImageIndex, item.X, item.Y, item.W, item.H);
+
+            // load sounds
+            foreach (var sound in Sounds)
             {
-                base.LoadContent();
-
-                // load background textures
-                Backgrounds.ForEach(bg => BackgroundTextures.Add(bg, Texture2D.FromFile(GraphicsDevice, bg.FilePath)));
-
-                // load fonts
-                Fonts.All.Clear();
-                Fonts.Current = null;
-                foreach (var fontd in FontsData)
-                    Fonts.All.Add(Fonts.FromGameFont(fontd, GraphicsDevice));
-                if (Fonts.All.Count > 0)
-                    Fonts.Current = Fonts.All[0];
-
-                // load main texture atlas
-                var mainAtlasTexture = Texture2D.FromFile(GraphicsDevice, MainTextureAtlasMap.AtlasFilePath);
-                MainTextureAtlas = new(mainAtlasTexture);
-                foreach (var item in MainTextureAtlasMap.Items)
-                    MainTextureAtlas.AddRegion(Sprites.First(sprite => sprite.Name == item.SpriteName), item.ImageIndex, item.X, item.Y, item.W, item.H);
-
-                // load sounds
-                foreach (var sound in Sounds)
-                {
-                    try
-                    {
-                        if (sound.Type == Sound.Types.SoundEffect)
-                        {
-                            var effect = SoundEffect.FromFile(sound.FilePath);
-                            soundEffects.Add(sound, effect);
-                        }
-                        else if (sound.Type == Sound.Types.BackgroundMusic)
-                        {
-                            var song = Song.FromUri(sound.Name, new Uri(sound.FilePath, UriKind.Absolute));
-                            backgroundMusics.Add(sound, song);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ArgumentException($"Error loading sound {sound.Name}: {ex.Message}.");
-                    }
-                }
-            });
-        }
-
-        private bool isOnError;
-
-#if !DEBUG
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        private void Try(Action action) // TODO: consider using a more efficient way to handle this, as this might cause performance issues when used in Update and Draw methods.
-        {
-            try
-            {
-                action();
-            }
-            catch (RuntimeException ex)
-            {
-                isOnError = true;
-                OnExpRuntimeError?.Invoke(this, ex);
-                isOnError = false;
-            }
-            catch (Exception ex) when (true)
-            {
-                isOnError = true;
-                OnCsError?.Invoke(this, ex);
-                isOnError = false;
-            }
-        }
-
-        /// <summary>
-        /// Updates the game's logic, called once per frame.
-        /// </summary>
-        /// <param name="gameTime">
-        /// Provides a snapshot of timing values used for game updates.
-        /// </param>
-        protected override void Update(GameTime gameTime)
-        {
-            if (isOnError)
-                return;
-
-            KeyboardState = null;
-            Gamepad1State = null;
-            Gamepad2State = null;
-            Gamepad3State = null;
-            Gamepad4State = null;
-            MouseState = null;
-
-            Try(GameRunner.FireStep);
-
-            base.Update(gameTime);
-        }
-
-        public int CurrentViewIndex { get; private set; } = -1;
-
-        /// <summary>
-        /// Draws the game's graphics, called once per frame.
-        /// </summary>
-        /// <param name="gameTime">
-        /// Provides a snapshot of timing values used for rendering.
-        /// </param>
-        protected override void Draw(GameTime gameTime)
-        {
-            if (isOnError || CurrentRoom == null)
-                return;
-
-            var bc = CurrentRoom.Model.BackgroundColor;
-            GraphicsDevice.Clear(new(bc.R, bc.G, bc.B, bc.A));
-
-            if (CurrentRoom.Model.Views.Count > 0)
-            {
-                CurrentViewIndex = 0;
                 try
                 {
-                    foreach (var view in CurrentRoom.Model.Views)
+                    if (sound.Type == Sound.Types.SoundEffect)
                     {
-                        if (!view.Visible)
-                            continue;
-
-                        GraphicsDevice.Viewport = Cameras[CurrentViewIndex].port;
-
-                        SpriteBatch.Begin(transformMatrix: Cameras[CurrentViewIndex].camera.GetViewMatrix());
-
-                        Try(GameRunner.FireDraw);
-
-                        SpriteBatch.End();
-
-                        CurrentViewIndex++;
+                        var effect = SoundEffect.FromFile(sound.FilePath);
+                        soundEffects.Add(sound, effect);
+                    }
+                    else if (sound.Type == Sound.Types.BackgroundMusic)
+                    {
+                        var song = Song.FromUri(sound.Name, new Uri(sound.FilePath, UriKind.Absolute));
+                        backgroundMusics.Add(sound, song);
                     }
                 }
-                finally
+                catch (Exception ex)
                 {
-                    CurrentViewIndex = -1;
+                    throw new ArgumentException($"Error loading sound {sound.Name}: {ex.Message}.");
                 }
             }
-            else
+        });
+    }
+
+    private bool isOnError;
+
+#if !DEBUG
+    //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+    private void Try(Action action) // TODO: consider using a more efficient way to handle this, as this might cause performance issues when used in Update and Draw methods.
+    {
+        try
+        {
+            action();
+        }
+        catch (RuntimeException ex)
+        {
+            isOnError = true;
+            OnExpRuntimeError?.Invoke(this, ex);
+            isOnError = false;
+        }
+        catch (Exception ex) when (true)
+        {
+            isOnError = true;
+            OnCsError?.Invoke(this, ex);
+            isOnError = false;
+        }
+    }
+
+    /// <summary>
+    /// Updates the game's logic, called once per frame.
+    /// </summary>
+    /// <param name="gameTime">
+    /// Provides a snapshot of timing values used for game updates.
+    /// </param>
+    protected override void Update(GameTime gameTime)
+    {
+        if (isOnError)
+            return;
+
+        KeyboardState = null;
+        Gamepad1State = null;
+        Gamepad2State = null;
+        Gamepad3State = null;
+        Gamepad4State = null;
+        MouseState = null;
+
+        Try(GameRunner.FireStep);
+
+        base.Update(gameTime);
+    }
+
+    public int CurrentViewIndex { get; private set; } = -1;
+
+    /// <summary>
+    /// Draws the game's graphics, called once per frame.
+    /// </summary>
+    /// <param name="gameTime">
+    /// Provides a snapshot of timing values used for rendering.
+    /// </param>
+    protected override void Draw(GameTime gameTime)
+    {
+        if (isOnError || CurrentRoom == null)
+            return;
+
+        var bc = CurrentRoom.Model.BackgroundColor;
+        GraphicsDevice.Clear(new(bc.R, bc.G, bc.B, bc.A));
+
+        if (CurrentRoom.Model.Views.Count > 0)
+        {
+            CurrentViewIndex = 0;
+            try
             {
-                SpriteBatch.Begin();
+                foreach (var view in CurrentRoom.Model.Views)
+                {
+                    if (!view.Visible)
+                        continue;
 
-                Try(GameRunner.FireDraw);
+                    GraphicsDevice.Viewport = Cameras[CurrentViewIndex].port;
 
-                SpriteBatch.End();
+                    SpriteBatch.Begin(transformMatrix: Cameras[CurrentViewIndex].camera.GetViewMatrix());
+
+                    Try(GameRunner.FireDraw);
+
+                    SpriteBatch.End();
+
+                    CurrentViewIndex++;
+                }
             }
-
-            base.Draw(gameTime);
-        }
-
-        public void DrawBackground()
-        {
-        }
-
-        public Exp.Void DrawInstance(ArcadeMaker.Core.Runtime.Instance inst)
-        {
-            if (inst.Model.Sprite == null)
-                return Exp.Void.Return;
-
-            Vector2 position = new((float)inst.X.Value!.Number, (float)inst.Y.Value!.Number);
-            Vector2 origin = new(inst.Model.Sprite.OriginX, inst.Model.Sprite.OriginY);
-            Vector2 scale = new((float)inst.ImageXScale.Value.Number, (float)inst.ImageYScale.Value.Number);
-            MainTextureAtlas.GetRegion(inst.Model.Sprite, (int)inst.ImageIndex.Value.Number).Draw(
-                SpriteBatch,
-                position,
-                Color.White,
-                (float)ArcadeMaker.Core.Math.Formulas.DegreesToRadians(inst.ImageAngle.Value.Number),
-                origin,
-                scale,
-                SpriteEffects.None,
-                0
-            );
-
-            return Exp.Void.Return;
-        }
-
-        public void SetWindowsSize(int w, int h)
-        {
-            graphicsDeviceManager.PreferredBackBufferWidth = w;
-            graphicsDeviceManager.PreferredBackBufferHeight = h;
-            graphicsDeviceManager.ApplyChanges();
-        }
-
-        public void SetCaption(string caption)
-        {
-            Window.Title = caption;
-        }
-
-        public Exp.Void ShowMessage(Exp.Instance? _, IValue[] args)
-        {
-            if (args == null || args.Length != 1)
-                throw new ArgumentException("A single argument of type instance was expected.");
-
-            MessageBox.Show("Message", ("".ToExpString() + args[0]?.Object?.ToString()).ToString(), ["OK"]);
-            return Exp.Void.Return;
-        }
-
-        private KeyboardState? KeyboardState
-        { get { field ??= Keyboard.GetState(); return field; } set; }
-        private GamePadState? Gamepad1State
-        { get { field ??= GamePad.GetState(PlayerIndex.One); return field; } set; }
-        private GamePadState? Gamepad2State
-        { get { field ??= GamePad.GetState(PlayerIndex.Two); return field; } set; }
-        private GamePadState? Gamepad3State
-        { get { field ??= GamePad.GetState(PlayerIndex.Three); return field; } set; }
-        private GamePadState? Gamepad4State
-        { get { field ??= GamePad.GetState(PlayerIndex.Four); return field; } set; }
-        private MouseState? MouseState
-        { get { field ??= Mouse.GetState(); return field; } set; }
-
-        public BoolValue KeyDown(Exp.Instance _, IValue[] args)
-        {
-            if (args == null || args.Length != 1 || !args[0].IsNumber)
-                throw new ArgumentException("A single argument of type number was expected.");
-
-            // check if the specified key is currently pressed.
-            return KeyboardState.Value.IsKeyDown((Keys)args[0].Number);
-        }
-
-        public BoolValue KeyUp(Exp.Instance _, IValue[] args)
-        {
-            if (args == null || args.Length != 1 || !args[0].IsNumber)
-                throw new ArgumentException("A single argument of type number was expected.");
-
-            // check if the specified key is currently pressed.
-            return KeyboardState.Value.IsKeyUp((Keys)args[0].Number);
-        }
-
-        public BoolValue GamepadButtonDown(Exp.Instance? _, IValue?[] args)
-        {
-            if (args == null || args.Length != 1 || !args[0].IsNumber)
-                throw new ArgumentException("2 arguments of type number were expected.");
-
-            // check if the specified key is currently pressed.
-            GamePadState? gamepad = args[0].Number switch
+            finally
             {
-                1 => Gamepad1State,
-                2 => Gamepad2State,
-                3 => Gamepad3State,
-                4 => Gamepad4State,
-                _ => throw new ArgumentException("Valid inputs for argument playerIndex is a number in range of 1-4.")
-            };
+                CurrentViewIndex = -1;
+            }
+        }
+        else
+        {
+            SpriteBatch.Begin();
 
-            return gamepad.Value.IsButtonDown((Buttons)args[1].Number);
+            Try(GameRunner.FireDraw);
+
+            SpriteBatch.End();
         }
 
-        public BoolValue MouseButtonDown(Exp.Instance? _, IValue?[] args)
-        {
-            if (args == null || args.Length != 1 || args[0]?.IsNumber != true)
-                throw new ArgumentException("A single argument of type number was expected.");
+        base.Draw(gameTime);
+    }
 
-            // check if the specified key is currently pressed
-            return args[0]!.Number switch
-            {
-                0d => MouseState!.Value.LeftButton == ButtonState.Pressed,
-                1d => MouseState!.Value.MiddleButton == ButtonState.Pressed,
-                2d => MouseState!.Value.RightButton == ButtonState.Pressed,
-                _ => throw new ArgumentException($"{args[0]!.Number} is not a valid mouse button input. Use '{ExpSrc.EngineNamespace}{Exp.Spans.NamespaceSpecificationSpan.Symbol}MouseButton' enum to pass valid values.")
-            };
-        }
+    public void DrawBackground()
+    {
+    }
 
-        public Exp.Void DrawText(Exp.Instance? inst, IValue?[] args)
-        {
-            args.ValidateArgsNumber(3);
-            args[0].ThrowIfNull();
-            args[1].ThrowIfNull();
-
-            // TODO: let user select font (by implementing setFont(fontId) function)
-            if (Fonts.Current == null)
-                throw new InvalidOperationException("Game must have at least 1 font to draw text.");
-
-            SpriteBatch.DrawString(Fonts.Current, args[2]?.ToString() ?? "NULL", new((float)args[0]!.Number, (float)args[1]!.Number), Color.White);
+    public Exp.Void DrawInstance(ArcadeMaker.Core.Runtime.Instance inst)
+    {
+        if (inst.Model.Sprite == null)
             return Exp.Void.Return;
-        }
 
-        public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness = 1f)
+        Vector2 position = new((float)inst.X.Value!.Number, (float)inst.Y.Value!.Number);
+        Vector2 origin = new(inst.Model.Sprite.OriginX, inst.Model.Sprite.OriginY);
+        Vector2 scale = new((float)inst.ImageXScale.Value.Number, (float)inst.ImageYScale.Value.Number);
+        MainTextureAtlas.GetRegion(inst.Model.Sprite, (int)inst.ImageIndex.Value.Number).Draw(
+            SpriteBatch,
+            position,
+            Color.White,
+            (float)ArcadeMaker.Core.Math.Formulas.DegreesToRadians(inst.ImageAngle.Value.Number),
+            origin,
+            scale,
+            SpriteEffects.None,
+            0
+        );
+
+        return Exp.Void.Return;
+    }
+
+    public void SetWindowsSize(int w, int h)
+    {
+        graphicsDeviceManager.PreferredBackBufferWidth = w;
+        graphicsDeviceManager.PreferredBackBufferHeight = h;
+        graphicsDeviceManager.ApplyChanges();
+    }
+
+    public void SetCaption(string caption)
+    {
+        Window.Title = caption;
+    }
+
+    public Exp.Void ShowMessage(Exp.Instance? _, IValue[] args)
+    {
+        if (args == null || args.Length != 1)
+            throw new ArgumentException("A single argument of type instance was expected.");
+
+        MessageBox.Show("Message", ("".ToExpString() + args[0]?.Object?.ToString()).ToString(), ["OK"]);
+        return Exp.Void.Return;
+    }
+
+    private KeyboardState? KeyboardState
+    { get { field ??= Keyboard.GetState(); return field; } set; }
+    private GamePadState? Gamepad1State
+    { get { field ??= GamePad.GetState(PlayerIndex.One); return field; } set; }
+    private GamePadState? Gamepad2State
+    { get { field ??= GamePad.GetState(PlayerIndex.Two); return field; } set; }
+    private GamePadState? Gamepad3State
+    { get { field ??= GamePad.GetState(PlayerIndex.Three); return field; } set; }
+    private GamePadState? Gamepad4State
+    { get { field ??= GamePad.GetState(PlayerIndex.Four); return field; } set; }
+    private MouseState? MouseState
+    { get { field ??= Mouse.GetState(); return field; } set; }
+
+    public BoolValue KeyDown(Exp.Instance _, IValue[] args)
+    {
+        if (args == null || args.Length != 1 || !args[0].IsNumber)
+            throw new ArgumentException("A single argument of type number was expected.");
+
+        // check if the specified key is currently pressed.
+        return KeyboardState.Value.IsKeyDown((Keys)args[0].Number);
+    }
+
+    public BoolValue KeyUp(Exp.Instance _, IValue[] args)
+    {
+        if (args == null || args.Length != 1 || !args[0].IsNumber)
+            throw new ArgumentException("A single argument of type number was expected.");
+
+        // check if the specified key is currently pressed.
+        return KeyboardState.Value.IsKeyUp((Keys)args[0].Number);
+    }
+
+    public BoolValue GamepadButtonDown(Exp.Instance? _, IValue?[] args)
+    {
+        if (args == null || args.Length != 1 || !args[0].IsNumber)
+            throw new ArgumentException("2 arguments of type number were expected.");
+
+        // check if the specified key is currently pressed.
+        GamePadState? gamepad = args[0].Number switch
         {
-            SpriteBatch.DrawLine(new Vector2((float)x1, (float)y1), new Vector2((float)x2, (float)y2), new Color((uint)col), (float)thickness);
-        }
+            1 => Gamepad1State,
+            2 => Gamepad2State,
+            3 => Gamepad3State,
+            4 => Gamepad4State,
+            _ => throw new ArgumentException("Valid inputs for argument playerIndex is a number in range of 1-4.")
+        };
 
-        public IValue GetMouseX(Exp.Instance? _, IValue?[] args) => MouseState.Value.X.ToExp();
+        return gamepad.Value.IsButtonDown((Buttons)args[1].Number);
+    }
 
-        public IValue GetMouseY(Exp.Instance? _, IValue?[] args) => MouseState.Value.Y.ToExp();
+    public BoolValue MouseButtonDown(Exp.Instance? _, IValue?[] args)
+    {
+        if (args == null || args.Length != 1 || args[0]?.IsNumber != true)
+            throw new ArgumentException("A single argument of type number was expected.");
 
-        protected override void Dispose(bool disposing)
+        // check if the specified key is currently pressed
+        return args[0]!.Number switch
         {
-            // dispose sounds
-            MediaPlayer.Queue.ActiveSong?.Dispose();
-            MediaPlayer.IsRepeating = false;
-            MediaPlayer.Stop();
-            backgroundMusics.ForEach(bm => { if (!bm.Value.IsDisposed) bm.Value.Dispose(); });
-            soundEffectInstances.Values.ForEach(ls => ls.ForEach(sei => { if (!sei.IsDisposed) sei.Dispose(); }));
-            soundEffects.ForEach(se => { if (!se.Value.IsDisposed) se.Value.Dispose(); });
+            0d => MouseState!.Value.LeftButton == ButtonState.Pressed,
+            1d => MouseState!.Value.MiddleButton == ButtonState.Pressed,
+            2d => MouseState!.Value.RightButton == ButtonState.Pressed,
+            _ => throw new ArgumentException($"{args[0]!.Number} is not a valid mouse button input. Use '{ExpSrc.EngineNamespace}{Exp.Spans.NamespaceSpecificationSpan.Symbol}MouseButton' enum to pass valid values.")
+        };
+    }
 
-            // dispose textures
-            BackgroundTextures.ForEach(tex => { if (!tex.Value.IsDisposed) tex.Value.Dispose(); });
-            if (!MainTextureAtlas.Texture.IsDisposed)
-                MainTextureAtlas.Texture.Dispose();
-            Fonts.All.ForEach(f => { if (!f.Texture.IsDisposed) f.Texture.Dispose(); });
+    public Exp.Void DrawText(Exp.Instance? inst, IValue?[] args)
+    {
+        args.ValidateArgsNumber(3);
+        args[0].ThrowIfNull();
+        args[1].ThrowIfNull();
 
-            base.Dispose(disposing);
-        }
+        // TODO: let user select font (by implementing setFont(fontId) function)
+        if (Fonts.Current == null)
+            throw new InvalidOperationException("Game must have at least 1 font to draw text.");
+
+        SpriteBatch.DrawString(Fonts.Current, args[2]?.ToString() ?? "NULL", new((float)args[0]!.Number, (float)args[1]!.Number), Color.White);
+        return Exp.Void.Return;
+    }
+
+    public void DrawLine(double x1, double y1, double x2, double y2, int col, double thickness = 1f)
+    {
+        SpriteBatch.DrawLine(new Vector2((float)x1, (float)y1), new Vector2((float)x2, (float)y2), new Color((uint)col), (float)thickness);
+    }
+
+    public IValue GetMouseX(Exp.Instance? _, IValue?[] args) => MouseState.Value.X.ToExp();
+
+    public IValue GetMouseY(Exp.Instance? _, IValue?[] args) => MouseState.Value.Y.ToExp();
+
+    protected override void Dispose(bool disposing)
+    {
+        // dispose sounds
+        MediaPlayer.Queue.ActiveSong?.Dispose();
+        MediaPlayer.IsRepeating = false;
+        MediaPlayer.Stop();
+        backgroundMusics.ForEach(bm => { if (!bm.Value.IsDisposed) bm.Value.Dispose(); });
+        soundEffectInstances.Values.ForEach(ls => ls.ForEach(sei => { if (!sei.IsDisposed) sei.Dispose(); }));
+        soundEffects.ForEach(se => { if (!se.Value.IsDisposed) se.Value.Dispose(); });
+
+        // dispose textures
+        BackgroundTextures.ForEach(tex => { if (!tex.Value.IsDisposed) tex.Value.Dispose(); });
+        if (!MainTextureAtlas.Texture.IsDisposed)
+            MainTextureAtlas.Texture.Dispose();
+        Fonts.All.ForEach(f => { if (!f.Texture.IsDisposed) f.Texture.Dispose(); });
+
+        base.Dispose(disposing);
     }
 }

@@ -1,71 +1,70 @@
-﻿namespace ArcadeMaker.IDE.Items
+﻿namespace ArcadeMaker.IDE.Items;
+
+public class GamePath : GameItem
 {
-    public class GamePath : GameItem
+    /* do not change property name!!! */
+    public static Bitmap icon { get; } = Properties.Resources.path;
+
+    public List<PathPoint> points = new List<PathPoint>();
+    public bool close = false;
+
+    public new PathEditor editor
     {
-        /* do not change property name!!! */
-        public static Bitmap icon { get; } = Properties.Resources.path;
-
-        public List<PathPoint> points = new List<PathPoint>();
-        public bool close = false;
-
-        public new PathEditor editor
+        get
         {
-            get
+            if (editorClosed)
             {
-                if (editorClosed)
-                {
-                    base.editor = new PathEditor(this);
-                }
-                return base.Editor as PathEditor;
+                base.editor = new PathEditor(this);
             }
-            set
-            {
-                base.editor = value;
-            }
+            return base.Editor as PathEditor;
         }
-
-        public GamePath(string name) : base(name)
+        set
         {
-            getEditor += (s, e) =>
-            {
-                var activateGet = editor;
-            };
-            editor = new PathEditor(this);
+            base.editor = value;
         }
     }
 
-    public class PathPoint
+    public GamePath(string name) : base(name)
     {
-        public int x = 0, y = 0, speed = 100;
-
-        public PathPoint(int x, int y, int speed = 100)
+        getEditor += (s, e) =>
         {
-            this.x = x;
-            this.y = y;
+            var activateGet = editor;
+        };
+        editor = new PathEditor(this);
+    }
+}
 
-            if (speed < 0 || speed > 100)
-                throw new Exception("PathPoint speed range is 0-100");
+public class PathPoint
+{
+    public int x = 0, y = 0, speed = 100;
 
-            this.speed = speed;
-        }
+    public PathPoint(int x, int y, int speed = 100)
+    {
+        this.x = x;
+        this.y = y;
 
-        public PathPoint(Point point)
-        {
-            this.x = point.X;
-            this.y = point.Y;
-        }
+        if (speed < 0 || speed > 100)
+            throw new Exception("PathPoint speed range is 0-100");
 
-        public PathPoint()
-        { }
+        this.speed = speed;
+    }
 
-        public static Point operator -(PathPoint left, Size right)
-        {
-            return new Point(left.x - right.Width, left.y - right.Height);
-        }
+    public PathPoint(Point point)
+    {
+        this.x = point.X;
+        this.y = point.Y;
+    }
 
-        public override string ToString()
-        {
-            return $"({x}, {y})     sp: {speed}%";
-        }
+    public PathPoint()
+    { }
+
+    public static Point operator -(PathPoint left, Size right)
+    {
+        return new Point(left.x - right.Width, left.y - right.Height);
+    }
+
+    public override string ToString()
+    {
+        return $"({x}, {y})     sp: {speed}%";
     }
 }

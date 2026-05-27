@@ -3,302 +3,301 @@ using ArcadeMaker.IDE.Items;
 using ArcadeMaker.IDE.Scripting;
 using Exp;
 
-namespace ArcadeMaker.IDE
+namespace ArcadeMaker.IDE;
+
+public partial class ScriptEditor : Form
 {
-    public partial class ScriptEditor : Form
+    /// <summary>
+    /// <inheritdoc cref="string.IndexOf(char, int)" path="/param[@name='startIndex']"/>
+    /// Ruuning on a <see cref="Task">Tasking</see> thread <seealso href="http://www.www">link</seealso><paramref name="param">pref</paramref> <c>for (int i = 0;;)</c>
+    /// <list type="table">
+    /// <listheader><description>hello <see langword="false"/></description></listheader><item><term>hello</term><description>world</description></item>
+    /// </list>
+    /// </summary>
+    /// <typeparam name="Hello"></typeparam>
+    /// <typeparam name="World"></typeparam>
+    /// <param name="param"></param>
+    /// <inheritdoc cref="string.IndexOf(char)" path="/param"/>
+    /// <returns>a task</returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public static async Task TestG<Hello, World>(int param, char value) where World : unmanaged
     {
-        /// <summary>
-        /// <inheritdoc cref="string.IndexOf(char, int)" path="/param[@name='startIndex']"/>
-        /// Ruuning on a <see cref="Task">Tasking</see> thread <seealso href="http://www.www">link</seealso><paramref name="param">pref</paramref> <c>for (int i = 0;;)</c>
-        /// <list type="table">
-        /// <listheader><description>hello <see langword="false"/></description></listheader><item><term>hello</term><description>world</description></item>
-        /// </list>
-        /// </summary>
-        /// <typeparam name="Hello"></typeparam>
-        /// <typeparam name="World"></typeparam>
-        /// <param name="param"></param>
-        /// <inheritdoc cref="string.IndexOf(char)" path="/param"/>
-        /// <returns>a task</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static async Task TestG<Hello, World>(int param, char value) where World : unmanaged
+        bool @bool = false;
+        if (@bool) await TestG<EventArgs, int>(7, 'a');
+        throw new NotImplementedException();
+    }
+
+    private string classname = null;
+    private readonly IContainsScript obj = null;
+
+    private List<ScriptBoxSpan> Spans => scriptBox.Spans;
+
+    public ScriptEditor(IContainsScript obj, string defaultText = "", string classname = null)
+    {
+        this.obj = obj;
+        InitializeComponent();
+        ShowInTaskbar = false;
+        if (defaultText != null)
+            scriptBox.Spans.AddRange(Global.GetScriptBoxSpans(defaultText, SpansTextBox2.TabSpace));
+        this.classname = classname;
+        //checkTimer.Interval = 200;
+
+        scriptBox.SelectionStartChanged += async (s, e) => await Task.Run(() => ScriptBox_SelectionStartChanged(s, e));
+        scriptBox.MouseHover += async (s, e) => await Task.Run(() => ScriptBox_MouseHover(s, e));
+
+        //scriptBox.OnCompletionItemShowInfo += ScriptBox_OnCompletionItemInfo;
+        //scriptBox.CharAlerts.Add('.');
+        //scriptBox.CharAlert += ScriptBox_CharAlert;
+    }
+
+    private void ScriptBox_MouseHover(object sender, EventArgs e)
+    {
+    }
+
+    private string ReadInheritDoc(InheritDoc doc, Func<Relation, string> ReadRelation)
+    {
+        return null;
+    }
+
+    private void ScriptBox_SelectionStartChanged(object sender, int e)
+    {
+    }
+
+    private async void ScriptEditor_Load(object sender, EventArgs e)
+    {
+        scriptBox.Loading = true;
+        scriptBox.Enabled = false;
+
+        string script = obj.Script;
+        if (obj is RoomObject ro)
+            script = ro.ScriptOrDefaultCreationCode;
+        if (string.IsNullOrEmpty(scriptBox.Text) && !string.IsNullOrEmpty(script))
+            scriptBox.Spans.AddRange(Global.GetScriptBoxSpans(script, SpansTextBox2.TabSpace));
+        //await Task.Run(InitCompilation);
+
+        // copy columns from main form's error box
+        ColumnHeader[] columns = new ColumnHeader[Global.form1.errorsBox.Columns.Count];
+        for (int i = 0; i < columns.Length; i++)
+            columns[i] = (ColumnHeader)Global.form1.errorsBox.Columns[i].Clone();
+        errorsBox.Columns.AddRange(columns);
+
+        scriptBox.Enabled = true;
+        scriptBox.Loading = false;
+        loaded = true;
+    }
+
+    public event EventHandler<string> OKClicked;
+
+    private bool okClose = false;
+
+    private void okBtn_Click(object sender, EventArgs e)
+    {
+        var handler = OKClicked;
+        handler?.Invoke(this, scriptBox.Text);
+        okClose = true;
+        Close();
+        okClose = false;
+    }
+
+    /*private bool skipTab = false;
+    private void scriptBoxTab()
+    {
+        if (!skipTab)
         {
-            bool @bool = false;
-            if (@bool) await TestG<EventArgs, int>(7, 'a');
-            throw new NotImplementedException();
-        }
-
-        private string classname = null;
-        private readonly IContainsScript obj = null;
-
-        private List<ScriptBoxSpan> Spans => scriptBox.Spans;
-
-        public ScriptEditor(IContainsScript obj, string defaultText = "", string classname = null)
-        {
-            this.obj = obj;
-            InitializeComponent();
-            ShowInTaskbar = false;
-            if (defaultText != null)
-                scriptBox.Spans.AddRange(Global.GetScriptBoxSpans(defaultText, SpansTextBox2.TabSpace));
-            this.classname = classname;
-            //checkTimer.Interval = 200;
-
-            scriptBox.SelectionStartChanged += async (s, e) => await Task.Run(() => ScriptBox_SelectionStartChanged(s, e));
-            scriptBox.MouseHover += async (s, e) => await Task.Run(() => ScriptBox_MouseHover(s, e));
-
-            //scriptBox.OnCompletionItemShowInfo += ScriptBox_OnCompletionItemInfo;
-            //scriptBox.CharAlerts.Add('.');
-            //scriptBox.CharAlert += ScriptBox_CharAlert;
-        }
-
-        private void ScriptBox_MouseHover(object sender, EventArgs e)
-        {
-        }
-
-        private string ReadInheritDoc(InheritDoc doc, Func<Relation, string> ReadRelation)
-        {
-            return null;
-        }
-
-        private void ScriptBox_SelectionStartChanged(object sender, int e)
-        {
-        }
-
-        private async void ScriptEditor_Load(object sender, EventArgs e)
-        {
-            scriptBox.Loading = true;
-            scriptBox.Enabled = false;
-
-            string script = obj.Script;
-            if (obj is RoomObject ro)
-                script = ro.ScriptOrDefaultCreationCode;
-            if (string.IsNullOrEmpty(scriptBox.Text) && !string.IsNullOrEmpty(script))
-                scriptBox.Spans.AddRange(Global.GetScriptBoxSpans(script, SpansTextBox2.TabSpace));
-            //await Task.Run(InitCompilation);
-
-            // copy columns from main form's error box
-            ColumnHeader[] columns = new ColumnHeader[Global.form1.errorsBox.Columns.Count];
-            for (int i = 0; i < columns.Length; i++)
-                columns[i] = (ColumnHeader)Global.form1.errorsBox.Columns[i].Clone();
-            errorsBox.Columns.AddRange(columns);
-
-            scriptBox.Enabled = true;
-            scriptBox.Loading = false;
-            loaded = true;
-        }
-
-        public event EventHandler<string> OKClicked;
-
-        private bool okClose = false;
-
-        private void okBtn_Click(object sender, EventArgs e)
-        {
-            var handler = OKClicked;
-            handler?.Invoke(this, scriptBox.Text);
-            okClose = true;
-            Close();
-            okClose = false;
-        }
-
-        /*private bool skipTab = false;
-        private void scriptBoxTab()
-        {
-            if (!skipTab)
+            int index = scriptBox.Text.GetLineColPosition(scriptBox.Caret.Line, scriptBox.Caret.Col);
+            int depth = 0;
+            for (int i = 0; i < index; i++)
             {
-                int index = scriptBox.Text.GetLineColPosition(scriptBox.Caret.Line, scriptBox.Caret.Col);
-                int depth = 0;
-                for (int i = 0; i < index; i++)
+                char c = scriptBox.Text[i];
+                if (c == '{')
+                    depth++;
+                else if (c == '}')
+                    depth--;
+                if (c == '\n')
                 {
-                    char c = scriptBox.Text[i];
-                    if (c == '{')
-                        depth++;
-                    else if (c == '}')
-                        depth--;
-                    if (c == '\n')
+                    while (scriptBox.Text[i + 1] == ' ' || scriptBox.Text[i + 1] == '\t')
                     {
-                        while (scriptBox.Text[i + 1] == ' ' || scriptBox.Text[i + 1] == '\t')
-                        {
-                            i++;
-                        }
-                        if (scriptBox.Text[i + 1] == '}')
-                        {
-                            depth--;
-                            i += 2;
-                        }
-                        if (i >= index)
-                        {
-                            string tabs = "";
-                            for (int t = 0; t < depth; t++)
-                                tabs += "    ";
-                            skipTab = true;
-                            scriptBox.Text = scriptBox.Text.Insert(index - 2, tabs);
-                            skipTab = false;
-                            for (int t = 0; t < depth * 4; t++)
-                                scriptBox.Caret.MoveRight();
-                            return;
-                        }
+                        i++;
+                    }
+                    if (scriptBox.Text[i + 1] == '}')
+                    {
+                        depth--;
+                        i += 2;
+                    }
+                    if (i >= index)
+                    {
+                        string tabs = "";
+                        for (int t = 0; t < depth; t++)
+                            tabs += "    ";
+                        skipTab = true;
+                        scriptBox.Text = scriptBox.Text.Insert(index - 2, tabs);
+                        skipTab = false;
+                        for (int t = 0; t < depth * 4; t++)
+                            scriptBox.Caret.MoveRight();
+                        return;
                     }
                 }
             }
         }
-        */
+    }
+    */
 
-        private void findBtn_Click(object sender, EventArgs e)
+    private void findBtn_Click(object sender, EventArgs e)
+    {
+        var findDialog = new SpansTextBox2SearchForm(scriptBox);
+        findDialog.Owner = this;
+        findDialog.Show();
+    }
+
+    private bool changes = false;
+
+    private void scriptBox_Load(object sender, EventArgs e)
+    {
+        textChangedTimer.Tick += textChangedTimer_Tick;
+    }
+
+    private System.Windows.Forms.Timer textChangedTimer = new() { Interval = 5000 };
+
+    private void scriptBox_TextChanged(object sender, SpansTextBox2TextChangedEventArgs e)
+    {
+        textChangedTimer.Stop();
+        textChangedTimer.Start();
+    }
+
+    private async void textChangedTimer_Tick(object? sender, EventArgs e)
+    {
+        textChangedTimer.Stop();
+
+        var scriptBu = obj.Script;
+        obj.Script = scriptBox.Text;
+
+        // check errors
+        HashSet<ExpError>? errors = null;
+        await Task.Run(() =>
         {
-            var findDialog = new SpansTextBox2SearchForm(scriptBox);
-            findDialog.Owner = this;
-            findDialog.Show();
-        }
+            Debugging.Debug.TryBuild(out errors);
+        });
 
-        private bool changes = false;
-
-        private void scriptBox_Load(object sender, EventArgs e)
+        Global.form1.errorsBox.Items.Clear();
+        errorsBox.Items.Clear();
+        if (errors?.Count >= 1)
         {
-            textChangedTimer.Tick += textChangedTimer_Tick;
-        }
-
-        private System.Windows.Forms.Timer textChangedTimer = new() { Interval = 5000 };
-
-        private void scriptBox_TextChanged(object sender, SpansTextBox2TextChangedEventArgs e)
-        {
-            textChangedTimer.Stop();
-            textChangedTimer.Start();
-        }
-
-        private async void textChangedTimer_Tick(object? sender, EventArgs e)
-        {
-            textChangedTimer.Stop();
-
-            var scriptBu = obj.Script;
-            obj.Script = scriptBox.Text;
-
-            // check errors
-            HashSet<ExpError>? errors = null;
-            await Task.Run(() =>
+            foreach (var err in errors)
             {
-                Debugging.Debug.TryBuild(out errors);
-            });
-
-            Global.form1.errorsBox.Items.Clear();
-            errorsBox.Items.Clear();
-            if (errors?.Count >= 1)
-            {
-                foreach (var err in errors)
-                {
-                    ListViewItem errItem = new("Exp");
-                    errItem.SubItems.Add(err.Message);
-                    errItem.SubItems.Add(err.Doc);
-                    errItem.SubItems.Add(err.Line.ToString());
-                    errorsBox.Items.Add(errItem);
-                    Global.form1.errorsBox.Items.Add((ListViewItem)errItem.Clone());
-                }
+                ListViewItem errItem = new("Exp");
+                errItem.SubItems.Add(err.Message);
+                errItem.SubItems.Add(err.Doc);
+                errItem.SubItems.Add(err.Line.ToString());
+                errorsBox.Items.Add(errItem);
+                Global.form1.errorsBox.Items.Add((ListViewItem)errItem.Clone());
             }
-
-            obj.Script = scriptBu;
         }
 
-        private CancellationTokenSource getCompletion_cancellationToken = new CancellationTokenSource();
-        private bool getCompletion_isRunning = false;
-        private SpansTextBox2Suggestion[] lastSugList = null;
+        obj.Script = scriptBu;
+    }
 
-        private static bool checkErrorsThreadFree = true;
+    private CancellationTokenSource getCompletion_cancellationToken = new CancellationTokenSource();
+    private bool getCompletion_isRunning = false;
+    private SpansTextBox2Suggestion[] lastSugList = null;
 
-        private string gameSettings = null;
+    private static bool checkErrorsThreadFree = true;
 
-        private string GetGameSettings()
+    private string gameSettings = null;
+
+    private string GetGameSettings()
+    {
+        throw new NotImplementedException();
+        //            if (gameSettings == null)
+        //            {
+        //#if DEBUG
+        //                using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Settings.cs"))
+        //                {
+        //                    gameSettings = tr.ReadToEnd();
+        //                    tr.Close();
+        //                }
+        //#else
+        //                gameSettings = Properties.Resources.Settings;
+        //#endif
+        //            }
+        //            return gameSettings;
+    }
+
+    private string gameResources = null;
+
+    private string GetGameResources()
+    {
+        throw new NotImplementedException();
+        /*
+        if (gameResources == null)
         {
-            throw new NotImplementedException();
-            //            if (gameSettings == null)
-            //            {
-            //#if DEBUG
-            //                using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Settings.cs"))
-            //                {
-            //                    gameSettings = tr.ReadToEnd();
-            //                    tr.Close();
-            //                }
-            //#else
-            //                gameSettings = Properties.Resources.Settings;
-            //#endif
-            //            }
-            //            return gameSettings;
-        }
-
-        private string gameResources = null;
-
-        private string GetGameResources()
-        {
-            throw new NotImplementedException();
-            /*
-            if (gameResources == null)
-            {
 #if DEBUG
-                using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Resources.Designer.cs"))
-                {
-                    gameResources = tr.ReadToEnd();
-                    tr.Close();
-                }
+            using (var tr = new StreamReader(@"C:\Users\vsprojs\GameStudio\Resources.Designer.cs"))
+            {
+                gameResources = tr.ReadToEnd();
+                tr.Close();
+            }
 #else
-                gameResources = Properties.Resources.Resources_Designer;
+            gameResources = Properties.Resources.Resources_Designer;
 #endif
-            }
-            return gameResources;
-            */
+        }
+        return gameResources;
+        */
+    }
+
+    private void ColorScriptEditor()
+    {
+        throw new NotImplementedException();
+    }
+
+    private int FindSpan(int searchFrom, char startsWith)
+    {
+        for (int span = searchFrom; span >= 0 && span < Spans.Count; span++)
+        {
+            if (Spans[span].text.Length > 0 && Spans[span].text[0] == startsWith)
+                return span;
         }
 
-        private void ColorScriptEditor()
-        {
-            throw new NotImplementedException();
-        }
+        return -1;
+    }
 
-        private int FindSpan(int searchFrom, char startsWith)
+    private int FindSpan(int charIndex)
+    {
+        for (int spanIndex = 0, totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
         {
-            for (int span = searchFrom; span >= 0 && span < Spans.Count; span++)
+            var span = Spans[spanIndex];
+            for (int i = 0; span != null && i < span.text.Length; i++, totalCharIndex++)
             {
-                if (Spans[span].text.Length > 0 && Spans[span].text[0] == startsWith)
-                    return span;
+                if (totalCharIndex == charIndex)
+                    return spanIndex;
             }
-
-            return -1;
         }
 
-        private int FindSpan(int charIndex)
+        return -1;
+    }
+
+    private bool loaded = false;
+
+    private void ScriptEditor_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (loaded && /*changes &&*/ !okClose)
         {
-            for (int spanIndex = 0, totalCharIndex = 0; spanIndex < Spans.Count; spanIndex++)
+            DialogResult result = MessageBox.Show("Do you want to save changes?", "Close Code Editor", MessageBoxButtons.YesNoCancel);
+            if (result == DialogResult.Yes)
             {
-                var span = Spans[spanIndex];
-                for (int i = 0; span != null && i < span.text.Length; i++, totalCharIndex++)
-                {
-                    if (totalCharIndex == charIndex)
-                        return spanIndex;
-                }
+                var handler = OKClicked;
+                handler?.Invoke(okBtn, scriptBox.Text);
             }
-
-            return -1;
-        }
-
-        private bool loaded = false;
-
-        private void ScriptEditor_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (loaded && /*changes &&*/ !okClose)
+            else if (result == DialogResult.Cancel)
             {
-                DialogResult result = MessageBox.Show("Do you want to save changes?", "Close Code Editor", MessageBoxButtons.YesNoCancel);
-                if (result == DialogResult.Yes)
-                {
-                    var handler = OKClicked;
-                    handler?.Invoke(okBtn, scriptBox.Text);
-                }
-                else if (result == DialogResult.Cancel)
-                {
-                    e.Cancel = true;
-                }
+                e.Cancel = true;
             }
         }
+    }
 
-        private void ScriptEditor_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            this.FormClosing -= ScriptEditor_FormClosing; // if not, causes a bug of warning box appear on closing object editor or IDE
+    private void ScriptEditor_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        this.FormClosing -= ScriptEditor_FormClosing; // if not, causes a bug of warning box appear on closing object editor or IDE
 
-            Dispose();
-        }
+        Dispose();
     }
 }

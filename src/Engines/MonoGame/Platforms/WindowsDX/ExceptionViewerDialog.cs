@@ -2,34 +2,33 @@
 using System;
 using System.Windows.Forms;
 
-namespace ArcadeMaker.Engines.MonoGame.WindowsDX
+namespace ArcadeMaker.Engines.MonoGame.WindowsDX;
+
+public partial class ExceptionViewerDialog : Form
 {
-    public partial class ExceptionViewerDialog : Form
+    public ExceptionViewerDialog(Exception ex)
     {
-        public ExceptionViewerDialog(Exception ex)
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            this.textBox.Text = $"Engine bug:\n\n{ex}";
-        }
+        this.textBox.Text = $"Engine bug:\n\n{ex}";
+    }
 
-        public ExceptionViewerDialog(RuntimeException ex)
-        {
-            InitializeComponent();
+    public ExceptionViewerDialog(RuntimeException ex)
+    {
+        InitializeComponent();
 
-            this.textBox.Text = $"Exception thrown from {ex.source}({ex.line}, {ex.col}):\n\n{ex.Message}";
-        }
+        this.textBox.Text = $"Exception thrown from {ex.source}({ex.line}, {ex.col}):\n\n{ex.Message}";
+    }
 
-        private void abortBtn_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Abort;
-            Close();
-        }
+    private void abortBtn_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.Abort;
+        Close();
+    }
 
-        private void ignoreBtn_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Ignore;
-            Close();
-        }
+    private void ignoreBtn_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.Ignore;
+        Close();
     }
 }

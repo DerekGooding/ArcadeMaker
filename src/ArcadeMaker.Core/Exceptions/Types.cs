@@ -1,5 +1,3 @@
 ﻿namespace ArcadeMaker.Core.Exceptions;
 
-internal static class Types
-{
-}
+internal static class Types;

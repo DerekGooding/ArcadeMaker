@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace ArcadeMaker.Engines.MonoGame.Platforms.WindowsDX;
 
-public class Program
+public static class Program
 {
     /// <summary>
     /// The main entry point for the application on Windows.

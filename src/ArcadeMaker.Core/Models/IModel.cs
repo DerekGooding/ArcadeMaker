@@ -1,4 +1,3 @@
-﻿namespace ArcadeMaker.Core.Models
-{
-    internal interface IModel : IItem;
-}
+﻿namespace ArcadeMaker.Core.Models;
+
+internal interface IModel : IItem;
