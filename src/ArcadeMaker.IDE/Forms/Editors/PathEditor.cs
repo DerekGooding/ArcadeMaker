@@ -36,7 +36,7 @@ public partial class PathEditor : Form
             AddPointToPanel(path.points[i], i);
         }
 
-        Rectangle screenRectangle = RectangleToScreen(this.ClientRectangle);
+        Rectangle screenRectangle = RectangleToScreen(ClientRectangle);
         titleBarHeight = screenRectangle.Top - Top;
     }
 

@@ -4,21 +4,19 @@ namespace Exp.Spans;
 
 public class TextSpan : IDisposable
 {
-    private string _text = "";
-
     public string text
     {
-        get => _text;
+        get;
         set
         {
-            if (value != _text)
+            if (value != field)
             {
-                _text = value;
+                field = value;
                 if (!disposed)
                     TextChanged?.Invoke(this, value);
             }
         }
-    }
+    } = "";
 
     public int location;
     public ScriptDocument Doc { get; set; }

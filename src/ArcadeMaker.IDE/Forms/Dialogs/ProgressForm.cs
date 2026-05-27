@@ -20,7 +20,7 @@ public partial class ProgressForm : Form
             {
                 progressBar.Value = progress;
                 if (progress == 100)
-                    this.Close();
+                    Close();
             });
 
             if (InvokeRequired)

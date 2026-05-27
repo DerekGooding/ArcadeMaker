@@ -7,7 +7,7 @@ internal class UsingWordSpan : WordSpan, IKeyword
 
     internal UsingWordSpan(string ns) : base(Keyword)
     {
-        this.Namespace = ns;
+        Namespace = ns;
     }
 
     internal override string FullText => $"{Keyword} {Namespace}";

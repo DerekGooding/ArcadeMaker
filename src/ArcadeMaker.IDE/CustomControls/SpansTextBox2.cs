@@ -9,14 +9,6 @@ public partial class SpansTextBox2 : UserControl
     public readonly List<ScriptBoxSpan> Spans = new List<ScriptBoxSpan>();
     public readonly List<char> CharAlerts = new List<char>();
 
-    private Font _font = new Font("Consolas", 9.5F);
-    private float _scrollX;
-    private int _selectionStart = 0, _selectionLength = 0;
-    private Color _selectionColor = Color.White;
-    private Color _selectionBackColor = Color.Violet;
-    private Brush _currentLineHighlightBrush = new Pen(Color.FromArgb(60, 60, 60)).Brush;
-    private Color _lineNumbersColor = Color.IndianRed;
-
     public float LineSpacing
     {
         get => Font.Size * Font.FontFamily.GetLineSpacing(FontStyle.Regular) / Font.FontFamily.GetEmHeight(FontStyle.Regular) + 2;
@@ -99,11 +91,11 @@ public partial class SpansTextBox2 : UserControl
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Font Font
-    { get => _font; set { _font = value; knownCharWidthes_chars.Clear(); knownCharWidthes_widthes.Clear(); Invalidate(); } }
+    { get; set { field = value; knownCharWidthes_chars.Clear(); knownCharWidthes_widthes.Clear(); Invalidate(); } } = new Font("Consolas", 9.5F);
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float ScrollX
-    { get => _scrollX; set { _scrollX = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float ScrollY
@@ -113,27 +105,27 @@ public partial class SpansTextBox2 : UserControl
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int SelectionStart
-    { get => _selectionStart; set { _selectionStart = value; SelectionStartChanged?.Invoke(this, value); Invalidate(); } }
+    { get; set { field = value; SelectionStartChanged?.Invoke(this, value); Invalidate(); } } = 0;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int SelectionLength
-    { get => _selectionLength; set { _selectionLength = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } } = 0;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color SelectionColor
-    { get => _selectionColor; set { _selectionColor = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } } = Color.White;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color SelectionBackColor
-    { get => _selectionBackColor; set { _selectionBackColor = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } } = Color.Violet;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Brush CurrentLineHighlightBrush
-    { get => _currentLineHighlightBrush; set { _currentLineHighlightBrush = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } } = new Pen(Color.FromArgb(60, 60, 60)).Brush;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color LineNumbersColor
-    { get => _lineNumbersColor; set { _lineNumbersColor = value; Invalidate(); } }
+    { get; set { field = value; Invalidate(); } } = Color.IndianRed;
 
     public new event EventHandler<SpansTextBox2TextChangedEventArgs> TextChanged;
 
@@ -811,12 +803,12 @@ public partial class SpansTextBox2 : UserControl
                     else if (newLine && text[i] != ' ')
                     {
                         newLine = false;
-                        this.SelectionStart = i + tabsCount * TabSpace.Length;
+                        SelectionStart = i + tabsCount * TabSpace.Length;
                         InsertText(TabSpace, removeSelected: false, setSpans: false, invalidate: false);
                         tabsCount++;
                     }
                 }
-                this.SelectionStart = selectionStart;
+                SelectionStart = selectionStart;
                 SelectionLength += tabsCount * TabSpace.Length;
                 SetSpans();
                 TextChanged?.Invoke(this, new SpansTextBox2TextChangedEventArgs(TextChangedKind.Replace, false));
@@ -1553,7 +1545,7 @@ public partial class SpansTextBox2 : UserControl
             //    SelectionStart += sug.Text.Length;
             //}
 
-            string oldText = this.Text;
+            string oldText = Text;
             Spans.Clear();
             string newText = oldText.Insert(suggestionSpanEnd, sug.Text).Remove(suggestionSpanStart, suggestionSpanEnd - suggestionSpanStart);
             Spans.Add(new ScriptBoxSpan { text = newText });
@@ -1616,7 +1608,7 @@ public partial class SpansTextBox2 : UserControl
     }
 
     private readonly Font toolTipFont = new Font(FontFamily.GenericMonospace, 8);
-    private Font toolTipTitleFont => this.Font;
+    private Font toolTipTitleFont => Font;
     private SizeF toolTipTitleSize = SizeF.Empty;
     private SizeF toolTipTextSize = SizeF.Empty;
 
@@ -1777,8 +1769,8 @@ public class SpansTextBox2TextChangedEventArgs : EventArgs
 
     public SpansTextBox2TextChangedEventArgs(TextChangedKind kind, bool bySuggestion)
     {
-        this.Kind = kind;
-        this.BySuggestion = bySuggestion;
+        Kind = kind;
+        BySuggestion = bySuggestion;
     }
 }
 
@@ -1790,9 +1782,9 @@ public class SpansTextBox2CharAlertEventArgs : EventArgs
 
     public SpansTextBox2CharAlertEventArgs(char alert, int index, ScriptBoxSpan spanBefore = null)
     {
-        this.Alert = alert;
-        this.Index = index;
-        this.SpanBefore = spanBefore;
+        Alert = alert;
+        Index = index;
+        SpanBefore = spanBefore;
     }
 }
 
@@ -1806,8 +1798,8 @@ public class SpansTextBox2Suggestion
     {
         if (text == null)
             text = displayText;
-        this.DisplayText = displayText;
-        this.Text = text;
+        DisplayText = displayText;
+        Text = text;
     }
 
     public override string ToString()
@@ -1836,7 +1828,7 @@ public class SuggestionsSorter : IComparer<SpansTextBox2Suggestion>
 
     public SuggestionsSorter(string span)
     {
-        this.Span = span;
+        Span = span;
     }
 }
 

@@ -44,8 +44,8 @@ public class RoomView(double x, double y)
 
     public void SetPosition(double x, double y)
     {
-        this.X = x;
-        this.Y = y;
+        X = x;
+        Y = y;
         PositionChanged?.Invoke(this, EventArgs.Empty);
     }
 }

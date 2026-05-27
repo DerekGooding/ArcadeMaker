@@ -34,9 +34,9 @@ public class GameScript : GameItem, IContainsScript
             Script = code;
         base.getEditor += (s, e) =>
         {
-            e = this.editor;
+            e = editor;
         };
-        this.editor = new ScriptEditor(this, Script);
+        editor = new ScriptEditor(this, Script);
     }
 
     public void InitDefaultCode()

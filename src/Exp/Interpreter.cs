@@ -41,13 +41,13 @@ public class Property : IClassMember, IExpItem
 
     public Property(ClassDefSpan def, bool cons, string name, bool prvt, bool baseArr, Span[] initVal = null, List<Span[]> tagsCode = null)
     {
-        this.Const = cons;
-        this.Name = name;
-        this.Private = prvt;
-        this.BaseArray = baseArr;
-        this.InitValueReadText = initVal;
-        this.TagsCode = tagsCode ?? [];
-        this.Def = def;
+        Const = cons;
+        Name = name;
+        Private = prvt;
+        BaseArray = baseArr;
+        InitValueReadText = initVal;
+        TagsCode = tagsCode ?? [];
+        Def = def;
     }
 }
 
@@ -84,14 +84,13 @@ public partial class Interpreter : IVarSystem
     private bool neutral = false;
 
     private string source;
-    private TextSpan[] _sourceSpans_;
 
     private TextSpan[] SourceSpans
     {
-        get => _sourceSpans_;
+        get;
         set
         {
-            _sourceSpans_ = value;
+            field = value;
             source = "";
             foreach (var ss in value)
                 source += ss.text;
@@ -99,18 +98,8 @@ public partial class Interpreter : IVarSystem
     }
 
     private int codeCursor = 0;
-    private Span[] _codeSpans_;
 
-    private Span[] CodeSpans
-    {
-        get => _codeSpans_;
-        set
-        {
-            //if (value == null)
-            //throw new InvalidOperationException(nameof(codeSpans) + " cannot be null.");
-            _codeSpans_ = value;
-        }
-    }
+    private Span[] CodeSpans { get; set; }
 
     private readonly List<ScriptDocument> docs = [];
     private HashSet<string> currUsings = [];
@@ -182,7 +171,7 @@ public partial class Interpreter : IVarSystem
     /// <param name="imports">Libraries codes.</param>
     public Interpreter()
     {
-        this._currentVarSystem_ = this;
+        CurrentVarSystem = this;
     }
 
     public void Build(ScriptDocument source, IEnumerable<IDefinition>? defsToImport = null, params ScriptDocument[] imports)
@@ -374,10 +363,10 @@ public partial class Interpreter : IVarSystem
             if (allowSingleCmd && Spoiler() is not SourceOpenerSpan)
             {
                 DefNameSpan.CancelResolveForNewOnes = true;
-                var errors = this.Errors.ToArray();
+                var errors = Errors.ToArray();
                 ReadOperation(null, new FutileContext(), out var src);
-                this.Errors.Clear();
-                this.Errors.AddRange(errors);
+                Errors.Clear();
+                Errors.AddRange(errors);
                 DefNameSpan.CancelResolveForNewOnes = false;
                 return src;
             }
@@ -520,7 +509,7 @@ public partial class Interpreter : IVarSystem
             // set source properties before reading spans
             Span[] sourceSpans_backup = CodeSpans;
             Span ls = lastSpan;
-            int cur = this.cursor, spcur = codeCursor;
+            int cur = cursor, spcur = codeCursor;
             cursor = 0;
             codeCursor = 0;
             CodeSpans = code.ToArray();
@@ -775,7 +764,7 @@ public partial class Interpreter : IVarSystem
 
     private VsStackIndex FindVsStack(IVarSystem ctx)
     {
-        var stack = this.vsStack;
+        var stack = vsStack;
         if (stack?.vs == ctx)
             return stack;
         while (stack != null)
@@ -877,9 +866,9 @@ public class ExpError : Exception
 
     public ExpError(string sourceName, int line, int col, string msg) : base(msg)
     {
-        this.Doc = sourceName;
-        this.Line = line;
-        this.Col = col;
+        Doc = sourceName;
+        Line = line;
+        Col = col;
     }
 }
 
@@ -916,6 +905,6 @@ public class RuntimeException : Exception
         this.source = source;
         this.line = line;
         this.col = col;
-        this.ByExpThrowStmt = byExpThrowStmt;
+        ByExpThrowStmt = byExpThrowStmt;
     }
 }

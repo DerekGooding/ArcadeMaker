@@ -16,7 +16,7 @@ internal class BreakStatement(BreakWordSpan bword, ILoopContext loop) : IOperati
             {
                 loopctx.Break = true;
 
-                if (loopctx == this.Loop)
+                if (loopctx == Loop)
                     return;
             }
             else if (span == null)

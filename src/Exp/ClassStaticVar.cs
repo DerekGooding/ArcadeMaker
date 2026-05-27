@@ -12,6 +12,6 @@ internal class ClassStaticVar : Variable, IClassMember, IExpItem
 
     internal ClassStaticVar(string name, IValue value, ClassDefSpan def, Span settingSpan, bool prvt = false, bool cons = false) : base(name, value, settingSpan, prvt, cons)
     {
-        this.Def = def;
+        Def = def;
     }
 }

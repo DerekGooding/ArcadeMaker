@@ -299,8 +299,8 @@ public class TranslatorItem
     {
         if (!name.IsLegallName())
             throw new ArgumentException("Illegal item name", "name");
-        this.Name = name;
-        this.AccessModifier = accessModifier;
+        Name = name;
+        AccessModifier = accessModifier;
     }
 }
 
@@ -312,7 +312,7 @@ public class Namespace : TranslatorItem
     {
         if (items == null)
             throw new ArgumentNullException("items");
-        this.Items = items.ToList();
+        Items = items.ToList();
     }
 }
 
@@ -336,8 +336,8 @@ public class Class : TranslatorItem
     {
         if (items == null)
             throw new ArgumentNullException("items");
-        this.Items = items.ToList();
-        this.IsStatic = isStatic;
+        Items = items.ToList();
+        IsStatic = isStatic;
     }
 }
 
@@ -350,8 +350,8 @@ public class ClassItem : TranslatorItem
     {
         if (!Actions.IsLegallName(type))
             throw new ArgumentException("Ilegall type for method or property", "type");
-        this.Type = type;
-        this.IsStatic = isStatic;
+        Type = type;
+        IsStatic = isStatic;
     }
 }
 
@@ -362,8 +362,8 @@ public class Property : ClassItem
 
     public Property(string name, AccessModifier accessModifier, string type, AccessModifier get = AccessModifier.Public, AccessModifier set = AccessModifier.Public) : base(name, accessModifier, type)
     {
-        this.Get = get;
-        this.Set = set;
+        Get = get;
+        Set = set;
     }
 }
 
@@ -375,7 +375,7 @@ public class Method : ClassItem
     {
         if (arguments == null)
             throw new ArgumentNullException("arguments");
-        this.Arguments = arguments.ToList();
+        Arguments = arguments.ToList();
     }
 }
 
@@ -392,9 +392,9 @@ public class MethodArgument
             throw new ArgumentException("Ilegall name for argument", "name");
         if (!type.IsLegallName())
             throw new ArgumentException("Ilegall name for type", "type");
-        this.Name = name;
-        this.Type = type;
-        this.HasDefaultValue = hasDefaultValue;
+        Name = name;
+        Type = type;
+        HasDefaultValue = hasDefaultValue;
     }
 }
 

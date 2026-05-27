@@ -10,7 +10,7 @@ public class ExternTypeInstance : Instance
     {
         ArgumentNullException.ThrowIfNull(inst);
 
-        this.ExternInstance = inst;
+        ExternInstance = inst;
 
         // load properties
         foreach (var prop in inst.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))

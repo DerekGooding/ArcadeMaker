@@ -15,8 +15,8 @@ internal class SectionWordSpan : WordSpan, IContext, IKeyword, IExpItem
 
     internal SectionWordSpan(Span[] innerSource, IVarSystem vs) : base(Keyword)
     {
-        this.InnerSource = innerSource;
-        this.OuterVarSystem = vs;
+        InnerSource = innerSource;
+        OuterVarSystem = vs;
     }
 
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";

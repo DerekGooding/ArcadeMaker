@@ -6,8 +6,7 @@ namespace ArcadeMaker.Core.Runtime;
 public class RoomInstance
 {
     public RoomModel Model { get; }
-    private readonly List<Instance> instances = [];
-    public List<Instance> Instances => instances;
+    public List<Instance> Instances { get; } = [];
 
     public IEnumerable<Instance> SortedInstances
     {
@@ -15,10 +14,10 @@ public class RoomInstance
         {
             if (!isSorted)
             {
-                instances.Sort((a, b) => a.Depth.Value!.Number.CompareTo(b.Depth.Value!.Number));
+                Instances.Sort((a, b) => a.Depth.Value!.Number.CompareTo(b.Depth.Value!.Number));
                 isSorted = true;
             }
-            return instances;
+            return Instances;
         }
     }
 
@@ -26,7 +25,7 @@ public class RoomInstance
 
     public RoomInstance(RoomModel model)
     {
-        this.Model = model;
+        Model = model;
 
         // add all instances from the init map
         foreach (var item in model.InitMap.Items)
@@ -41,13 +40,13 @@ public class RoomInstance
 
     public void AddInstance(Instance instance)
     {
-        instances.Add(instance);
+        Instances.Add(instance);
         isSorted = false;
     }
 
     public void RemoveInstance(Instance instance)
     {
-        instances.Remove(instance);
+        Instances.Remove(instance);
         instance.DepthChanged -= MarkDepthChanged;
     }
 

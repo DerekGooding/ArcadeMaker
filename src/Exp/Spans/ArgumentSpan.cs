@@ -8,8 +8,8 @@ public class ArgumentSpan : WordSpan, IExpItem
 
     internal ArgumentSpan(string name, bool notNull = false) : base(name)
     {
-        this.Name = name;
-        this.NotNull = notNull;
+        Name = name;
+        NotNull = notNull;
     }
 
     internal override string FullText

@@ -98,7 +98,7 @@ public class EventScript : IContainsScript
             ScriptDocument.ReadDocSettings("", Spanner.GetTextSpans(value), out var _, out string? description, out var _, out var _, out var _);
             if (string.IsNullOrWhiteSpace(description))
                 description = "<No Description>";
-            this.Description = description;
+            Description = description;
         }
     }
 
@@ -106,7 +106,7 @@ public class EventScript : IContainsScript
 
     public EventScript(string script)
     {
-        this.Script = script;
+        Script = script;
     }
 
     public EventScript() : this("")

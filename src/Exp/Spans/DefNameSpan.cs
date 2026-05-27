@@ -18,7 +18,7 @@ internal class DefNameSpan : WordSpan
 
     internal DefNameSpan(string specNs, string name, ScriptDocument doc, int docLoc, Interpreter compiler) : base(name)
     {
-        (this.SpecificNs, this.Name, Document, DocumentLocation) = (specNs, name, doc, docLoc);
+        (SpecificNs, Name, Document, DocumentLocation) = (specNs, name, doc, docLoc);
         void Resolve(object sender, EventArgs e)
         {
             if (CancelResolve)

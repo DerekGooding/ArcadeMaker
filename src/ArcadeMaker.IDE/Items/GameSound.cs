@@ -43,7 +43,7 @@ public class GameSound : GameItem
         this.filePath = filePath;
         base.getEditor += (s, e) =>
         {
-            e = this.editor;
+            e = editor;
         };
         editor = new SoundEditor(this);
     }

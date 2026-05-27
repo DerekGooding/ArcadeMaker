@@ -10,8 +10,8 @@ internal class InitOperation : IReadingOperation
 
     internal InitOperation(ClassDefSpan def, IReadingOperation[] args)
     {
-        this.Def = def ?? throw new ArgumentNullException(nameof(def));
-        this.Args = args ?? throw new ArgumentNullException(nameof(args));
+        Def = def ?? throw new ArgumentNullException(nameof(def));
+        Args = args ?? throw new ArgumentNullException(nameof(args));
 
         // find the constructor with the given num of arguments
         var ctors = def.Funcs.Where(f => !f.Static && f.Args.Length == args.Length && f is ConstructorDefSpan);

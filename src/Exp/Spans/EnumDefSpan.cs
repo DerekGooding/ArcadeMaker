@@ -12,8 +12,8 @@ internal class EnumDefSpan : WordSpan, IDefinition, ICanSetAttr, IKeyword, IExpI
 
     internal EnumDefSpan(string name, EnumValueSpan[] values) : base(Keyword)
     {
-        this.Name = name;
-        this.Values = values;
+        Name = name;
+        Values = values;
     }
 
     internal override string FullText

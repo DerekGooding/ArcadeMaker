@@ -5,27 +5,22 @@ public class GameBackground : GameItem
     /* do not change property name!!! */
     public static Bitmap icon { get; } = Properties.Resources.background;
 
-    private Bitmap _image = null;
-
     public Bitmap image
     {
-        get
-        {
-            return _image;
-        }
+        get;
         set
         {
-            _image = value;
+            field = value;
 
             if (treeImageIndex >= 0)
             {
                 int w = Global.form1.treeImages.ImageSize.Width;
                 int h = Global.form1.treeImages.ImageSize.Height;
-                Global.form1.treeImages.Images[treeImageIndex] = _image == null ? new Bitmap(1, 1) : _image.ResizeImage(w, h);
+                Global.form1.treeImages.Images[treeImageIndex] = field == null ? new Bitmap(1, 1) : field.ResizeImage(w, h);
                 Global.form1.RefreshTreeView();
             }
         }
-    }
+    } = null;
 
     public new BackgroundEditor editor
     {

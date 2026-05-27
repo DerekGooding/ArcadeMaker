@@ -15,23 +15,19 @@ public class GameObject : GameItem //, IContainsScript
     public bool compiledModelsTree = false;
 
     private string _part2script = null;
-    private GameSprite _sprite = null;
 
     public GameSprite sprite
     {
-        get
-        {
-            return _sprite;
-        }
+        get;
         set
         {
-            _sprite = value;
+            field = value;
             if (treeImageIndex >= 0)
             {
                 if (sprite != null && treeNode != null)
                 {
-                    treeNode.ImageIndex = _sprite.treeImageIndex;
-                    treeNode.SelectedImageIndex = _sprite.treeImageIndex;
+                    treeNode.ImageIndex = field.treeImageIndex;
+                    treeNode.SelectedImageIndex = field.treeImageIndex;
                 }
                 else
                 {
@@ -42,7 +38,7 @@ public class GameObject : GameItem //, IContainsScript
                 Global.form1?.RefreshTreeView();
             }
         }
-    }
+    } = null;
 
     public new ObjectEditor editor
     {
@@ -64,7 +60,7 @@ public class GameObject : GameItem //, IContainsScript
     {
         getEditor += (s, e) =>
         {
-            e = this.editor;
+            e = editor;
         };
         editor = new ObjectEditor(this);
         base.NameChanged += (s, e) =>

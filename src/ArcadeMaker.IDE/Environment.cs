@@ -9,17 +9,17 @@ public static class Environment
     private static string Basecode = null;
     private static bool readBasecodeAgain = false;
 
-    private static string[] _assembliesLocations = null;
-
     public static string[] AssembliesLocations
     {
         get
         {
-            if (_assembliesLocations == null)
+            if (field == null)
                 LoadAssembliesLocations();
-            return _assembliesLocations;
+            return field;
         }
-    }
+
+        private set;
+    } = null;
 
     private static void LoadAssembliesLocations()
     {
@@ -53,7 +53,7 @@ public static class Environment
         //        assemblies.Add(location);
         //}
 
-        _assembliesLocations = assemblies.ToArray();
+        AssembliesLocations = assemblies.ToArray();
     }
 
     private static string[] GetNAudioAssembliesLocations()
@@ -64,21 +64,16 @@ public static class Environment
 
     public static event EventHandler<int> ProgressUpdated;
 
-    private static int progress = 0;
-
     public static int Progress
     {
-        get
-        {
-            return progress;
-        }
+        get;
         private set
         {
-            progress = value;
+            field = value;
             if (ProgressUpdated != null)
                 ProgressUpdated(null, value);
         }
-    }
+    } = 0;
 
     private const string EngineDllResName = "engine.dll";
     internal static bool isGameRunning = false;

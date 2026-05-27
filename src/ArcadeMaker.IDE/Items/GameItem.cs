@@ -5,28 +5,23 @@ namespace ArcadeMaker.IDE.Items;
 public class GameItem
 {
     [XmlIgnore]
-    private string Name;
-
-    [XmlIgnore]
     public int treeImageIndex = -1;
 
     [XmlIgnore]
     public TreeNode treeNode = null;
 
+    [field: XmlIgnore]
     public string name
     {
-        get
-        {
-            return Name;
-        }
+        get;
         set
         {
-            if (value.IsPossibleName(Name))
+            if (value.IsPossibleName(field))
             {
-                if (value != Name)
+                if (value != field)
                 {
-                    GameItemNameChangedEventArgs args = new GameItemNameChangedEventArgs(Name, value);
-                    Name = value;
+                    GameItemNameChangedEventArgs args = new GameItemNameChangedEventArgs(field, value);
+                    field = value;
                     var handler = NameChanged;
                     handler?.Invoke(this, args);
                 }

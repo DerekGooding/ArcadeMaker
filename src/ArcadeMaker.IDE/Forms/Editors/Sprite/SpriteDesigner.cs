@@ -82,8 +82,8 @@ public partial class SpriteDesigner : Form
         };
 
         // color tool panel
-        shape = _shape;
-        drawStyle = _drawStyle;
+        shape = shape;
+        drawStyle = drawStyle;
     }
 
     private void SpriteDesigner_Load(object sender, EventArgs e)
@@ -105,17 +105,12 @@ public partial class SpriteDesigner : Form
     {
     }
 
-    private Shape _shape = Shape.Pen;
-
     private Shape shape
     {
-        get
-        {
-            return _shape;
-        }
+        get;
         set
         {
-            _shape = value;
+            field = value;
 
             // set group boxes visible
             widthGroupBox.Visible = value == Shape.Pen || value == Shape.Line || value == Shape.Ellipse || value == Shape.Rect;
@@ -158,19 +153,14 @@ public partial class SpriteDesigner : Form
                     ctrl.BackColor = Color.LightBlue;
             }
         }
-    }
-
-    private DrawStyle _drawStyle = DrawStyle.Draw;
+    } = Shape.Pen;
 
     private DrawStyle drawStyle
     {
-        get
-        {
-            return _drawStyle;
-        }
+        get;
         set
         {
-            _drawStyle = value;
+            field = value;
 
             // color button
             Button btn = null;
@@ -196,7 +186,7 @@ public partial class SpriteDesigner : Form
                     ctrl.BackColor = Color.LightBlue;
             }
         }
-    }
+    } = DrawStyle.Draw;
 
     private void imageBox_MouseUp(object sender, MouseEventArgs e)
     {
@@ -331,9 +321,9 @@ public partial class SpriteDesigner : Form
             if (shape == Shape.Pen)
             {
                 //penPath.Add(ImageLocation(e.Location));
-                if (mouseCurrentLoc.X < this.image.Width && mouseCurrentLoc.X >= 0 && mouseCurrentLoc.Y < this.image.Height && mouseCurrentLoc.Y >= 0)
+                if (mouseCurrentLoc.X < image.Width && mouseCurrentLoc.X >= 0 && mouseCurrentLoc.Y < image.Height && mouseCurrentLoc.Y >= 0)
                 {
-                    this.image.SetPixel((int)Math.Round(mouseCurrentLoc.X), (int)Math.Round(mouseCurrentLoc.Y), pen.Color);
+                    image.SetPixel((int)Math.Round(mouseCurrentLoc.X), (int)Math.Round(mouseCurrentLoc.Y), pen.Color);
                     imageBox.Image = DisplayImage();
                 }
                 return;

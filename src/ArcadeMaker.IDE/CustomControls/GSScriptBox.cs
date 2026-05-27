@@ -6,7 +6,6 @@ namespace ArcadeMaker.IDE;
 
 public partial class GSScriptBox : UserControl
 {
-    private string text = "";
     private FontDialog fontDialog = new FontDialog();
     private int caret = 0;
     private int lineCount = 0;
@@ -64,12 +63,12 @@ public partial class GSScriptBox : UserControl
         skipRefill = true;
         // preventVScroll = true; -------------------------------------------------------------------------------------------------------------------------
 
-        if (textBox.Text != text)
+        if (textBox.Text != Text)
         {
-            textBox.Text = text;
+            textBox.Text = Text;
         }
 
-        ScriptBoxSpan[] newSpans = Global.GetScriptBoxSpans(text);
+        ScriptBoxSpan[] newSpans = Global.GetScriptBoxSpans(Text);
 
         if (endSpan < 0)
         {
@@ -119,13 +118,10 @@ public partial class GSScriptBox : UserControl
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Text
     {
-        get
-        {
-            return text;
-        }
+        get;
         set
         {
-            text = value;
+            field = value;
 
             /*if (spans != null) {
                 int startSpan = 0;
@@ -192,7 +188,7 @@ public partial class GSScriptBox : UserControl
                 skipText = false;
             }
         }
-    }
+    } = "";
 
     private void fontBtn_Click(object sender, EventArgs e)
     {
@@ -214,7 +210,7 @@ public partial class GSScriptBox : UserControl
         {
             caret = textBox.SelectionStart;
             Text = textBox.Text;
-            int lc = text.CountOf('\n');
+            int lc = Text.CountOf('\n');
             if (lc != lineCount)
             {
                 lineCount = lc;
@@ -335,21 +331,19 @@ public partial class GSScriptBox : UserControl
 
 public class ScriptBoxSpan : IDisposable
 {
-    private string _text = "";
-
     public string text
     {
-        get => _text;
+        get;
         set
         {
-            if (value != _text)
+            if (value != field)
             {
-                _text = value;
+                field = value;
                 if (!disposed)
                     TextChanged?.Invoke(this, value);
             }
         }
-    }
+    } = "";
 
     public Color color = Color.Black;
     public Color backColor = Color.Transparent;
@@ -452,9 +446,9 @@ internal class TextEditor : RichTextBoxEx
     {
         int minScroll;
         int maxScroll;
-        GetScrollRange(this.Handle, SB_VERT, out minScroll, out maxScroll);
+        GetScrollRange(Handle, SB_VERT, out minScroll, out maxScroll);
         Point rtfPoint = Point.Empty;
-        SendMessage(this.Handle, EM_GETSCROLLPOS, 0, ref rtfPoint);
+        SendMessage(Handle, EM_GETSCROLLPOS, 0, ref rtfPoint);
 
         return rtfPoint;
     }
@@ -481,9 +475,9 @@ internal class TextEditor : RichTextBoxEx
     {
         if (m.Msg == WM_PAINT)
         {
-            this.Invalidate();
+            Invalidate();
             base.WndProc(ref m);
-            using (Graphics g = Graphics.FromHwnd(this.Handle))
+            using (Graphics g = Graphics.FromHwnd(Handle))
             {
                 if (Paint != null)
                 {

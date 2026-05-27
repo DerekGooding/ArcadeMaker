@@ -765,7 +765,7 @@ public class SerializeableGameFont : SerializeableGameItem
     public SerializeableGameFont(GameFont font)
     {
         this.font = font;
-        this.ttf = font.GetTTF();
+        ttf = font.GetTTF();
     }
 }
 

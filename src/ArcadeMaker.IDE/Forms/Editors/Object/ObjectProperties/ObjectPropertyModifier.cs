@@ -12,7 +12,7 @@ public partial class ObjectPropertyModifier : UserControl
 
     public ObjectPropertyModifier(IDEObjectProperty property)
     {
-        this.Property = property;
+        Property = property;
 
         InitializeComponent();
         debugTimer.Tick += async (s, e) =>

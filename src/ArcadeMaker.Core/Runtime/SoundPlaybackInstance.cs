@@ -14,8 +14,8 @@ public abstract class SoundPlaybackInstance<T> : Exp.Instance
 
     public SoundPlaybackInstance(Sound sound, T instance) : base(SoundPlaybackInstance.Class, addProperties: false)
     {
-        this.Sound = sound;
-        this.Instance = instance;
+        Sound = sound;
+        Instance = instance;
 
         // create the volume, pan and pitch properties
         Vars.Add(new Exp.CustomVariable(SoundPlaybackInstance.VolumePName, () => ((double)Volume).ToExp(), (value) => Volume = (float)(value?.Number ?? 1))); // volume

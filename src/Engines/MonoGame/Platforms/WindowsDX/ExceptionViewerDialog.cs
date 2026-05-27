@@ -10,14 +10,14 @@ public partial class ExceptionViewerDialog : Form
     {
         InitializeComponent();
 
-        this.textBox.Text = $"Engine bug:\n\n{ex}";
+        textBox.Text = $"Engine bug:\n\n{ex}";
     }
 
     public ExceptionViewerDialog(RuntimeException ex)
     {
         InitializeComponent();
 
-        this.textBox.Text = $"Exception thrown from {ex.source}({ex.line}, {ex.col}):\n\n{ex.Message}";
+        textBox.Text = $"Exception thrown from {ex.source}({ex.line}, {ex.col}):\n\n{ex.Message}";
     }
 
     private void abortBtn_Click(object sender, EventArgs e)

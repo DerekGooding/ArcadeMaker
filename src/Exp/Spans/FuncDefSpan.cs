@@ -42,10 +42,10 @@ public class FuncDefSpan : WordSpan, IContext, IDefinition, IKeyword, IClassMemb
 
     internal FuncDefSpan(string name, ArgumentSpan[] args, Span[] innerSource, ClassDefSpan definedAt, string text = null) : base(text ?? Keyword)
     {
-        this.Name = name;
-        this.Args = args;
-        this.InnerSource = innerSource;
-        this.DefinedAt = definedAt;
+        Name = name;
+        Args = args;
+        InnerSource = innerSource;
+        DefinedAt = definedAt;
 
         // create variables for parameter
         ParamVariables = new Variable[Args.Length];
@@ -61,12 +61,12 @@ public class FuncDefSpan : WordSpan, IContext, IDefinition, IKeyword, IClassMemb
             if (name == "get")
             {
                 ArrayIndexGetter = this;
-                this.Name = "array." + name;
+                Name = "array." + name;
             }
             else if (name == "set")
             {
                 ArrayIndexSetter = this;
-                this.Name = "array." + name;
+                Name = "array." + name;
             }
         }
     }

@@ -1,15 +1,15 @@
-﻿namespace ArcadeMaker.IDE;
+﻿using System.ComponentModel;
+
+namespace ArcadeMaker.IDE;
 
 public partial class GSColorPicker : UserControl
 {
     private ColorDialog dlg1 = new ColorDialog(), dlg2 = new ColorDialog();
 
+    [DefaultValue(typeof(Color), "Black")]
     public Color Color1
     {
-        get
-        {
-            return dlg1.Color;
-        }
+        get => dlg1.Color;
         set
         {
             dlg1.Color = value;
@@ -19,12 +19,10 @@ public partial class GSColorPicker : UserControl
         }
     }
 
+    [DefaultValue(typeof(Color), "Black")]
     public Color Color2
     {
-        get
-        {
-            return dlg2.Color;
-        }
+        get => dlg2.Color;
         set
         {
             dlg2.Color = value;

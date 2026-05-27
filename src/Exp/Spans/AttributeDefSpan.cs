@@ -72,23 +72,21 @@ internal class AttributeDefSpan : WordSpan, IDefinition, IKeyword, ICanSetAttr, 
     {
         get
         {
-            if (_expType == null)
+            if (field == null)
             {
-                _expType = new Instance(ClassDefSpan.ExpTypeDef ?? throw new Exception("Trying to get type instance before Type def was collected."));
-                _expType.Vars[0].SetSkippingConstant(Interpreter.StringToExpString(Name));
-                _expType.Vars[1].SetSkippingConstant(Interpreter.StringToExpString(Namespace + NamespaceSpecificationSpan.Symbol + Name));
-                _expType.Vars[2].SetSkippingConstant(SpecialValue.From(this));
+                field = new Instance(ClassDefSpan.ExpTypeDef ?? throw new Exception("Trying to get type instance before Type def was collected."));
+                field.Vars[0].SetSkippingConstant(Interpreter.StringToExpString(Name));
+                field.Vars[1].SetSkippingConstant(Interpreter.StringToExpString(Namespace + NamespaceSpecificationSpan.Symbol + Name));
+                field.Vars[2].SetSkippingConstant(SpecialValue.From(this));
             }
-            return _expType;
+            return field;
         }
     }
 
-    private Instance _expType;
-
     internal AttributeDefSpan(string name, AttributeParamSpan[] param) : base(Keyword)
     {
-        this.Name = name;
-        this.Params = param;
+        Name = name;
+        Params = param;
         if (name == "ExpectFunc")
             ExpectFuncAttr ??= this;
         else if (name == "Iteratable")

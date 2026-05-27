@@ -51,8 +51,8 @@ public class PathPoint
 
     public PathPoint(Point point)
     {
-        this.x = point.X;
-        this.y = point.Y;
+        x = point.X;
+        y = point.Y;
     }
 
     public PathPoint()

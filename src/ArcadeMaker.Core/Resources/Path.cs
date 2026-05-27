@@ -12,9 +12,9 @@ public class Path : ISetsID
         public double Direction { get; }
         public Step(double width, double height, double speed)
         {
-            this.Width = width;
-            this.Height = height;
-            this.Speed = speed;
+            Width = width;
+            Height = height;
+            Speed = speed;
 
             // calculate direction
             Direction = Math.Formulas.AngleBetween(0, 0, Width, Height) - 90;
@@ -32,10 +32,10 @@ public class Path : ISetsID
 
     public Path(string name, double startX, double startY, Step[] steps)
     {
-        this.Name = name;
+        Name = name;
         StartPositionX = startX;
         StartPositionY = startY;
-        this.Steps = steps;
+        Steps = steps;
     }
 }
 

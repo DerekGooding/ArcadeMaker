@@ -42,12 +42,12 @@ internal class RangeLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
 
     internal RangeLoopSpan(string varName, bool constVar, Span[] fromReadText, Span[] toReadText, Span[] innerSource, IVarSystem varSystem) : base(Keyword)
     {
-        this.VarName = varName;
-        this.ConstVar = constVar;
-        this.FromReadText = fromReadText;
-        this.ToReadText = toReadText;
-        this.InnerSource = innerSource;
-        this.OuterVarSystem = varSystem;
+        VarName = varName;
+        ConstVar = constVar;
+        FromReadText = fromReadText;
+        ToReadText = toReadText;
+        InnerSource = innerSource;
+        OuterVarSystem = varSystem;
     }
 
     internal override Span Container

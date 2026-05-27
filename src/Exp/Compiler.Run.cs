@@ -9,11 +9,10 @@ namespace Exp;
 public partial class Interpreter
 {
     private IContext currentContext => stack?.context;
-    private readonly IVarSystem _currentVarSystem_; // set to this at constructor
 
     private IVarSystem CurrentVarSystem
     {
-        get => currentContext ?? _currentVarSystem_;
+        get => currentContext ?? field;
     }
 
     private string currNs;
@@ -69,8 +68,8 @@ public partial class Interpreter
     {
         internal readonly IVarSystem vs;
         internal readonly VsStackIndex parent;
-        private static IVarSystem def;
-        internal static IVarSystem Default { get => def ?? Interpreter.Activated; set => def = value; }
+
+        internal static IVarSystem Default { get => field ?? Interpreter.Activated; set; }
 
         internal VsStackIndex(IVarSystem vs, VsStackIndex parent)
         {
@@ -545,8 +544,8 @@ public partial class Interpreter
         Span[] codeSpans_backup = CodeSpans;
         Span ls = lastSpan;
         var stack = this.stack;
-        var vstack = this.vsStack;
-        int cur = this.cursor, spcur = codeCursor;
+        var vstack = vsStack;
+        int cur = cursor, spcur = codeCursor;
         cursor = 0;
         codeCursor = 0;
         CodeSpans = src;
@@ -565,7 +564,7 @@ public partial class Interpreter
             //Throw(ExpStringToString(throwing.Vars[0].Value as Instance));
 
             this.stack = stack;
-            this.vsStack = vstack;
+            vsStack = vstack;
             CodeSpans = codeSpans_backup;
             lastSpan = ls;
             cursor = cur;
@@ -582,15 +581,15 @@ public partial class Interpreter
         Span[] codeSpans_backup = CodeSpans;
         Span ls = lastSpan;
         var stack = this.stack;
-        var vstack = this.vsStack;
-        int cur = this.cursor, spcur = codeCursor;
+        var vstack = vsStack;
+        int cur = cursor, spcur = codeCursor;
         cursor = 0;
         codeCursor = 0;
         CodeSpans = src;
         this.stack = context == null ? this.stack : new StackIndex(context, this.stack);
         T v = ReadValue<T>(allowUnknownVars: allowUnknownVars, oconst: oconst);
         this.stack = stack;
-        this.vsStack = vstack;
+        vsStack = vstack;
         CodeSpans = codeSpans_backup;
         lastSpan = ls;
         cursor = cur;
@@ -644,8 +643,8 @@ public partial class Interpreter
         Errors.AddRange(ShellDoc.SettingsErrors);
         if (Errors.Count > 0)
         {
-            var errors = this.Errors.ToArray(); // ToArray() so the Clear() below won't affect it
-            this.Errors.Clear();
+            var errors = Errors.ToArray(); // ToArray() so the Clear() below won't affect it
+            Errors.Clear();
             throw new BuildFailureException(errors);
         }
 
@@ -659,7 +658,7 @@ public partial class Interpreter
         contextLoc = cursor;
         Span[] codeSpans_backup = CodeSpans;
         Span ls = lastSpan;
-        int cur = this.cursor, spcur = codeCursor;
+        int cur = cursor, spcur = codeCursor;
         cursor = 0;
         codeCursor = 0;
         CodeSpans = src;
@@ -776,7 +775,7 @@ public partial class Interpreter
         lastSpan = lastSpan_bu;
         SourceSpans = sourceSpans_bu;
         if (saveSpans)
-            this.CodeSpans = codeSpans.ToArray();
+            CodeSpans = codeSpans.ToArray();
     }
 
     private void CollectDefs(ScriptDocument[] docs)

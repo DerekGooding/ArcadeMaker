@@ -18,10 +18,10 @@ internal class CatchWordSpan : WordSpan, IContext, IKeyword, IExpItem
 
     internal CatchWordSpan(string varname, WhenWordSpan when, Span[] innerSource, IVarSystem vs) : base(Keyword)
     {
-        this.VarName = varname;
-        this.When = when;
-        this.InnerSource = innerSource;
-        this.OuterVarSystem = vs;
+        VarName = varname;
+        When = when;
+        InnerSource = innerSource;
+        OuterVarSystem = vs;
     }
 
     internal override string FullText

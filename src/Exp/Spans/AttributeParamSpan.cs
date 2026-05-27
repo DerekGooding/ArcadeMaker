@@ -10,24 +10,24 @@ internal class AttributeParamSpan : WordSpan, IExpItem
 
     private AttributeParamSpan(string name) : base(name)
     {
-        this.Name = name;
+        Name = name;
     }
 
     internal AttributeParamSpan(Instance type, string name) : this(name)
     {
-        this.ExpType = type;
+        ExpType = type;
     }
 
     internal AttributeParamSpan(Type type, string name) : this(name)
     {
-        this.Type = type;
+        Type = type;
     }
 
     internal AttributeParamSpan(DefNameSpan defName, string name) : this(name)
     {
         ArgumentNullException.ThrowIfNull(defName);
 
-        this.ExpTypeName = defName;
+        ExpTypeName = defName;
     }
 
     internal bool ResolveTypeName(IEnumerable<IDefinition> defs)

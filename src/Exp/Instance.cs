@@ -21,8 +21,8 @@ public class Instance : IVarSystem, IValue, IExpItem
         ArgumentNullException.ThrowIfNull(def);
 
         this.def = def;
-        this.Vars = [];
-        this.ArrayValues = arrVals;
+        Vars = [];
+        ArrayValues = arrVals;
 
         if (addProperties)
         {

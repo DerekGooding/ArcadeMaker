@@ -11,7 +11,7 @@ public partial class SpansTextBox2SearchForm : Form
 
         Form owner = scriptBox.FindForm();
         if (owner != null)
-            this.Owner = owner;
+            Owner = owner;
     }
 
     private int FindNextIndex(bool notFoundMsg = true)

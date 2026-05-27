@@ -296,7 +296,7 @@ public partial class ScriptEditor : Form
 
     private void ScriptEditor_FormClosed(object sender, FormClosedEventArgs e)
     {
-        this.FormClosing -= ScriptEditor_FormClosing; // if not, causes a bug of warning box appear on closing object editor or IDE
+        FormClosing -= ScriptEditor_FormClosing; // if not, causes a bug of warning box appear on closing object editor or IDE
 
         Dispose();
     }

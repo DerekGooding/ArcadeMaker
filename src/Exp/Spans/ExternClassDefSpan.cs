@@ -18,9 +18,9 @@ internal class ExternClassDefSpan : WordSpan, IDefinition, IKeyword, IExpItem
 
     internal ExternClassDefSpan(string refName, Type type) : base(Keyword)
     {
-        this.RefName = refName;
-        this.Type = type;
-        this.IsEnum = type.IsEnum;
+        RefName = refName;
+        Type = type;
+        IsEnum = type.IsEnum;
 
         if (IsEnum)
         {
@@ -29,9 +29,9 @@ internal class ExternClassDefSpan : WordSpan, IDefinition, IKeyword, IExpItem
         }
 
         // get all public static methods of the type
-        this.Methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
-        this.Constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-        this.Props = type.GetProperties(BindingFlags.Public | BindingFlags.Static);
+        Methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
+        Constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+        Props = type.GetProperties(BindingFlags.Public | BindingFlags.Static);
     }
 
     internal override string FullText => $"{Keyword} {RefName} = \"{Type}\"";

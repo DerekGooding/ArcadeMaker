@@ -30,18 +30,17 @@ public class ClassDefSpan : WordSpan, IDefinition, IVarSystem, IKeyword, ICanSet
     {
         get
         {
-            if (_expType == null)
+            if (field == null)
             {
-                _expType = new Instance(ExpTypeDef ?? throw new Exception("Trying to get type instance before Type def was collected."));
-                _expType.Vars[0].SetSkippingConstant(Interpreter.StringToExpString(Name));
-                _expType.Vars[1].SetSkippingConstant(Interpreter.StringToExpString(Namespace + NamespaceSpecificationSpan.Symbol + Name));
-                _expType.Vars[2].SetSkippingConstant(SpecialValue.From(this));
+                field = new Instance(ExpTypeDef ?? throw new Exception("Trying to get type instance before Type def was collected."));
+                field.Vars[0].SetSkippingConstant(Interpreter.StringToExpString(Name));
+                field.Vars[1].SetSkippingConstant(Interpreter.StringToExpString(Namespace + NamespaceSpecificationSpan.Symbol + Name));
+                field.Vars[2].SetSkippingConstant(SpecialValue.From(this));
             }
-            return _expType;
+            return field;
         }
     }
 
-    private Instance _expType;
     public List<Span[]> TagsCode { get; set; } = [];
     public Instance[] AttrInfo { get; set; }
 
@@ -50,11 +49,11 @@ public class ClassDefSpan : WordSpan, IDefinition, IVarSystem, IKeyword, ICanSet
 
     public ClassDefSpan(string name, Property[] props, FuncDefSpan[] funcs = null, Instance[] attr = null) : base(Keyword)
     {
-        this.Name = name;
-        this.Props = props;
+        Name = name;
+        Props = props;
         props.ForEach(p => p.Def = this);
-        this.Funcs = funcs;
-        this.AttrInfo = attr;
+        Funcs = funcs;
+        AttrInfo = attr;
 
         if (name == "Array")
             ExpArrayDef = this;

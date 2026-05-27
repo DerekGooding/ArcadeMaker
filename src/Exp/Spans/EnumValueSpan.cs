@@ -11,9 +11,9 @@ internal class EnumValueSpan : WordSpan, ICanSetAttr, IExpItem
 
     internal EnumValueSpan(string name, double value, bool customValue) : base(name)
     {
-        this.Name = name;
-        this.Value = value;
-        this.CustomValue = customValue;
+        Name = name;
+        Value = value;
+        CustomValue = customValue;
     }
 
     internal override string FullText => Name + (CustomValue ? $" = {Value}" : "");

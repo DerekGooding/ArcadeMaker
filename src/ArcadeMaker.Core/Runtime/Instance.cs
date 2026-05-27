@@ -73,7 +73,7 @@ public class Instance : Exp.Instance
 
     public Instance(ObjectModel model) : base(model.Class, addProperties: false)
     {
-        this.Model = model;
+        Model = model;
 
         // assign properties
         var isNumChecker = new Func<IValue?, bool>(v => v?.IsNumber == true);

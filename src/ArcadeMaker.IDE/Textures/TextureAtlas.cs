@@ -52,7 +52,7 @@ internal class ImageRect
 
     internal ImageRect(Bitmap image)
     {
-        this.Image = image;
+        Image = image;
         Rect = new()
         {
             Width = (uint)image.Width,
@@ -68,7 +68,7 @@ internal class SpriteImageRect : ImageRect
 
     internal SpriteImageRect(GameSprite sprite, int index) : base(sprite.images[index])
     {
-        this.Sprite = sprite;
-        this.Index = index;
+        Sprite = sprite;
+        Index = index;
     }
 }

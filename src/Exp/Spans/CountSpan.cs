@@ -6,6 +6,6 @@ internal class CountSpan : Span
 
     internal CountSpan(int count) : base(".." + count)
     {
-        this.Count = count;
+        Count = count;
     }
 }

@@ -12,16 +12,16 @@ public partial class SpriteMaskEditor : Form
     }
 
     private readonly GameSprite Sprite = null;
-    private int top, left, right, bottom;
+    private int right;
 
     private new int Top
     {
-        get => top;
+        get;
         set
         {
             if (value >= 0 && value < Mask.height)
             {
-                top = value;
+                field = value;
                 boundingTopBox.Value = value;
                 previewBox.Invalidate();
             }
@@ -30,12 +30,12 @@ public partial class SpriteMaskEditor : Form
 
     private new int Left
     {
-        get => left;
+        get;
         set
         {
             if (value < Mask.width && value >= 0)
             {
-                left = value;
+                field = value;
                 boundingLeftBox.Value = value;
                 previewBox.Invalidate();
             }
@@ -58,12 +58,12 @@ public partial class SpriteMaskEditor : Form
 
     private new int Bottom
     {
-        get => bottom;
+        get;
         set
         {
             if (value >= 0 && value < Mask.height)
             {
-                bottom = value;
+                field = value;
                 boundingBottomBox.Value = value;
                 previewBox.Invalidate();
             }
@@ -81,20 +81,18 @@ public partial class SpriteMaskEditor : Form
         }
     }
 
-    private bool manualMode = false;
-
     private bool ManualMode
     {
-        get => manualMode;
+        get;
         set
         {
-            manualMode = value;
-            boundingLeftBox.Enabled = manualMode;
-            boundingRightBox.Enabled = manualMode;
-            boundingTopBox.Enabled = manualMode;
-            boundingBottomBox.Enabled = manualMode;
+            field = value;
+            boundingLeftBox.Enabled = field;
+            boundingRightBox.Enabled = field;
+            boundingTopBox.Enabled = field;
+            boundingBottomBox.Enabled = field;
         }
-    }
+    } = false;
 
     private void boundingManualOpt_CheckedChanged(object sender, EventArgs e)
     {
@@ -256,20 +254,18 @@ public partial class SpriteMaskEditor : Form
         }
     }
 
-    private int alphaTolerance = 0;
-
     private int AlphaTolerance
     {
-        get => alphaTolerance;
+        get;
         set
         {
-            alphaTolerance = value;
-            alphaToleranceBar.Value = alphaTolerance;
-            alphaToleranceBox.Value = alphaTolerance;
+            field = value;
+            alphaToleranceBar.Value = field;
+            alphaToleranceBox.Value = field;
             SetMasks();
             previewBox.Invalidate();
         }
-    }
+    } = 0;
 
     private bool SkipAlphaToleranceEditorSet = false;
 
@@ -297,16 +293,16 @@ public partial class SpriteMaskEditor : Form
     {
         InitializeComponent();
 
-        this.Sprite = sprite;
+        Sprite = sprite;
 
         SetMasks();
 
         if (sprite.maskBounding_manual)
         {
-            this.Top = sprite.maskTop;
-            this.right = sprite.maskRight;
-            this.Left = sprite.maskLeft;
-            this.Bottom = sprite.maskBottom;
+            Top = sprite.maskTop;
+            right = sprite.maskRight;
+            Left = sprite.maskLeft;
+            Bottom = sprite.maskBottom;
         }
         else if (sprite.maskBounding_fullImage)
             boundingFullOpt_CheckedChanged(this, EventArgs.Empty);
@@ -434,8 +430,8 @@ public class SpriteMask : IDisposable
 
     public SpriteMask(bool precise, int alphaTolerance, params Bitmap[] images)
     {
-        this.width = images[0].Width;
-        this.height = images[0].Height;
+        width = images[0].Width;
+        height = images[0].Height;
 
         for (int y = 0; y < height; y++)
         {

@@ -14,7 +14,7 @@ internal class ContinueStatement(ContinueWordSpan cword, ILoopContext loop) : IO
         {
             if (span is ILoopContext loopctx)
             {
-                if (loopctx == this.Loop)
+                if (loopctx == Loop)
                 {
                     loopctx.Continue = true;
                     return;

@@ -20,10 +20,10 @@ public class ScriptDocument
     {
         ArgumentNullException.ThrowIfNull(script);
 
-        this.Name = name;
-        this.Script = script;
+        Name = name;
+        Script = script;
 
-        TextSpans = Spanner.GetTextSpans(this.Script);
+        TextSpans = Spanner.GetTextSpans(Script);
         ReadDocSettings();
         foreach (var span in TextSpans)
             span.Doc = this;
@@ -32,9 +32,9 @@ public class ScriptDocument
     private void ReadDocSettings()
     {
         ReadDocSettings(Name, TextSpans, out var updatedTextSpans, out var description, out var @namespace, out var usings, out var settingsErrors);
-        (this.TextSpans, this.Description, this.Namespace) = (updatedTextSpans, description, @namespace);
-        this.Usings.AddRange(usings);
-        this.SettingsErrors.AddRange(settingsErrors);
+        (TextSpans, Description, Namespace) = (updatedTextSpans, description, @namespace);
+        Usings.AddRange(usings);
+        SettingsErrors.AddRange(settingsErrors);
     }
 
     public static void ReadDocSettings(string Name, TextSpan[] TextSpans, out TextSpan[] updatedTextSpans, out string? Description, out string? Namespace, out HashSet<string> Usings, out HashSet<ExpError> SettingsErrors)

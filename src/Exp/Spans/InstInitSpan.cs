@@ -9,7 +9,7 @@ internal class InstInitSpan : WordSpan, IKeyword, IExpItem
     internal InstInitSpan(DefNameSpan defName) : base(Keyword)
     {
         ArgumentNullException.ThrowIfNull(defName, nameof(defName));
-        this.DefName = defName;
+        DefName = defName;
     }
 
     internal override string FullText

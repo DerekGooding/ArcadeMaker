@@ -4,7 +4,7 @@ internal class TypeOfSpan : WordSpan
 {
     internal Instance Value { get; set; }
 
-    private TypeOfSpan(Instance value) : base("<>") => this.Value = value;
+    private TypeOfSpan(Instance value) : base("<>") => Value = value;
 
     internal TypeOfSpan(ExternClassDefSpan ext) : this(ext.Type.AsExtern())
     {

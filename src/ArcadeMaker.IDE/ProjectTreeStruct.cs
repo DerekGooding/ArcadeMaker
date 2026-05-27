@@ -10,7 +10,7 @@ public class ProjectItemTreeStruct<T> : ProjectTreeStruct<T> where T : GameItem
 
     public ProjectItemTreeStruct(GameItem item)
     {
-        this.Item = item;
+        Item = item;
     }
 }
 
@@ -23,8 +23,8 @@ public class ProjectFolderTreeStruct<T> : ProjectTreeStruct<T> where T : GameIte
 
     public ProjectFolderTreeStruct(string name, bool isBaseFolder)
     {
-        this.Name = name;
-        this.IsBaseFolder = isBaseFolder;
+        Name = name;
+        IsBaseFolder = isBaseFolder;
     }
 
     public ProjectFolderTreeStruct(string name, bool isBaseFolder, object[] structs) : this(name, isBaseFolder)
@@ -32,7 +32,7 @@ public class ProjectFolderTreeStruct<T> : ProjectTreeStruct<T> where T : GameIte
         foreach (object obj in structs)
         {
             if (obj is ProjectTreeStruct<T> @struct)
-                this.Structs.Add(@struct);
+                Structs.Add(@struct);
         }
     }
 }

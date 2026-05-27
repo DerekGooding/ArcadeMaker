@@ -12,8 +12,8 @@ internal class ExternTypeInitOperation : IReadingOperation
         ArgumentNullException.ThrowIfNull(extrn);
         ArgumentNullException.ThrowIfNull(args);
 
-        this.Extern = extrn;
-        this.Args = args;
+        Extern = extrn;
+        Args = args;
 
         if (!Extern.Type.GetConstructors(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Any(ctor => ctor.GetParameters().Length == Args.Length))
             Interpreter.Activated.Error($"Extern class '{extrn.GetExpTypeName(false)}' does not contain a constructor taking {Args.Length} parameters.");

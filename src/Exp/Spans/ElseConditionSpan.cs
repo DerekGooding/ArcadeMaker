@@ -17,8 +17,8 @@ internal class ElseConditionSpan : WordSpan, IContext, IKeyword, IExpItem
 
     internal ElseConditionSpan(Span[] innerSource, IVarSystem varSystem) : base(Keyword)
     {
-        this.InnerSource = innerSource;
-        this.OuterVarSystem = varSystem;
+        InnerSource = innerSource;
+        OuterVarSystem = varSystem;
         SetContainer(InnerSource);
     }
 }

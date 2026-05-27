@@ -16,7 +16,7 @@ public class GameRunner
     {
         ArgumentNullException.ThrowIfNull(game);
 
-        this.Game = game;
+        Game = game;
         game.Scripts.AddRange(GetScripts());
         Interpreter = new();
 
@@ -325,7 +325,7 @@ public class GameRunner
         int currentIndex = Game.Rooms.IndexOf(Game.CurrentRoom.Model);
 
         if (currentIndex + 1 >= Game.Rooms.Count)
-            this.Interpreter.ThrowRuntime("Current room is the last room.", RuntimeException.INVALID_OPERATION);
+            Interpreter.ThrowRuntime("Current room is the last room.", RuntimeException.INVALID_OPERATION);
         else
             GoToRoom(Game.Rooms[currentIndex + 1]);
 

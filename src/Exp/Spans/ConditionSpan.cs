@@ -17,9 +17,9 @@ internal abstract class ConditionSpan : WordSpan, IContext
 
     internal ConditionSpan(string text, Span[] condition, Span[] innerSource, IVarSystem varSystem) : base(text)
     {
-        this.InnerSource = innerSource;
-        this.Condition = condition;
-        this.OuterVarSystem = varSystem;
+        InnerSource = innerSource;
+        Condition = condition;
+        OuterVarSystem = varSystem;
     }
 
     internal override Span Container

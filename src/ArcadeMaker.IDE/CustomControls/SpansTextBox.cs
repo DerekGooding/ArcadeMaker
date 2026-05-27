@@ -324,7 +324,7 @@ public partial class SpansTextBox : UserControl
         textWidth = 0;
         textHeight = 0;
 
-        if (this.Spans.Count == 0)
+        if (Spans.Count == 0)
             return;
 
         // set origin point to scroll point

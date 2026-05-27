@@ -36,7 +36,7 @@ public class Variable : IExpItem, INamedValue
     public void SetSkippingConstant(IValue value)
     {
         firstSet = true;
-        this.Value = value;
+        Value = value;
     }
 
     public bool Private { get; set; }
@@ -45,10 +45,10 @@ public class Variable : IExpItem, INamedValue
 
     public Variable(string name, IValue? value, Span? settingSpan = null, bool prvt = false, bool cons = false)
     {
-        this.Name = name;
-        this.Value = value;
-        this.SettingSpan = settingSpan;
-        this.Private = prvt;
-        this.Const = cons;
+        Name = name;
+        Value = value;
+        SettingSpan = settingSpan;
+        Private = prvt;
+        Const = cons;
     }
 }

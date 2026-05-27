@@ -46,11 +46,11 @@ internal class ForEachLoopSpan : WordSpan, ILoopContext, IKeyword, IExpItem
 
     internal ForEachLoopSpan(string varName, bool constVar, Span[] arrReadText, Span[] innerSource, IVarSystem varSystem) : base(Keyword)
     {
-        this.VarName = varName;
-        this.ConstVar = constVar;
-        this.ArrReadText = arrReadText;
-        this.InnerSource = innerSource;
-        this.OuterVarSystem = varSystem;
+        VarName = varName;
+        ConstVar = constVar;
+        ArrReadText = arrReadText;
+        InnerSource = innerSource;
+        OuterVarSystem = varSystem;
     }
 
     internal override Span Container

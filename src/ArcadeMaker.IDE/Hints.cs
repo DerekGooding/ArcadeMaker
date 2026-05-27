@@ -196,20 +196,18 @@ namespace ArcadeMaker.IDE.Scripting
     [XmlRoot(Roots.Exception)]
     public class Exception
     {
-        private string _cref;
-
         [XmlAttribute("cref")]
         public string Cref
         {
-            get => _cref;
+            get;
             set
             {
-                _cref = value;
+                field = value;
                 if (value != null)
                 {
                     if (value.Length > 2 && value[1] == ':')
                     {
-                        _cref = value.Substring(2);
+                        field = value.Substring(2);
                     }
                 }
             }
@@ -225,16 +223,14 @@ namespace ArcadeMaker.IDE.Scripting
         [XmlIgnore]
         public RelationKind Kind { get; set; }
 
-        [XmlIgnore]
-        private string _cref;
-
+        [field: XmlIgnore]
         [XmlAttribute("cref")]
         public string Cref
         {
-            get => _cref;
+            get;
             set
             {
-                _cref = value;
+                field = value;
                 Kind = RelationKind.None;
 
                 if (value != null)
@@ -242,7 +238,7 @@ namespace ArcadeMaker.IDE.Scripting
                     if (value.Length > 2 && value[1] == ':')
                     {
                         Kind = (RelationKind)value[0];
-                        _cref = value.Substring(2);
+                        field = value.Substring(2);
                     }
                 }
             }
@@ -304,16 +300,14 @@ namespace ArcadeMaker.IDE.Scripting
         [XmlIgnore]
         public RelationKind Kind { get; set; }
 
-        [XmlIgnore]
-        private string _cref;
-
+        [field: XmlIgnore]
         [XmlAttribute("cref")]
         public string Cref
         {
-            get => _cref;
+            get;
             set
             {
-                _cref = value;
+                field = value;
                 Kind = RelationKind.None;
 
                 if (value != null)
@@ -321,22 +315,20 @@ namespace ArcadeMaker.IDE.Scripting
                     if (value.Length > 2 && value[1] == ':')
                     {
                         Kind = (RelationKind)value[0];
-                        _cref = value.Substring(2);
+                        field = value.Substring(2);
                     }
                 }
             }
         }
 
-        [XmlIgnore]
-        private string path;
-
+        [field: XmlIgnore]
         [XmlAttribute("path")]
         public string Path
         {
-            get => path;
+            get;
             set
             {
-                path = value;
+                field = value;
 
                 try
                 {

@@ -6,24 +6,20 @@ namespace ArcadeMaker.IDE;
 public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
 {
     public readonly ContextMenuStrip Menu = new ContextMenuStrip();
-    private T resource = null;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public T Resource
     {
-        get
-        {
-            return resource;
-        }
+        get;
         set
         {
-            resource = value;
-            if (resource != null)
-                nameBox.Text = resource.name;
+            field = value;
+            if (field != null)
+                nameBox.Text = field.name;
             else
                 nameBox.Text = defaultItemTitle;
         }
-    }
+    } = null;
 
     public event EventHandler<T> SelectionChanged;
 
@@ -41,7 +37,7 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
             defaultItemTitle = value;
             if (noResItem != null)
                 noResItem.Text = value;
-            if (resource == null)
+            if (Resource == null)
                 nameBox.Text = value;
         }
     }
@@ -132,8 +128,8 @@ public partial class GameResourcePickerBox<T> : UserControl where T : GameItem
     {
         Resource = res;
         SelectionChanged?.Invoke(this, Resource);
-        if (resource != null)
-            nameBox.Text = resource.name;
+        if (Resource != null)
+            nameBox.Text = Resource.name;
         else
             nameBox.Text = defaultItemTitle;
     }

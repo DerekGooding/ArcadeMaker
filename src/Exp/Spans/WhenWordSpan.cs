@@ -7,7 +7,7 @@ internal class WhenWordSpan : WordSpan, IKeyword
 
     internal WhenWordSpan(Span[] condition) : base(Keyword)
     {
-        this.Condition = condition;
+        Condition = condition;
         SetContainer(condition, Container);
     }
 

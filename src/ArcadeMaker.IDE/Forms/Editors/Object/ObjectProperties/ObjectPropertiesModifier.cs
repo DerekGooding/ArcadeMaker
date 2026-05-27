@@ -24,7 +24,7 @@ public partial class ObjectPropertiesModifier : UserControl
 
     public void Init(GameObject gameObject)
     {
-        this.GameObject = gameObject;
+        GameObject = gameObject;
 
         foreach (var pro in GameObject.ExtraProperties)
         {

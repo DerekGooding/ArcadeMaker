@@ -17,10 +17,10 @@ internal class TryWordSpan : WordSpan, IContext, IKeyword, IExpItem
 
     internal TryWordSpan(Span[] innerSource, IVarSystem vs, CatchWordSpan catc, FinallyWordSpan finaly) : base(Keyword)
     {
-        this.InnerSource = innerSource;
-        this.Catch = catc;
-        this.Finally = finaly;
-        this.OuterVarSystem = vs;
+        InnerSource = innerSource;
+        Catch = catc;
+        Finally = finaly;
+        OuterVarSystem = vs;
     }
 
     internal override string FullText => $"{Keyword}\n{{\n\t{InnerSource.ToString(" ")}\n}}";

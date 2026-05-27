@@ -31,8 +31,8 @@ internal class ForLoopSpan : ConditionSpan, ILoopContext, IKeyword, IExpItem
 
     internal ForLoopSpan(Span[] initExe, Span[] condition, Span[] stepExe, Span[] innerSource, IVarSystem varSystem) : base(Keyword, condition, innerSource, varSystem)
     {
-        this.InitExe = initExe;
-        this.StepExe = stepExe;
+        InitExe = initExe;
+        StepExe = stepExe;
         SetContainer(InitExe);
         SetContainer(StepExe);
         SetContainer(condition);

@@ -25,18 +25,17 @@ public class GameRoom : GameItem, IContainsScript
     public Color backColor = Color.Silver;
 
     private const string defaultScript = "namespace Game\n{\n\tpublic partial class RoomName\n\t{\n\t\tprotected override void Create()\n\t\t{\n\t\t\t\n\t\t}\n\t}\n}";
-    private string creationCode = null;
 
     public string Script
     {
         get
         {
-            if (creationCode == null)
-                creationCode = defaultScript.Replace("RoomName", name);
-            return creationCode;
+            if (field == null)
+                field = defaultScript.Replace("RoomName", name);
+            return field;
         }
-        set => creationCode = value;
-    }
+        set;
+    } = null;
 
     public new RoomEditor editor
     {
